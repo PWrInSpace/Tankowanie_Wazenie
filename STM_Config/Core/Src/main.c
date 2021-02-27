@@ -90,8 +90,6 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_USB_PCD_Init();
-  MX_TIM1_Init();
-  MX_TIM2_Init();
   MX_TIM3_Init();
   MX_TIM4_Init();
   MX_USART3_UART_Init();
@@ -101,10 +99,22 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+
   int i;
   while (1)
   {
 
+	  /* pulse */
+	 	  for(i=0;i<500;i++){
+	 		  HAL_Delay(2);
+	 		  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, i);
+	 	  }
+
+	 	  for(;i>=0;i--){
+	 		  HAL_Delay(2);
+	 		  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, i);
+	 	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

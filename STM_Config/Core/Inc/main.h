@@ -60,14 +60,6 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define BLTH_XBEE_Pin GPIO_PIN_13
 #define BLTH_XBEE_GPIO_Port GPIOC
-#define FILL_O_LIMIT_SW_Pin GPIO_PIN_14
-#define FILL_O_LIMIT_SW_GPIO_Port GPIOC
-#define FILL_C_LIMIT_SW_Pin GPIO_PIN_15
-#define FILL_C_LIMIT_SW_GPIO_Port GPIOC
-#define DEPR_O_LIMIT_SW_Pin GPIO_PIN_0
-#define DEPR_O_LIMIT_SW_GPIO_Port GPIOA
-#define DEPR_C_LIMIT_SW_Pin GPIO_PIN_1
-#define DEPR_C_LIMIT_SW_GPIO_Port GPIOA
 #define HX2_SDA_Pin GPIO_PIN_4
 #define HX2_SDA_GPIO_Port GPIOA
 #define HX2_SCL_Pin GPIO_PIN_5
@@ -88,14 +80,14 @@ void Error_Handler(void);
 #define QD_D2_GPIO_Port GPIOB
 #define QD_D1_Pin GPIO_PIN_15
 #define QD_D1_GPIO_Port GPIOB
-#define ENK_DEPR_CH2_Pin GPIO_PIN_8
-#define ENK_DEPR_CH2_GPIO_Port GPIOA
-#define ENK_DEPR_CH1_Pin GPIO_PIN_9
-#define ENK_DEPR_CH1_GPIO_Port GPIOA
-#define ENK_FILL_CH2_Pin GPIO_PIN_15
-#define ENK_FILL_CH2_GPIO_Port GPIOA
-#define ENK_FILL_CH1_Pin GPIO_PIN_3
-#define ENK_FILL_CH1_GPIO_Port GPIOB
+#define DEPR_C_LIMIT_SW_Pin GPIO_PIN_8
+#define DEPR_C_LIMIT_SW_GPIO_Port GPIOA
+#define DEPR_O_LIMIT_SW_Pin GPIO_PIN_9
+#define DEPR_O_LIMIT_SW_GPIO_Port GPIOA
+#define FILL_C_LIMIT_SW_Pin GPIO_PIN_15
+#define FILL_C_LIMIT_SW_GPIO_Port GPIOA
+#define FILL_O_LIMIT_SW_Pin GPIO_PIN_3
+#define FILL_O_LIMIT_SW_GPIO_Port GPIOB
 #define DEPR_CLOSE_Pin GPIO_PIN_4
 #define DEPR_CLOSE_GPIO_Port GPIOB
 #define DEPR_EN_Pin GPIO_PIN_5
