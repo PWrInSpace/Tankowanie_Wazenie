@@ -1,4 +1,5 @@
 #include "Funkcje.h"
+//xd co to tu robi?!
 
 //make struct 'Motor', fill it, return pointer to it    (names for args start with '_' sign)
 Motor* Motor_Init(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1, GPIO_TypeDef* _GPIO_PORT_IN2, uint16_t _PIN_IN2, TIM_HandleTypeDef _TIM_NR_EN, uint16_t _TIM_CHANNEL_EN){
@@ -16,7 +17,6 @@ Motor* Motor_Init(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1, GPIO_TypeDef*
 	return M;
 };
 /*
-void motor_stop(){
 
 	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, 0);
 	HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 0);
