@@ -7,17 +7,22 @@
 #include "stdlib.h"
 
 typedef struct {
-	//IN1
+	//Input 1
 	GPIO_TypeDef* GPIO_PORT_IN1;
 	uint16_t PIN_IN1;
-	//IN2
+	//Input 2
 	GPIO_TypeDef* GPIO_PORT_IN2;
 	uint16_t PIN_IN2;
-	//EN
+	//Enable
 	TIM_HandleTypeDef TIM_NR_EN;
 	uint16_t TIM_CHANNEL_EN;
+	//Limit Switch 1
+	GPIO_TypeDef* GPIO_PORT_LS1;
+	uint16_t PIN_LS1;
+	//Limit Switch 2
+	GPIO_TypeDef* GPIO_PORT_LS2;
+	uint16_t PIN_LS2;
 }Motor;
-
 
 
 //void SystemClock_Config(void);

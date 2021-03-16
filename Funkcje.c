@@ -1,11 +1,14 @@
 #include "Funkcje.h"
 
 //make struct 'Motor', fill it, return pointer to it    (names for args start with '_' sign)
-Motor* Motor_Init(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1, GPIO_TypeDef* _GPIO_PORT_IN2, uint16_t _PIN_IN2, TIM_HandleTypeDef _TIM_NR_EN, uint16_t _TIM_CHANNEL_EN){
+Motor* Motor_Init(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1, GPIO_TypeDef* _GPIO_PORT_IN2, uint16_t _PIN_IN2, TIM_HandleTypeDef _TIM_NR_EN, uint16_t _TIM_CHANNEL_EN,
+		GPIO_TypeDef* _GPIO_PORT_LS1, uint16_t _PIN_LS1, GPIO_TypeDef* _GPIO_PORT_LS2, uint16_t _PIN_LS2 ){
 	//allocate the space for struct
 	Motor* M = malloc(sizeof(Motor));
 	M->GPIO_PORT_IN1 = malloc(sizeof(GPIO_TypeDef));
 	M->GPIO_PORT_IN2 = malloc(sizeof(GPIO_TypeDef));
+	M->GPIO_PORT_LS1 = malloc(sizeof(GPIO_TypeDef));
+	M->GPIO_PORT_LS2 = malloc(sizeof(GPIO_TypeDef));
 	//fill struct
 	M->GPIO_PORT_IN1 = _GPIO_PORT_IN1;
 	M->PIN_IN1 = _PIN_IN1;
@@ -13,6 +16,10 @@ Motor* Motor_Init(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1, GPIO_TypeDef*
 	M->PIN_IN2 = _PIN_IN2;
 	M->TIM_NR_EN = _TIM_NR_EN;
 	M->TIM_CHANNEL_EN = _TIM_CHANNEL_EN;
+	M->GPIO_PORT_LS1 = _GPIO_PORT_LS1;
+	M->PIN_LS1 = _PIN_LS1;
+	M->GPIO_PORT_LS2 = _GPIO_PORT_LS2;
+	M->PIN_LS2 = _PIN_LS2;
 	return M;
 };
 /*
@@ -86,4 +93,4 @@ state_of_limit_switch_open  = HAL_GPIO_ReadPin(LIMIT_SWITCH_OPEN_GPIO_Port, LIMI
 	}
 	motor_stop();
 }
-/*
+*/
