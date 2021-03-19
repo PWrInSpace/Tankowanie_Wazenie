@@ -2,95 +2,81 @@
 
 //make struct 'Motor', fill it, return pointer to it    (names for args start with '_' sign)
 Motor* Motor_Init(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1, GPIO_TypeDef* _GPIO_PORT_IN2, uint16_t _PIN_IN2, TIM_HandleTypeDef _TIM_NR_EN, uint16_t _TIM_CHANNEL_EN,
-		GPIO_TypeDef* _GPIO_PORT_LS1, uint16_t _PIN_LS1, GPIO_TypeDef* _GPIO_PORT_LS2, uint16_t _PIN_LS2 ){
-	//allocate the space for struct
+		GPIO_TypeDef* _GPIO_PORT_LS_OPEN, uint16_t _PIN_LS_OPEN, GPIO_TypeDef* _GPIO_PORT_LS_CLOSED, uint16_t _PIN_LS_CLOSED ){
+	 //allocate space for struct
 	Motor* M = malloc(sizeof(Motor));
-	M->GPIO_PORT_IN1 = malloc(sizeof(GPIO_TypeDef));
-	M->GPIO_PORT_IN2 = malloc(sizeof(GPIO_TypeDef));
-	M->GPIO_PORT_LS1 = malloc(sizeof(GPIO_TypeDef));
-	M->GPIO_PORT_LS2 = malloc(sizeof(GPIO_TypeDef));
-	//fill struct
+	 //fill struct
 	M->GPIO_PORT_IN1 = _GPIO_PORT_IN1;
 	M->PIN_IN1 = _PIN_IN1;
 	M->GPIO_PORT_IN2 = _GPIO_PORT_IN2;
 	M->PIN_IN2 = _PIN_IN2;
 	M->TIM_NR_EN = _TIM_NR_EN;
 	M->TIM_CHANNEL_EN = _TIM_CHANNEL_EN;
-	M->GPIO_PORT_LS1 = _GPIO_PORT_LS1;
-	M->PIN_LS1 = _PIN_LS1;
-	M->GPIO_PORT_LS2 = _GPIO_PORT_LS2;
-	M->PIN_LS2 = _PIN_LS2;
+	M->GPIO_PORT_LS_OPEN = _GPIO_PORT_LS_OPEN;
+	M->PIN_LS_OPEN = _PIN_LS_OPEN;
+	M->GPIO_PORT_LS_CLOSED = _GPIO_PORT_LS_CLOSED;
+	M->PIN_LS_CLOSED = _PIN_LS_CLOSED;
 	return M;
 };
-/*
-void motor_stop(){
 
-	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, 0);
-	HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 0);
-	HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, 0);
-	HAL_GPIO_WritePin(GPIOx, GPIO_Pin, PinState)
+void motor_stop(Motor *Mot){
+	__HAL_TIM_SET_COMPARE(&(Mot->TIM_NR_EN), Mot->TIM_CHANNEL_EN, 0);
+	HAL_GPIO_WritePin(Mot->GPIO_PORT_IN1, Mot->PIN_IN1, 0);
+	HAL_GPIO_WritePin(Mot->GPIO_PORT_IN2, Mot->PIN_IN2, 0);
+}
+
+void motor_opening(Motor *Mot){
+	__HAL_TIM_SET_COMPARE(&(Mot->TIM_NR_EN), Mot->TIM_CHANNEL_EN, 1000);
+	HAL_GPIO_WritePin(Mot->GPIO_PORT_IN1, Mot->PIN_IN1, 1);
+	HAL_GPIO_WritePin(Mot->GPIO_PORT_IN2, Mot->PIN_IN2, 0);
+}
+
+void motor_closing(Motor *Mot){
+	__HAL_TIM_SET_COMPARE(&(Mot->TIM_NR_EN), Mot->TIM_CHANNEL_EN, 1000);
+	HAL_GPIO_WritePin(Mot->GPIO_PORT_IN1, Mot->PIN_IN1, 0);
+	HAL_GPIO_WritePin(Mot->GPIO_PORT_IN2, Mot->PIN_IN2, 1);
 }
 
 
-void motor_opening(){
-	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 1000);
-	HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 1);
-	HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, 0);
-}
+void motor_initial(Motor *Mot){
+	bool dir = false;
+	uint8_t i=0;
 
-void motor_closing(){
-	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 1000);
-	HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 0);
-	HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, 1);
-}
+	while(i<2){
+		do{
+			Mot->State_of_limit_switch_open = HAL_GPIO_ReadPin(Mot->GPIO_PORT_LS_OPEN, Mot->PIN_LS_OPEN);
+			Mot->State_of_limit_switch_closed = HAL_GPIO_ReadPin(Mot->GPIO_PORT_LS_CLOSED, Mot->PIN_LS_CLOSED);
+			motor_closing(Mot);
+		}while(Mot->State_of_limit_switch_open == 0 && Mot->State_of_limit_switch_closed == 0);
 
-
-void motor_initial(){
-	bool dir=false;
-	int i=0;
-
-while(i<2){
-
-
-	do{
-		state_of_limit_switch_open  = HAL_GPIO_ReadPin(LIMIT_SWITCH_OPEN_GPIO_Port, LIMIT_SWITCH_OPEN_Pin);
-		state_of_limit_switch_close = HAL_GPIO_ReadPin(LIMIT_SWITCH_CLOSE_GPIO_Port, LIMIT_SWITCH_CLOSE_Pin);
-		motor_closing();
-	}while(state_of_limit_switch_open == 0 && state_of_limit_switch_close == 0);
-
-	if (state_of_limit_switch_open == 1) {
-		dir = false;
+		if (Mot->State_of_limit_switch_open == 1){
+			dir = false;
+			}
+		if (Mot->State_of_limit_switch_closed == 1){
+			 dir = true;
+			 }
+		if (dir){
+			do{
+				motor_opening(Mot);
+				Mot->State_of_limit_switch_open  = HAL_GPIO_ReadPin(Mot->GPIO_PORT_LS_OPEN, Mot->PIN_LS_OPEN);
+			}while(Mot->State_of_limit_switch_open != 1);
+			i++;
 		}
-
-	if (state_of_limit_switch_close == 1) {
-		 dir = true;
-		 }
-
-
-	if (dir) {
-		do{
-			motor_opening();
-			state_of_limit_switch_open  = HAL_GPIO_ReadPin(LIMIT_SWITCH_OPEN_GPIO_Port, LIMIT_SWITCH_OPEN_Pin);
-		}while(state_of_limit_switch_open != 1);
-		i++;
-	 }
-
-	else if (!dir) {
-		do{
-			motor_closing();
-			state_of_limit_switch_close = HAL_GPIO_ReadPin(LIMIT_SWITCH_CLOSE_GPIO_Port, LIMIT_SWITCH_CLOSE_Pin);
-		}while(state_of_limit_switch_close != 1);
-		i++;
+		else if (!dir){
+			do{
+				motor_closing(Mot);
+				Mot->State_of_limit_switch_closed = HAL_GPIO_ReadPin(Mot->GPIO_PORT_LS_CLOSED, Mot->PIN_LS_CLOSED);
+			}while(Mot->State_of_limit_switch_closed != 1);
+			i++;
+		}
 	}
-	 }
 
-state_of_limit_switch_open  = HAL_GPIO_ReadPin(LIMIT_SWITCH_OPEN_GPIO_Port, LIMIT_SWITCH_OPEN_Pin);
-	if(state_of_limit_switch_open == 1){
+	Mot->State_of_limit_switch_open  = HAL_GPIO_ReadPin(Mot->GPIO_PORT_LS_OPEN, Mot->PIN_LS_OPEN);
+	if(Mot->State_of_limit_switch_open == 1){
 		do{
-			motor_closing();
-			state_of_limit_switch_close = HAL_GPIO_ReadPin(LIMIT_SWITCH_CLOSE_GPIO_Port, LIMIT_SWITCH_CLOSE_Pin);
-		}while(state_of_limit_switch_close != 1);
+			motor_closing(Mot);
+			Mot->State_of_limit_switch_closed = HAL_GPIO_ReadPin(Mot->GPIO_PORT_LS_CLOSED, Mot->PIN_LS_CLOSED);
+		}while(Mot->State_of_limit_switch_closed != 1);
 	}
-	motor_stop();
+	motor_stop(Mot);
 }
-*/

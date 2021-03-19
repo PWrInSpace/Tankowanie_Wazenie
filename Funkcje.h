@@ -17,22 +17,23 @@ typedef struct {
 	TIM_HandleTypeDef TIM_NR_EN;
 	uint16_t TIM_CHANNEL_EN;
 	//Limit Switch 1
-	GPIO_TypeDef* GPIO_PORT_LS1;
-	uint16_t PIN_LS1;
+	GPIO_TypeDef* GPIO_PORT_LS_OPEN;
+	uint16_t PIN_LS_OPEN;
 	//Limit Switch 2
-	GPIO_TypeDef* GPIO_PORT_LS2;
-	uint16_t PIN_LS2;
+	GPIO_TypeDef* GPIO_PORT_LS_CLOSED;
+	uint16_t PIN_LS_CLOSED;
+	bool State_of_limit_switch_open;
+	bool State_of_limit_switch_closed;
 }Motor;
-
 
 //void SystemClock_Config(void);
 
 int state_of_limit_switch_open;
 int state_of_limit_switch_close;
 
-void motor_stop();
-void motor_opening();
-void motor_closing();
-void motor_initial();
+void motor_stop(Motor *Mot);
+void motor_opening(Motor *Mot);
+void motor_closing(Motor *Mot);
+void motor_initial(Motor *Mot);
 
 #endif /* INC_FUNKCJE_H_ */
