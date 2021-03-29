@@ -26,7 +26,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <L298.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -100,25 +100,20 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
 
-  int i;
+  Motor* Fill = Motor_Init(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port , FILL_CLOSE_Pin, &htim3 , TIM_CHANNEL_3, FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin, FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
+
   while (1)
   {
-
-	  /* pulse */
-	 	  for(i=0;i<500;i++){
-	 		  HAL_Delay(2);
-	 		  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, i);
-	 	  }
-
-	 	  for(;i>=0;i--){
-	 		  HAL_Delay(2);
-	 		  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, i);
-	 	  }
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
+	  motor_initial(Fill);
+	  HAL_Delay(1000);
   }
+    /* USER CODE END WHILE */
+    /* USER CODE BEGIN 3 */
+
   /* USER CODE END 3 */
 }
 
