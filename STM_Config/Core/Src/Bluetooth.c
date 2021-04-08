@@ -21,6 +21,7 @@ void resolveCommand(UART_HandleTypeDef* huart1, Motor* Mot){
 		// HAL_UART_Transmit(&huart2, stringOrSth, Size, 500);
 	
 		//then just clear the buffer
+	//this line added to test the push to github
 		memset(buff,0,sizeof(buff));
 }
 
