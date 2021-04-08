@@ -124,8 +124,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   motor_initial(Fill);
+//hhhhjjjk
+  //nieistniejacy brancz
 
-/jjj
   while (1)
   {
 	  //zabawa z hamowaniem
