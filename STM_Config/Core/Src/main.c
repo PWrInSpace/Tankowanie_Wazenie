@@ -132,7 +132,7 @@ int main(void)
 	/* HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 1); //krece w prawo max
 	 HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, 0);
 	 HAL_Delay(5000);
-*/
+
 	 HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 0); //krece w prawo max
 	 HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, 0);
 	 HAL_Delay(2000);
