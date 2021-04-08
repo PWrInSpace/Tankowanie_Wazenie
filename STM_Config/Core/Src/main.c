@@ -125,7 +125,7 @@ int main(void)
 
   motor_initial(Fill);
 
-
+/jjj
   while (1)
   {
 	  //zabawa z hamowaniem
