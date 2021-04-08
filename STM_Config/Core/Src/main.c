@@ -27,6 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <L298.h>
+#include <Bluetooth.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -94,24 +95,117 @@ int main(void)
   MX_TIM4_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
 
+//  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); test timer
+
+  /* USER CODE END 2 */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+
+  //Motor - Fill - PB7(close) PB8(enable) PB9(open)
   Motor* Fill = Motor_Init(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port , FILL_CLOSE_Pin, &htim3 , TIM_CHANNEL_3, FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin, FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
+
+///ADDED FOR BLUETOOTH///
+ // HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
+  HAL_Delay(1000);
+
+  char* buff;
+  memset(buff ,0,sizeof(buff));
+  // HAL_TIM_Base_Start_IT(&htim2);
+  __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+
+  /* USER CODE END 2 */
+
+  /* USER CODE BEGIN WHILE */
+
+  motor_initial(Fill);
+
 
   while (1)
   {
-	  motor_initial(Fill);
+	  //zabawa z hamowaniem
+	//__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 1000);
+	/* HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 1); //krece w prawo max
+	 HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, 0);
+	 HAL_Delay(5000);
+
+	 HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 0); //krece w prawo max
+	 HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, 0);
+	 HAL_Delay(2000);
+
+	 HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 1); //krece w prawo max
+	 HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, 0);
+	 HAL_Delay(5000);
+
+	 HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 0); //krece w prawo max
+	 HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, 0);
+	 HAL_Delay(2000);*/
+
+	  //zabawa z pulsem
+	  /*HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 1);
+	  HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, 0);
+
+	  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 999);
+	  HAL_Delay(5000);
+	  HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 0);
 	  HAL_Delay(1000);
-  }
+
+	  HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 0);
+	  HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, 1);
+	 __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 500);
+	  HAL_Delay(5000);
+	  HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 0);
+	  HAL_Delay(1000);*/
+
+	/*  HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 1);
+	  HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, 0);
+	  HAL_Delay(5000);*/
+
+	  	 //zabawa z przyciskiem
+
+		/*  if(HAL_GPIO_ReadPin(BUT_GPIO_Port, BUT_Pin)==1){
+			HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 0);
+			HAL_Delay(300);
+		  	HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, 1);
+		  	HAL_Delay(300);
+		  }
+		  else
+		  {
+			  HAL_GPIO_WritePin(LEDIN1_GPIO_Port, LEDIN1_Pin, 1);
+			  HAL_Delay(300);
+			  HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, 0);
+			  HAL_Delay(300);
+		 }*/
+
+	 /*  state_of_limit_switch_open  = HAL_GPIO_ReadPin(LIMIT_SWITCH_OPEN_GPIO_Port, LIMIT_SWITCH_OPEN_Pin);
+	   state_of_limit_switch_close = HAL_GPIO_ReadPin(LIMIT_SWITCH_CLOSE_GPIO_Port, LIMIT_SWITCH_CLOSE_Pin);
+
+		if (state_of_limit_switch_open == 1) {
+		    dir = false;
+		  }
+		  if (state_of_limit_switch_close == 1) {
+		    dir = true;
+		  }
+		  if (dir) {
+		    motor_opening();
+		  }
+		  if (!dir) {
+		    motor_closing();
+		  }
+		  if (state_of_limit_switch_close == 1&&state_of_limit_switch_open == 1) {
+		  		    motor_stop();
+		  		  HAL_Delay(1000);
+
+		  		  }
+		  HAL_Delay(100);*/
+ }
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
 
   /* USER CODE END 3 */

@@ -1,12 +1,12 @@
-#ifndef INC_L298_H_
-#define INC_L298_H_
+#ifndef L298_LIB
+#define L298_LIB
 
 #include "stdbool.h"
 #include "gpio.h"
 #include "tim.h"
 #include "stdlib.h"
 
-typedef struct {
+typedef struct Motor{
 	//Input 1
 	GPIO_TypeDef* GPIO_PORT_IN1;
 	uint16_t PIN_IN1;
@@ -20,10 +20,10 @@ typedef struct {
 	GPIO_TypeDef* GPIO_PORT_LS_OPEN;
 	uint16_t PIN_LS_OPEN;
 	//Limit Switch 2
-	GPIO_TypeDef* GPIO_PORT_LS_CLOSED;
-	uint16_t PIN_LS_CLOSED;
+	GPIO_TypeDef* GPIO_PORT_LS_CLOSE;
+	uint16_t PIN_LS_CLOSE;
 	bool State_of_limit_switch_open;
-	bool State_of_limit_switch_closed;
+	bool State_of_limit_switch_close;
 }Motor;
 
 //?? void SystemClock_Config(void);
@@ -32,13 +32,9 @@ Motor* Motor_Init(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1, GPIO_TypeDef*
 		TIM_HandleTypeDef* _TIM_NR_EN, uint16_t _TIM_CHANNEL_EN, GPIO_TypeDef* _GPIO_PORT_LS_OPEN, uint16_t _PIN_LS_OPEN,
 		GPIO_TypeDef* _GPIO_PORT_LS_CLOSED, uint16_t _PIN_LS_CLOSED );
 
-
-int state_of_limit_switch_open;
-int state_of_limit_switch_close;
-
 void motor_stop(Motor *Mot);
 void motor_opening(Motor *Mot);
 void motor_closing(Motor *Mot);
 void motor_initial(Motor *Mot);
 
-#endif /* INC_L298_H_ */
+#endif /* L298_LIB */

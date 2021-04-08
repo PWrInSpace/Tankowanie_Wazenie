@@ -8,7 +8,7 @@ stm32f1xx_hal_tim.c:399:19:HAL_TIM_Base_Start	0	static
 stm32f1xx_hal_tim.c:438:19:HAL_TIM_Base_Stop	0	static
 stm32f1xx_hal_tim.c:458:19:HAL_TIM_Base_Start_IT	0	static
 stm32f1xx_hal_tim.c:500:19:HAL_TIM_Base_Stop_IT	0	static
-stm32f1xx_hal_tim.c:525:19:HAL_TIM_Base_Start_DMA	8	static
+stm32f1xx_hal_tim.c:525:19:HAL_TIM_Base_Start_DMA	16	static
 stm32f1xx_hal_tim.c:593:19:HAL_TIM_Base_Stop_DMA	8	static
 stm32f1xx_hal_tim.c:750:13:HAL_TIM_OC_MspInit	0	static
 stm32f1xx_hal_tim.c:765:13:HAL_TIM_OC_MspDeInit	0	static
@@ -25,10 +25,10 @@ stm32f1xx_hal_tim.c:2610:19:HAL_TIM_OnePulse_DeInit	8	static
 stm32f1xx_hal_tim.c:3086:13:HAL_TIM_Encoder_MspInit	0	static
 stm32f1xx_hal_tim.c:3101:13:HAL_TIM_Encoder_MspDeInit	0	static
 stm32f1xx_hal_tim.c:3041:19:HAL_TIM_Encoder_DeInit	8	static
-stm32f1xx_hal_tim.c:4405:19:HAL_TIM_DMABurst_MultiWriteStart	24	static
+stm32f1xx_hal_tim.c:4405:19:HAL_TIM_DMABurst_MultiWriteStart	16	static
 stm32f1xx_hal_tim.c:4359:19:HAL_TIM_DMABurst_WriteStart	24	static
 stm32f1xx_hal_tim.c:4582:19:HAL_TIM_DMABurst_WriteStop	16	static
-stm32f1xx_hal_tim.c:4723:19:HAL_TIM_DMABurst_MultiReadStart	24	static
+stm32f1xx_hal_tim.c:4723:19:HAL_TIM_DMABurst_MultiReadStart	16	static
 stm32f1xx_hal_tim.c:4677:19:HAL_TIM_DMABurst_ReadStart	24	static
 stm32f1xx_hal_tim.c:4901:19:HAL_TIM_DMABurst_ReadStop	16	static
 stm32f1xx_hal_tim.c:4978:19:HAL_TIM_GenerateEvent	0	static
@@ -95,9 +95,9 @@ stm32f1xx_hal_tim.c:1512:19:HAL_TIM_PWM_Start_IT	8	static
 stm32f1xx_hal_tim.c:1599:19:HAL_TIM_PWM_Stop_IT	16	static
 stm32f1xx_hal_tim.c:1670:19:HAL_TIM_PWM_Start_DMA	16	static
 stm32f1xx_hal_tim.c:1823:19:HAL_TIM_PWM_Stop_DMA	16	static
-stm32f1xx_hal_tim.c:2058:19:HAL_TIM_IC_Start	8	static
+stm32f1xx_hal_tim.c:2058:19:HAL_TIM_IC_Start	16	static
 stm32f1xx_hal_tim.c:2110:19:HAL_TIM_IC_Stop	16	static
-stm32f1xx_hal_tim.c:2140:19:HAL_TIM_IC_Start_IT	8	static
+stm32f1xx_hal_tim.c:2140:19:HAL_TIM_IC_Start_IT	16	static
 stm32f1xx_hal_tim.c:2225:19:HAL_TIM_IC_Stop_IT	16	static
 stm32f1xx_hal_tim.c:2291:19:HAL_TIM_IC_Start_DMA	16	static
 stm32f1xx_hal_tim.c:2443:19:HAL_TIM_IC_Stop_DMA	16	static
@@ -109,5 +109,5 @@ stm32f1xx_hal_tim.c:3121:19:HAL_TIM_Encoder_Start	16	static
 stm32f1xx_hal_tim.c:3215:19:HAL_TIM_Encoder_Stop	16	static
 stm32f1xx_hal_tim.c:3275:19:HAL_TIM_Encoder_Start_IT	16	static
 stm32f1xx_hal_tim.c:3375:19:HAL_TIM_Encoder_Stop_IT	16	static
-stm32f1xx_hal_tim.c:3440:19:HAL_TIM_Encoder_Start_DMA	24	static
+stm32f1xx_hal_tim.c:3440:19:HAL_TIM_Encoder_Start_DMA	32	static
 stm32f1xx_hal_tim.c:3648:19:HAL_TIM_Encoder_Stop_DMA	16	static

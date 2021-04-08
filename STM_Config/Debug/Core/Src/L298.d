@@ -1,5 +1,5 @@
-Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
- ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
+Core/Src/L298.o: ../Core/Src/L298.c ../Core/Inc/L298.h ../Core/Inc/gpio.h \
+ ../Core/Inc/main.h ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
  ../Core/Inc/stm32f1xx_hal_conf.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h \
@@ -27,9 +27,11 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_usb.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd_ex.h \
- ../Core/Inc/tim.h ../Core/Inc/main.h ../Core/Inc/usart.h \
- ../Core/Inc/usb.h ../Core/Inc/gpio.h ../Core/Inc/L298.h \
- ../Core/Inc/gpio.h ../Core/Inc/tim.h ../Core/Inc/Bluetooth.h
+ ../Core/Inc/tim.h
+
+../Core/Inc/L298.h:
+
+../Core/Inc/gpio.h:
 
 ../Core/Inc/main.h:
 
@@ -90,19 +92,3 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd_ex.h:
 
 ../Core/Inc/tim.h:
-
-../Core/Inc/main.h:
-
-../Core/Inc/usart.h:
-
-../Core/Inc/usb.h:
-
-../Core/Inc/gpio.h:
-
-../Core/Inc/L298.h:
-
-../Core/Inc/gpio.h:
-
-../Core/Inc/tim.h:
-
-../Core/Inc/Bluetooth.h:
