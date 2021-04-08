@@ -124,8 +124,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   motor_initial(Fill);
-//hhhhjjjk
-  //nieistniejacy brancz
 
   while (1)
   {
