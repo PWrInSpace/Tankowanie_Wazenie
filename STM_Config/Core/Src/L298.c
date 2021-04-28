@@ -1,12 +1,12 @@
 #include <L298.h>
 
-//make struct 'Motor', fill it, return pointer to it    (names for args start with '_' sign)
-Motor* Motor_Init(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1, GPIO_TypeDef* _GPIO_PORT_IN2, uint16_t _PIN_IN2,
+//make struct 'Motor', fill it, return pointer to it    (names of args start with '_' sign)
+Motor* motor_init(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1, GPIO_TypeDef* _GPIO_PORT_IN2, uint16_t _PIN_IN2,
 		TIM_HandleTypeDef* _TIM_NR_EN, uint16_t _TIM_CHANNEL_EN, GPIO_TypeDef* _GPIO_PORT_LS_OPEN, uint16_t _PIN_LS_OPEN,
-		GPIO_TypeDef* _GPIO_PORT_LS_CLOSE, uint16_t _PIN_LS_CLOSE){
-	 //allocate space for struct
-	Motor* M = malloc(sizeof(Motor));
-	 //fill struct
+		GPIO_TypeDef* _GPIO_PORT_LS_CLOSE, uint16_t _PIN_LS_CLOSE)
+{
+	Motor* M = malloc(sizeof(Motor));	 //allocate space for struct
+//fill whole struct
 	M->GPIO_PORT_IN1 = _GPIO_PORT_IN1;
 	M->PIN_IN1 = _PIN_IN1;
 	M->GPIO_PORT_IN2 = _GPIO_PORT_IN2;

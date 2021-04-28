@@ -60,6 +60,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define BLTH_XBEE_Pin GPIO_PIN_13
 #define BLTH_XBEE_GPIO_Port GPIOC
+#define IGN_TEST_CON_Pin GPIO_PIN_15
+#define IGN_TEST_CON_GPIO_Port GPIOC
 #define HX2_SDA_Pin GPIO_PIN_4
 #define HX2_SDA_GPIO_Port GPIOA
 #define HX2_SCL_Pin GPIO_PIN_5
@@ -84,6 +86,8 @@ void Error_Handler(void);
 #define DEPR_C_LIMIT_SW_GPIO_Port GPIOA
 #define DEPR_O_LIMIT_SW_Pin GPIO_PIN_9
 #define DEPR_O_LIMIT_SW_GPIO_Port GPIOA
+#define IGN_FIRE_Pin GPIO_PIN_10
+#define IGN_FIRE_GPIO_Port GPIOA
 #define FILL_C_LIMIT_SW_Pin GPIO_PIN_15
 #define FILL_C_LIMIT_SW_GPIO_Port GPIOA
 #define FILL_O_LIMIT_SW_Pin GPIO_PIN_3
