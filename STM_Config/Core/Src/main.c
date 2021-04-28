@@ -28,6 +28,7 @@
 /* USER CODE BEGIN Includes */
 #include <L298.h>
 #include <Bluetooth.h>
+#include <Igniter.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -115,7 +116,7 @@ int main(void)
   HAL_Delay(1000);
 
   char* buff;
-  memset(buff ,0,sizeof(buff));
+  memset(buff, 0, sizeof(buff));
   // HAL_TIM_Base_Start_IT(&htim2);
   __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
 
@@ -132,9 +133,9 @@ int main(void)
 	  case 0: //test state
 		  motor_initial(Fill);
 		  if(igniter_is_connected(Ignit)){
-			  HAL_GPIO_TogglePin(BLTH_XBEE_GPIO_Port, BLTH_XBEE_Pin);
+			  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 		  }
-		  delay(1000);
+		  HAL_Delay(1000);
 		  break;
 	  }
 

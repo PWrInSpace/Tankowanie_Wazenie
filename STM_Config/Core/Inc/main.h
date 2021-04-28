@@ -58,8 +58,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define BLTH_XBEE_Pin GPIO_PIN_13
-#define BLTH_XBEE_GPIO_Port GPIOC
+#define BUILD_IN_LED_Pin GPIO_PIN_13
+#define BUILD_IN_LED_GPIO_Port GPIOC
 #define IGN_TEST_CON_Pin GPIO_PIN_15
 #define IGN_TEST_CON_GPIO_Port GPIOC
 #define HX2_SDA_Pin GPIO_PIN_4

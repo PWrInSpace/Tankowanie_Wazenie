@@ -1,4 +1,5 @@
 "Core/Src/Bluetooth.o"
+"Core/Src/Ingniter.o"
 "Core/Src/L298.o"
 "Core/Src/gpio.o"
 "Core/Src/main.o"
