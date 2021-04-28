@@ -1,0 +1,5 @@
+L298.c:4:8:Motor_Init	24	static
+L298.c:25:6:motor_stop	8	static
+L298.c:31:6:motor_opening	16	static
+L298.c:41:6:motor_closing	16	static
+L298.c:51:6:motor_initial	8	static
