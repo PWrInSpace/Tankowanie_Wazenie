@@ -25,8 +25,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <L298.h>
 #include <Bluetooth.h>
+#include <Igniter.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,7 +46,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint8_t state = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -92,10 +92,6 @@ int main(void)
   MX_USB_PCD_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
-  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
 
 //  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); test timer
 
@@ -118,12 +114,23 @@ int main(void)
 
   /* USER CODE BEGIN WHILE */
 
-  motor_initial(Fill);
+  Igniter* Ignit = igniter_init(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
 
   while (1)
   {
-	  HAL_Delay(1000);
+	  switch(state){
+		  case 0: //test state
+			  if(igniter_is_connected(Ignit)){
+				  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
+			  }
+			  HAL_Delay(1000);
+			  break;
+		  case 1:
+			  break;
+	  }
+
   }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

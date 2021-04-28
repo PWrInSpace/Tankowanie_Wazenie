@@ -35,34 +35,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := TanwaR4S
+BUILD_ARTIFACT_NAME := tanwaR4S
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX := 
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME).$(BUILD_ARTIFACT_EXTENSION)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-TanwaR4S.elf \
+tanwaR4S.elf \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-TanwaR4S.list \
+tanwaR4S.list \
 
 OBJCOPY_BIN += \
-TanwaR4S.bin \
+tanwaR4S.bin \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: TanwaR4S.elf secondary-outputs
+main-build: tanwaR4S.elf secondary-outputs
 
 # Tool invocations
-TanwaR4S.elf: $(OBJS) $(USER_OBJS) D:\ST\workspace\TanwaR4S\STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "TanwaR4S.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"D:\ST\workspace\TanwaR4S\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="TanwaR4S.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+tanwaR4S.elf: $(OBJS) $(USER_OBJS) C:\Users\HP\git\Tankowanie_Wazenie\R4S_STM_CODE\STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "tanwaR4S.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\HP\git\Tankowanie_Wazenie\R4S_STM_CODE\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="tanwaR4S.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -71,13 +71,13 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-TanwaR4S.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "TanwaR4S.list"
+tanwaR4S.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "tanwaR4S.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-TanwaR4S.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "TanwaR4S.bin"
+tanwaR4S.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "tanwaR4S.bin"
 	@echo 'Finished building: $@'
 	@echo ' '
 

@@ -61,8 +61,8 @@ all: main-build
 main-build: tanwa.elf secondary-outputs
 
 # Tool invocations
-tanwa.elf: $(OBJS) $(USER_OBJS) C:\Users\HP\git\Tankowanie_Wazenie\STM_Config\STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "tanwa.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\HP\git\Tankowanie_Wazenie\STM_Config\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="tanwa.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+tanwa.elf: $(OBJS) $(USER_OBJS) C:\Users\HP\git\Tankowanie_Wazenie\R4_STM_CODE\STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "tanwa.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\HP\git\Tankowanie_Wazenie\R4_STM_CODE\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="tanwa.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

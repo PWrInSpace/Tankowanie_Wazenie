@@ -6,9 +6,7 @@
 #include "string.h"
 #include "stdlib.h"
 
-#include <L298.h>
-
-void resolveCommand(UART_HandleTypeDef* huart1, Motor* Mot);
+void resolveCommand(UART_HandleTypeDef* huart1);
 bool stringCompare(char array1[], char array2[], uint16_t lght);
 
 #endif

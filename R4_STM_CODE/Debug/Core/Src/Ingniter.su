@@ -1,3 +1,3 @@
-Ingniter.c:4:10:igniter_init	0	static
-Ingniter.c:14:6:igniter_is_connected	8	static
-Ingniter.c:21:6:igniter_FIRE	8	static
+Ingniter.c:4:10:igniter_init	24	static
+Ingniter.c:15:6:igniter_is_connected	8	static
+Ingniter.c:22:6:igniter_FIRE	8	static
