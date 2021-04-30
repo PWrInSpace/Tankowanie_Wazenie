@@ -22,6 +22,7 @@ void resolveCommand(UART_HandleTypeDef* huart1, Motor* Mot){
 	
 		//then just clear the buffer
 	//this line added to test the push to github
+	//
 		memset(buff,0,sizeof(buff));
 }
 

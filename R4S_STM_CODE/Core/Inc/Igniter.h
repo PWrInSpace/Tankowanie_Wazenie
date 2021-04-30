@@ -6,6 +6,7 @@
 #include "stdlib.h"
 
 /* Struktura zapalnika */
+
 typedef struct Igniter{
 	// Igniter Pin
 	GPIO_TypeDef* GPIO_PORT_IGNITER;

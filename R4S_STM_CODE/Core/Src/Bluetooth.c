@@ -6,7 +6,7 @@ void resolveCommand(UART_HandleTypeDef* huart1){
 	if(stringCompare(buff,"INIT_V0", strlen("INIT_V0"))){
 		HAL_UART_Transmit(huart1, (uint8_t*)"calibrating main valve \n",strlen("calibrating main valve \n"), 500);
 		//String bufor = buff;
-		motor_initial(Mot);
+		motor_initial(Mot);//xd
 		HAL_UART_Transmit(huart1, (uint8_t*)"Done... \n",strlen("Done... \n"), 500);
 	}
 	if(stringCompare(buff,"OPEN", strlen("OPEN")))
