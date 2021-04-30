@@ -9,10 +9,9 @@ typedef struct Igniter{
 	// Igniter Pin
 	GPIO_TypeDef* GPIO_PORT_IGNITER;
 	uint16_t PIN_IGNITER;
-	// Test Connection
+	// Test Connection Pin
 	GPIO_TypeDef* GPIO_PORT_TEST_CON;
 	uint16_t PIN_TEST_CON;
-
 }Igniter;
 
 /* Konstruktor */
