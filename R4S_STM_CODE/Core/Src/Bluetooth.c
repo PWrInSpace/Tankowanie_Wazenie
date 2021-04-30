@@ -1,6 +1,5 @@
 #include <Bluetooth.h>
 
-
 void resolveCommand(UART_HandleTypeDef* huart1){
 /*	char buff [50];
 
