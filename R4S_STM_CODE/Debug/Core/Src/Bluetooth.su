@@ -1,2 +1,2 @@
-Bluetooth.c:4:6:resolveCommand	0	static
-Bluetooth.c:29:6:stringCompare	16	static
+Bluetooth.c:3:6:resolveCommand	0	static
+Bluetooth.c:28:6:stringCompare	16	static
