@@ -1,4 +1,4 @@
-#include "Igniter.h"
+#include <Igniter.hh>
 
 //make struct 'Igniter', fill it, return pointer to it    (names of args start with '_' sign)
 Igniter* igniter_init(GPIO_TypeDef* _GPIO_PORT_IGNITER, uint16_t _PIN_IGNITER, GPIO_TypeDef* _GPIO_PORT_TEST_CON, uint16_t _PIN_TEST_CON){

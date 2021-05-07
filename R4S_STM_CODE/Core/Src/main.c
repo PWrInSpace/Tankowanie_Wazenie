@@ -26,7 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <Bluetooth.h>
-#include <Igniter.h>
+#include <Igniter.hh>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
