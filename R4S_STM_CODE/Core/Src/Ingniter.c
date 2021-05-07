@@ -3,7 +3,7 @@
 //make struct 'Igniter', fill it, return pointer to it    (names of args start with '_' sign)
 Igniter* igniter_init(GPIO_TypeDef* _GPIO_PORT_IGNITER, uint16_t _PIN_IGNITER, GPIO_TypeDef* _GPIO_PORT_TEST_CON, uint16_t _PIN_TEST_CON){
 
-	Igniter* I = malloc(sizeof(Igniter));	 //allocate space for struct
+	Igniter* I = malloc(sizeof(Igniter));	 //allocate space for struct xd
 	//fill whole struct
 	I->GPIO_PORT_IGNITER = _GPIO_PORT_IGNITER;
 	I->PIN_IGNITER = _PIN_IGNITER;
