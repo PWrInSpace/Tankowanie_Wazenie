@@ -5,23 +5,20 @@
 #include "stdbool.h"
 #include "stdlib.h"
 
-/* Struktura zapalnika */
-
-
-typedef struct Igniter{
+class Igniter{
 	// Igniter Pin
 	GPIO_TypeDef* GPIO_PORT_IGNITER;
 	uint16_t PIN_IGNITER;
 	// Test Connection
 	GPIO_TypeDef* GPIO_PORT_TEST_CON;
 	uint16_t PIN_TEST_CON;
+public:
+	/* Constructor */
+	Igniter(GPIO_TypeDef* _GPIO_PORT_IGNITER, uint16_t _PIN_IGNITER, GPIO_TypeDef* _GPIO_PORT_TEST_CON, uint16_t _PIN_TEST_CON);
 
-}Igniter;
-
-/* Konstruktor */
-Igniter* igniter_init(GPIO_TypeDef* _GPIO_PORT_IGNITER, uint16_t _PIN_IGNITER, GPIO_TypeDef* _GPIO_PORT_TEST_CON, uint16_t _PIN_TEST_CON);
-
-bool igniter_is_connected(Igniter* Igniter);
-bool igniter_FIRE(Igniter* Igniter);
+	/* */
+	bool is_connected();
+	bool FIRE();
+};
 
 #endif /* INC_IGNITER_HH_ */

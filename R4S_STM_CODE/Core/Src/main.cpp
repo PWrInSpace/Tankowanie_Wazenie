@@ -106,7 +106,7 @@ int main(void)
   HAL_Delay(1000);
 
   char* buff;
-  memset(buff ,0,sizeof(buff));
+  //memset(buff ,0,sizeof(buff));
   // HAL_TIM_Base_Start_IT(&htim2);
   __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
 
@@ -115,7 +115,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   // INIT
-  Igniter* Ignit = igniter_init(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
+  Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
 
 
   uint16_t signal = 999; //placeholder, we need to do some signal managing with Michał
@@ -124,7 +124,7 @@ int main(void)
   {
 	  switch(state){
 		  case 0: //test state
-			  if(igniter_is_connected(Ignit)){
+			  if(igniter.is_connected()){
 				  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 			  }
 			  HAL_Delay(1000);
@@ -139,13 +139,13 @@ int main(void)
 			  }
 			  break;
 		  case 2:	//ARMED(hard)
-			  if(igniter_is_connected(Ignit) && signal == 'h'){
+			  if(igniter.is_connected() && signal == 'h'){
 			  	  state = 3;
 			  }
 			  break;
 		  case 3:	//ARMED(soft)
 			  	  if(signal == 666){		//signal == fire
-			  		  igniter_FIRE(Ignit);
+			  		  igniter.FIRE();
 			  		  state = 5;
 			  	  }
 			  	  else if(signal == 89){	//signal == arm
@@ -157,7 +157,7 @@ int main(void)
 			  break;
 		  case 5:	//FLIGHT
 			  //TODO: Send "fired" 	//n - times
-			  if( ! igniter_is_connected(Ignit)){
+			  if( ! igniter.is_connected()){
 				  state = 6;
 			  }
 			  break;
