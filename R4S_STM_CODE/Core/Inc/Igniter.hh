@@ -18,7 +18,7 @@ public:
 
 	/* */
 	bool is_connected();
-	bool FIRE();
+	void FIRE();
 };
 
 #endif /* INC_IGNITER_HH_ */

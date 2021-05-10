@@ -15,12 +15,8 @@ bool Igniter::is_connected(){
 		return 0;
 }
 
-bool Igniter::FIRE(){
+void Igniter::FIRE(){
 	HAL_GPIO_WritePin(GPIO_PORT_IGNITER, PIN_IGNITER, GPIO_PIN_SET);
-	if(is_connected() == 1)
-		return 1;
-	else
-		return 0;
 }
 
 
