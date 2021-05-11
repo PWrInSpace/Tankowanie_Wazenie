@@ -16,8 +16,8 @@ public:
 	/* Constructor */
 	Igniter(GPIO_TypeDef* _GPIO_PORT_IGNITER, uint16_t _PIN_IGNITER, GPIO_TypeDef* _GPIO_PORT_TEST_CON, uint16_t _PIN_TEST_CON);
 
-	/* */
-	bool is_connected();
+	/* Methods */
+	bool is_connected() const;
 	void FIRE();
 };
 
