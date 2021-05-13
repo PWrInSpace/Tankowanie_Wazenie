@@ -55,3 +55,8 @@ void motor_initial(Motor *Mot){
 	motor_closing(Mot);
 	motor_stop(Mot);
 }
+
+
+
+//Motor* test_motor = motor_init(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port , FILL_CLOSE_Pin, &htim3 , TIM_CHANNEL_3, FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin, FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
+

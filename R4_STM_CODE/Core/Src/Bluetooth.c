@@ -1,14 +1,22 @@
 #include <Bluetooth.h>
 #include <L298.h>
 
-void resolveCommand(UART_HandleTypeDef* huart1, Motor* Mot){
+
+////////////////////VARIABLES//////////////////////
+char buff [50];
+uint8_t timcnt=0;
+uint8_t buffindex=0;
+//////////////////////////////////////////////////
+
+
+void resolveCommand(UART_HandleTypeDef* huart3, Motor* Mot){
 	char buff [50];
 
 	if(stringCompare(buff,"INIT_V0", strlen("INIT_V0"))){
-		HAL_UART_Transmit(huart1, (uint8_t*)"calibrating main valve \n",strlen("calibrating main valve \n"), 500);
+		HAL_UART_Transmit(huart3, (uint8_t*)"calibrating main valve \n",strlen("calibrating main valve \n"), 500);
 		//String bufor = buff;
 		motor_initial(Mot);
-		HAL_UART_Transmit(huart1, (uint8_t*)"Done... \n",strlen("Done... \n"), 500);
+		HAL_UART_Transmit(huart3, (uint8_t*)"Done... \n",strlen("Done... \n"), 500);
 	}
 	if(stringCompare(buff,"OPEN", strlen("OPEN")))
 		motor_opening(Mot);

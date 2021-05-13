@@ -6,6 +6,7 @@
 #include "tim.h"
 #include "stdlib.h"
 
+
 typedef struct Motor{
 	//Input 1
 	GPIO_TypeDef* GPIO_PORT_IN1;
@@ -36,5 +37,8 @@ void motor_stop(Motor *Mot);
 void motor_opening(Motor *Mot);
 void motor_closing(Motor *Mot);
 void motor_initial(Motor *Mot);
+
+
+Motor* test_motor;
 
 #endif /* L298_LIB */
