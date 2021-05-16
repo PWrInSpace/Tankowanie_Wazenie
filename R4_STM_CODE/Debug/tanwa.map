@@ -3791,25 +3791,25 @@ LOAD d:/st/stm32cubeide_1.5.0/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
 LOAD d:/st/stm32cubeide_1.5.0/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp\libm.a
 LOAD d:/st/stm32cubeide_1.5.0/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/thumb/v7-m/nofp\libgcc.a
 
-.debug_info     0x0000000000000000    0x1119a
+.debug_info     0x0000000000000000    0x111b4
  .debug_info    0x0000000000000000     0x138d Core/Src/Igniter.o
- .debug_info    0x000000000000138d     0x1a9a Core/Src/L298.o
- .debug_info    0x0000000000002e27      0x4c7 Core/Src/gpio.o
- .debug_info    0x00000000000032ee     0x1edc Core/Src/main.o
- .debug_info    0x00000000000051ca      0x301 Core/Src/stm32f1xx_hal_msp.o
- .debug_info    0x00000000000054cb      0x23d Core/Src/stm32f1xx_it.o
- .debug_info    0x0000000000005708      0x2cd Core/Src/system_stm32f1xx.o
- .debug_info    0x00000000000059d5      0xd42 Core/Src/tim.o
- .debug_info    0x0000000000006717      0x9bc Core/Src/usart.o
- .debug_info    0x00000000000070d3       0x22 Core/Startup/startup_stm32f103c8tx.o
- .debug_info    0x00000000000070f5      0x835 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.o
- .debug_info    0x000000000000792a      0xe46 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.o
- .debug_info    0x0000000000008770      0x761 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.o
- .debug_info    0x0000000000008ed1      0xae1 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.o
- .debug_info    0x00000000000099b2      0x501 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.o
- .debug_info    0x0000000000009eb3     0x3f06 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.o
- .debug_info    0x000000000000ddb9     0x1a9b Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.o
- .debug_info    0x000000000000f854     0x1946 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.o
+ .debug_info    0x000000000000138d     0x1aa7 Core/Src/L298.o
+ .debug_info    0x0000000000002e34      0x4c7 Core/Src/gpio.o
+ .debug_info    0x00000000000032fb     0x1ee9 Core/Src/main.o
+ .debug_info    0x00000000000051e4      0x301 Core/Src/stm32f1xx_hal_msp.o
+ .debug_info    0x00000000000054e5      0x23d Core/Src/stm32f1xx_it.o
+ .debug_info    0x0000000000005722      0x2cd Core/Src/system_stm32f1xx.o
+ .debug_info    0x00000000000059ef      0xd42 Core/Src/tim.o
+ .debug_info    0x0000000000006731      0x9bc Core/Src/usart.o
+ .debug_info    0x00000000000070ed       0x22 Core/Startup/startup_stm32f103c8tx.o
+ .debug_info    0x000000000000710f      0x835 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.o
+ .debug_info    0x0000000000007944      0xe46 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.o
+ .debug_info    0x000000000000878a      0x761 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.o
+ .debug_info    0x0000000000008eeb      0xae1 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.o
+ .debug_info    0x00000000000099cc      0x501 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.o
+ .debug_info    0x0000000000009ecd     0x3f06 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.o
+ .debug_info    0x000000000000ddd3     0x1a9b Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.o
+ .debug_info    0x000000000000f86e     0x1946 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.o
 
 .debug_abbrev   0x0000000000000000     0x2872
  .debug_abbrev  0x0000000000000000      0x34c Core/Src/Igniter.o
@@ -3999,7 +3999,7 @@ LOAD d:/st/stm32cubeide_1.5.0/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
  .debug_str     0x0000000000000000    0x8aaea Core/Src/Igniter.o
                                       0x8af93 (size before relaxing)
  .debug_str     0x000000000008aaea      0x5d8 Core/Src/L298.o
-                                      0x8b63e (size before relaxing)
+                                      0x8b644 (size before relaxing)
  .debug_str     0x000000000008b0c2      0x262 Core/Src/gpio.o
                                       0x85d99 (size before relaxing)
  .debug_str     0x000000000008b324      0x424 Core/Src/main.o

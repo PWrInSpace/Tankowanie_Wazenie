@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000029  00000000  00000000  0002000c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0001119a  00000000  00000000  00020035  2**0
+ 12 .debug_info   000111b4  00000000  00000000  00020035  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00002872  00000000  00000000  000311cf  2**0
+ 13 .debug_abbrev 00002872  00000000  00000000  000311e9  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000b48  00000000  00000000  00033a48  2**3
+ 14 .debug_aranges 00000b48  00000000  00000000  00033a60  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 00000ae0  00000000  00000000  00034590  2**3
+ 15 .debug_ranges 00000ae0  00000000  00000000  000345a8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  0001a689  00000000  00000000  00035070  2**0
+ 16 .debug_macro  0001a689  00000000  00000000  00035088  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00011bd1  00000000  00000000  0004f6f9  2**0
+ 17 .debug_line   00011bd1  00000000  00000000  0004f711  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0008e142  00000000  00000000  000612ca  2**0
+ 18 .debug_str    0008e142  00000000  00000000  000612e2  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  000ef40c  2**0
+ 19 .comment      00000053  00000000  00000000  000ef424  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00001d8c  00000000  00000000  000ef460  2**2
+ 20 .debug_frame  00001d8c  00000000  00000000  000ef478  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_loc    00009c4f  00000000  00000000  000f11ec  2**0
+ 21 .debug_loc    00009c4f  00000000  00000000  000f1204  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -295,7 +295,6 @@ void Motor::stop(){
  8000294:	2200      	movs	r2, #0
  8000296:	4619      	mov	r1, r3
  8000298:	f000 fe78 	bl	8000f8c <HAL_GPIO_WritePin>
-;
 }
  800029c:	bf00      	nop
  800029e:	3708      	adds	r7, #8
@@ -345,16 +344,15 @@ void Motor::open(){
  80002f2:	681b      	ldr	r3, [r3, #0]
  80002f4:	f44f 727a 	mov.w	r2, #1000	; 0x3e8
  80002f8:	641a      	str	r2, [r3, #64]	; 0x40
-	do{
-		HAL_GPIO_WritePin(GPIO_PORT_IN1, PIN_IN1, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIO_PORT_IN1, PIN_IN1, GPIO_PIN_SET);
  80002fa:	687b      	ldr	r3, [r7, #4]
  80002fc:	6818      	ldr	r0, [r3, #0]
  80002fe:	687b      	ldr	r3, [r7, #4]
  8000300:	889b      	ldrh	r3, [r3, #4]
- 8000302:	2200      	movs	r2, #0
+ 8000302:	2201      	movs	r2, #1
  8000304:	4619      	mov	r1, r3
  8000306:	f000 fe41 	bl	8000f8c <HAL_GPIO_WritePin>
-		HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_RESET);
  800030a:	687b      	ldr	r3, [r7, #4]
  800030c:	6898      	ldr	r0, [r3, #8]
  800030e:	687b      	ldr	r3, [r7, #4]
@@ -362,7 +360,7 @@ void Motor::open(){
  8000312:	2200      	movs	r2, #0
  8000314:	4619      	mov	r1, r3
  8000316:	f000 fe39 	bl	8000f8c <HAL_GPIO_WritePin>
-	}while(HAL_GPIO_ReadPin(GPIO_PORT_LS_OPEN, PIN_LS_OPEN) == GPIO_PIN_RESET);
+	while(HAL_GPIO_ReadPin(GPIO_PORT_LS_OPEN, PIN_LS_OPEN) == GPIO_PIN_RESET);
  800031a:	687b      	ldr	r3, [r7, #4]
  800031c:	699a      	ldr	r2, [r3, #24]
  800031e:	687b      	ldr	r3, [r7, #4]
@@ -378,8 +376,7 @@ void Motor::open(){
  8000334:	b2db      	uxtb	r3, r3
  8000336:	2b00      	cmp	r3, #0
  8000338:	d000      	beq.n	800033c <_ZN5Motor4openEv+0x98>
-	do{
- 800033a:	e7de      	b.n	80002fa <_ZN5Motor4openEv+0x56>
+ 800033a:	e7ee      	b.n	800031a <_ZN5Motor4openEv+0x76>
 	stop();
  800033c:	6878      	ldr	r0, [r7, #4]
  800033e:	f7ff ff76 	bl	800022e <_ZN5Motor4stopEv>
@@ -432,8 +429,7 @@ void Motor::close(){
  8000398:	681b      	ldr	r3, [r3, #0]
  800039a:	f44f 727a 	mov.w	r2, #1000	; 0x3e8
  800039e:	641a      	str	r2, [r3, #64]	; 0x40
-	do{
-		HAL_GPIO_WritePin(GPIO_PORT_IN1, PIN_IN1, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIO_PORT_IN1, PIN_IN1, GPIO_PIN_RESET);
  80003a0:	687b      	ldr	r3, [r7, #4]
  80003a2:	6818      	ldr	r0, [r3, #0]
  80003a4:	687b      	ldr	r3, [r7, #4]
@@ -441,7 +437,7 @@ void Motor::close(){
  80003a8:	2200      	movs	r2, #0
  80003aa:	4619      	mov	r1, r3
  80003ac:	f000 fdee 	bl	8000f8c <HAL_GPIO_WritePin>
-		HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_SET);
  80003b0:	687b      	ldr	r3, [r7, #4]
  80003b2:	6898      	ldr	r0, [r3, #8]
  80003b4:	687b      	ldr	r3, [r7, #4]
@@ -449,7 +445,7 @@ void Motor::close(){
  80003b8:	2201      	movs	r2, #1
  80003ba:	4619      	mov	r1, r3
  80003bc:	f000 fde6 	bl	8000f8c <HAL_GPIO_WritePin>
-	}while( HAL_GPIO_ReadPin(GPIO_PORT_LS_CLOSE, PIN_LS_CLOSE) == GPIO_PIN_RESET);
+	while( HAL_GPIO_ReadPin(GPIO_PORT_LS_CLOSE, PIN_LS_CLOSE) == GPIO_PIN_RESET);
  80003c0:	687b      	ldr	r3, [r7, #4]
  80003c2:	6a1a      	ldr	r2, [r3, #32]
  80003c4:	687b      	ldr	r3, [r7, #4]
@@ -465,8 +461,7 @@ void Motor::close(){
  80003da:	b2db      	uxtb	r3, r3
  80003dc:	2b00      	cmp	r3, #0
  80003de:	d000      	beq.n	80003e2 <_ZN5Motor5closeEv+0x98>
-	do{
- 80003e0:	e7de      	b.n	80003a0 <_ZN5Motor5closeEv+0x56>
+ 80003e0:	e7ee      	b.n	80003c0 <_ZN5Motor5closeEv+0x76>
 	stop();
  80003e2:	6878      	ldr	r0, [r7, #4]
  80003e4:	f7ff ff23 	bl	800022e <_ZN5Motor4stopEv>
@@ -831,16 +826,16 @@ int main(void)
  800062c:	4830      	ldr	r0, [pc, #192]	; (80006f0 <main+0x1bc>)
  800062e:	f000 fcb3 	bl	8000f98 <HAL_GPIO_TogglePin>
   			  }
-  			  HAL_Delay(1000);
- 8000632:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
- 8000636:	f000 fb25 	bl	8000c84 <HAL_Delay>
 
-  			  Fill.test_open_close();
- 800063a:	f107 032c 	add.w	r3, r7, #44	; 0x2c
- 800063e:	4618      	mov	r0, r3
- 8000640:	f7ff fed6 	bl	80003f0 <_ZN5Motor15test_open_closeEv>
   			  //place for random tests
+  			  Fill.test_open_close();
+ 8000632:	f107 032c 	add.w	r3, r7, #44	; 0x2c
+ 8000636:	4618      	mov	r0, r3
+ 8000638:	f7ff feda 	bl	80003f0 <_ZN5Motor15test_open_closeEv>
 
+  			  HAL_Delay(1000);
+ 800063c:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
+ 8000640:	f000 fb20 	bl	8000c84 <HAL_Delay>
   			  break;
  8000644:	e051      	b.n	80006ea <main+0x1b6>
   		  case 1:	//IDLE

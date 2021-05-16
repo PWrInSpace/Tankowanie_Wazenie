@@ -5,6 +5,8 @@
 #include "gpio.h"
 #include "tim.h"
 #include "stdlib.h"
+
+enum class State {OPEN, CLOSE, IDK};
 class Motor{
 	GPIO_TypeDef* GPIO_PORT_IN1;
 	uint16_t PIN_IN1;
@@ -20,7 +22,7 @@ class Motor{
 	//Limit Switch 2
 	GPIO_TypeDef* GPIO_PORT_LS_CLOSE;
 	uint16_t PIN_LS_CLOSE;
-
+	State state;
 public:
 	Motor(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1, GPIO_TypeDef* _GPIO_PORT_IN2, uint16_t _PIN_IN2,
 			TIM_HandleTypeDef* _TIM_NR_EN, uint16_t _TIM_CHANNEL_EN, GPIO_TypeDef* _GPIO_PORT_LS_OPEN, uint16_t _PIN_LS_OPEN,
