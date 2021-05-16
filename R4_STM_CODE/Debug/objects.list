@@ -2,6 +2,7 @@
 "Core/Src/Ingniter.o"
 "Core/Src/L298.o"
 "Core/Src/gpio.o"
+"Core/Src/hx711.o"
 "Core/Src/main.o"
 "Core/Src/stm32f1xx_hal_msp.o"
 "Core/Src/stm32f1xx_it.o"

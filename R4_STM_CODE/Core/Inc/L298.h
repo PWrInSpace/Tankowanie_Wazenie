@@ -22,8 +22,6 @@ typedef struct Motor{
 	//Limit Switch 2
 	GPIO_TypeDef* GPIO_PORT_LS_CLOSE;
 	uint16_t PIN_LS_CLOSE;
-	bool State_of_limit_switch_open;
-	bool State_of_limit_switch_close;
 }Motor;
 
 //?? void SystemClock_Config(void);
