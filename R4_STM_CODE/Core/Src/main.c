@@ -21,14 +21,17 @@
 #include "main.h"
 #include "tim.h"
 #include "usart.h"
-#include "usb.h"
+#include "usb_device.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "hx711.h"
 #include "L298.h"
-#include <Bluetooth.h>
-#include <Igniter.h>
+#include "Bluetooth.h"
+#include "Igniter.h"
+#include "usbd_cdc_if.h"
+#include "stm32f1xx_hal.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,6 +52,7 @@
 
 /* USER CODE BEGIN PV */
 uint8_t state = 0;
+uint8_t data[40], len;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -91,10 +95,10 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
-  MX_USB_PCD_Init();
   MX_TIM3_Init();
   MX_TIM4_Init();
   MX_USART3_UART_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
@@ -125,12 +129,19 @@ int main(void)
   Igniter* Ignit = igniter_init(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
   Motor* Fill = motor_init(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port , FILL_CLOSE_Pin, &htim3 , TIM_CHANNEL_3, FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin, FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
 
+  int32_t weight = 0;
+
   uint16_t signal = 999; //placeholder, we need to do some signal managing with Michał
   state = 0; //touch only for tests
   while (1)
   {
 	  switch(state){
-		  case 0: //test state
+	  	  case 0: //test state
+			  weight = HX711_Average_Value(HX1_SDA_GPIO_Port, HX1_SDA_Pin ,HX1_SCL_GPIO_Port, HX1_SCL_Pin, 10);
+			  weight=(weight)/215.0;  //convert to grams;
+			  len = sprintf((char*)data, "%ld g \n", weight);
+			  CDC_Transmit_FS(data, len);
+
 			  if(igniter_is_connected(Ignit)){
 				  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 			  }
@@ -172,9 +183,8 @@ int main(void)
 			  HAL_Delay(1000000);
 			  break;
 	  }
-	  }
-
   }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
