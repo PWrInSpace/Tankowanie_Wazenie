@@ -1,4 +1,3 @@
-"Core/Src/Bluetooth.o"
 "Core/Src/Igniter.o"
 "Core/Src/L298.o"
 "Core/Src/gpio.o"
