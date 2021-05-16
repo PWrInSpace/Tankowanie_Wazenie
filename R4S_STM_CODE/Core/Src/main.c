@@ -114,8 +114,12 @@ int main(void)
 
   /* USER CODE BEGIN WHILE */
 
+  // INIT
   Igniter* Ignit = igniter_init(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
 
+
+  uint16_t signal = 999; //placeholder, we need to do some signal managing with Michał
+  state = 0; //touch only for tests
   while (1)
   {
 	  switch(state){
@@ -124,8 +128,41 @@ int main(void)
 				  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 			  }
 			  HAL_Delay(1000);
+
+			  //place for random tests
+
 			  break;
-		  case 1:
+		  case 1:	//IDLE
+			  if(signal == 23){  //signal == ready
+				  //TODO: send ready
+				  state = 2;
+			  }
+			  break;
+		  case 2:	//ARMED(hard)
+			  if(igniter_is_connected(Ignit) && signal == 'h'){
+			  	  state = 3;
+			  }
+			  break;
+		  case 3:	//ARMED(soft)
+			  	  if(signal == 666){		//signal == fire
+			  		  igniter_FIRE(Ignit);
+			  		  state = 5;
+			  	  }
+			  	  else if(signal == 89){	//signal == arm
+			  		  state = 4;
+			  	  }
+			  break;
+		  case 4:	//ABORT
+			  state = 2;
+			  break;
+		  case 5:	//FLIGHT
+			  //TODO: Send "fired" 	//n - times
+			  if( ! igniter_is_connected(Ignit)){
+				  state = 6;
+			  }
+			  break;
+		  case 6:	//END
+			  HAL_Delay(1000000);
 			  break;
 	  }
 
