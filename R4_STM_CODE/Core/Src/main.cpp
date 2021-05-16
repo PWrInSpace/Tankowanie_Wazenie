@@ -26,9 +26,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "Bluetooth.h"
 #include "L298.h"
-#include <Bluetooth.h>
-#include <Igniter.h>
+#include "Igniter.hh"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -96,51 +96,80 @@ int main(void)
   MX_TIM4_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
-  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
-
-//  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); test timer
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
-
-///ADDED FOR BLUETOOTH///
- // HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
   HAL_Delay(1000);
 
-  char* buff;
-  memset(buff ,0,sizeof(buff));
-  // HAL_TIM_Base_Start_IT(&htim2);
-  __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+   // char* buff;
+    //memset(buff ,0,sizeof(buff));
+    // HAL_TIM_Base_Start_IT(&htim2);
+    __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
 
-  /* USER CODE END 2 */
+    /* USER CODE END 2 */
 
-  /* USER CODE BEGIN WHILE */
+    /* USER CODE BEGIN WHILE */
 
-  Igniter* Ignit = igniter_init(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
-  Motor* Fill = motor_init(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port , FILL_CLOSE_Pin, &htim3 , TIM_CHANNEL_3, FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin, FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
+    // INIT
+    Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
+    //Motor* Fill = motor_init(FILL_OPEN_GPIO_Port, (uint16_t)FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port , (uint16_t)FILL_CLOSE_Pin, &htim3 , (uint16_t)TIM_CHANNEL_3, FILL_O_LIMIT_SW_GPIO_Port, (uint16_t)FILL_O_LIMIT_SW_Pin, FILL_C_LIMIT_SW_GPIO_Port, (uint16_t)FILL_C_LIMIT_SW_Pin);
+    Motor* Fill = motor_init(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim3, TIM_CHANNEL_3, FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin, FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
+    		//    Motor* QD = motor_init(QD_D1_GPIO_Port, QD_D1_Pin, QD_D2_GPIO_Port, QD_D2_Pin, QD_EN_GPIO_Port, QD_EN_Pin, nullptr, 0, nullptr, 0);
+    //motor_initial(QD);
+    uint16_t signal = 999; //placeholder, we need to do some signal managing with Michał
+    state = 0; //touch only for tests
+    while (1)
+    {
+  	  switch(state){
+  		  case 0: //test state
+  			  if(igniter.is_connected()){
+  				  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
+  			  }
+  			  HAL_Delay(1000);
 
-  while (1)
-  {
-	  switch(state){
-	  case 0: //test state
-		  motor_initial(Fill);
-		  if(igniter_is_connected(Ignit)){
-			  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
-		  }
-		  HAL_Delay(1000);
-		  break;
-	  }
+  			  //place for random tests
 
-  }
-    /* USER CODE END WHILE */
+  			  break;
+  		  case 1:	//IDLE
+  			  if(signal == 23){  //signal == ready
+  				  //TODO: send ready
+  				  state = 2;
+  			  }
+  			  break;
+  		  case 2:	//ARMED(hard)
+  			  if(igniter.is_connected() && signal == 'h'){
+  			  	  state = 3;
+  			  }
+  			  break;
+  		  case 3:	//ARMED(soft)
+  			  	  if(signal == 666){		//signal == fire
+  			  		  igniter.FIRE();
+  			  		  state = 5;
+  			  	  }
+  			  	  else if(signal == 89){	//signal == arm
+  			  		  state = 4;
+  			  	  }
+  			  break;
+  		  case 4:	//ABORT
+  			  state = 2;
+  			  break;
+  		  case 5:	//FLIGHT
+  			  //TODO: Send "fired" 	//n - times
+  			  if( ! igniter.is_connected()){
+  				  state = 6;
+  			  }
+  			  break;
+  		  case 6:	//END
+  			  HAL_Delay(1000000);
+  			  break;
+  	  }
+    }
 
-    /* USER CODE BEGIN 3 */
+  /* USER CODE END WHILE */
+
+  /* USER CODE BEGIN 3 */
 
   /* USER CODE END 3 */
 }
