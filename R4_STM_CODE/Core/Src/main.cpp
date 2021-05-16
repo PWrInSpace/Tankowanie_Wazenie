@@ -22,7 +22,6 @@
 #include "main.h"
 #include "tim.h"
 #include "usart.h"
-#include "usb.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -90,7 +89,6 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
-  MX_USB_PCD_Init();
   MX_TIM3_Init();
   MX_TIM4_Init();
   MX_USART3_UART_Init();
@@ -112,24 +110,25 @@ int main(void)
     /* USER CODE BEGIN WHILE */
 
     // INIT
-   // Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
-    //Motor* Fill = motor_init(FILL_OPEN_GPIO_Port, (uint16_t)FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port , (uint16_t)FILL_CLOSE_Pin, &htim3 , (uint16_t)TIM_CHANNEL_3, FILL_O_LIMIT_SW_GPIO_Port, (uint16_t)FILL_O_LIMIT_SW_Pin, FILL_C_LIMIT_SW_GPIO_Port, (uint16_t)FILL_C_LIMIT_SW_Pin);
+    Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
     Motor Fill(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim3, TIM_CHANNEL_3, FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin, FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
     Motor QD(QD_D1_GPIO_Port, QD_D1_Pin, QD_D2_GPIO_Port, QD_D2_Pin, &htim3, TIM_CHANNEL_3, nullptr, 0, nullptr, 0);
-    //motor_initial(QD);
+
     uint16_t signal = 999; //placeholder, we need to do some signal managing with Michał
+
     state = 0; //touch only for tests
     while (1)
     {
   	  switch(state){
   		  case 0: //test state
-  			 // if(igniter.is_connected()){
-  			//	  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
-  			 // }
-  			  HAL_Delay(1000);
+  			  if(igniter.is_connected()){
+  				  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
+  			  }
 
   			  //place for random tests
+  			  Fill.test_open_close();
 
+  			  HAL_Delay(1000);
   			  break;
   		  case 1:	//IDLE
   			  if(signal == 23){  //signal == ready
@@ -138,13 +137,13 @@ int main(void)
   			  }
   			  break;
   		  case 2:	//ARMED(hard)
-  			 // if(igniter.is_connected() && signal == 'h'){
-  			 // 	  state = 3;
-  			 // }
+  			  if(igniter.is_connected() && signal == 'h'){
+  			  	  state = 3;
+  			  }
   			  break;
   		  case 3:	//ARMED(soft)
   			  	  if(signal == 666){		//signal == fire
-  			  		//  igniter.FIRE();
+  			  		  igniter.FIRE();
   			  		  state = 5;
   			  	  }
   			  	  else if(signal == 89){	//signal == arm
@@ -156,9 +155,9 @@ int main(void)
   			  break;
   		  case 5:	//FLIGHT
   			  //TODO: Send "fired" 	//n - times
-  			//  if( ! igniter.is_connected()){
-  			//	  state = 6;
-  			//  }
+  			 if( ! igniter.is_connected()){
+  				  state = 6;
+  			  }
   			  break;
   		  case 6:	//END
   			  HAL_Delay(1000000);

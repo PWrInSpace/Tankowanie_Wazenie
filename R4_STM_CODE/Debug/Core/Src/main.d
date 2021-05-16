@@ -29,8 +29,7 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/L298.hh \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_usb.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd_ex.h \
  ../Core/Inc/tim.h ../Core/Inc/main.h ../Core/Inc/tim.h \
- ../Core/Inc/usart.h ../Core/Inc/usb.h ../Core/Inc/gpio.h \
- ../Core/Inc/Igniter.hh
+ ../Core/Inc/usart.h ../Core/Inc/gpio.h ../Core/Inc/Igniter.hh
 
 ../Core/Inc/L298.hh:
 
@@ -101,8 +100,6 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/L298.hh \
 ../Core/Inc/tim.h:
 
 ../Core/Inc/usart.h:
-
-../Core/Inc/usb.h:
 
 ../Core/Inc/gpio.h:
 
