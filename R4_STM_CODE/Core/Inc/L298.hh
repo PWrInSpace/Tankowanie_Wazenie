@@ -7,7 +7,9 @@
 #include "stdlib.h"
 
 enum class State {OPEN, CLOSE, IDK};
+
 class Motor{
+private:
 	GPIO_TypeDef* GPIO_PORT_IN1;
 	uint16_t PIN_IN1;
 	//Input 2

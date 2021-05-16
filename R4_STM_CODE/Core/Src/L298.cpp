@@ -15,6 +15,7 @@ Motor::Motor(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1, GPIO_TypeDef* _GPI
 	PIN_LS_OPEN = _PIN_LS_OPEN;
 	GPIO_PORT_LS_CLOSE = _GPIO_PORT_LS_CLOSE;
 	PIN_LS_CLOSE = _PIN_LS_CLOSE;
+	state = State::IDK;
 }
 
 
@@ -30,6 +31,7 @@ void Motor::open(){
 	HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_RESET);
 	while(HAL_GPIO_ReadPin(GPIO_PORT_LS_OPEN, PIN_LS_OPEN) == GPIO_PIN_RESET);
 	stop();
+	state = State::OPEN;
 }
 
 void Motor::close(){
@@ -38,6 +40,7 @@ void Motor::close(){
 	HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_SET);
 	while(HAL_GPIO_ReadPin(GPIO_PORT_LS_CLOSE, PIN_LS_CLOSE) == GPIO_PIN_RESET);
 	stop();
+	state = State::CLOSE;
 }
 
 void Motor::test_open_close(){
