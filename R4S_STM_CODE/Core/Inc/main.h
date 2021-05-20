@@ -60,8 +60,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define BUILD_IN_LED_Pin GPIO_PIN_13
 #define BUILD_IN_LED_GPIO_Port GPIOC
-#define IGN_TEST_CON_Pin GPIO_PIN_13
-#define IGN_TEST_CON_GPIO_Port GPIOB
+#define IGN_TEST_CON_Pin GPIO_PIN_15
+#define IGN_TEST_CON_GPIO_Port GPIOC
 #define IGN_FIRE_Pin GPIO_PIN_10
 #define IGN_FIRE_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */

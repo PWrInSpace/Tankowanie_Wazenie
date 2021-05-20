@@ -117,7 +117,6 @@ int main(void)
   // INIT
   Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
 
-
   uint16_t signal = 999; //placeholder, we need to do some signal managing with Michał
   state = 0; //touch only for tests
   while (1)
