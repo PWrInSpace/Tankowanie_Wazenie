@@ -65,17 +65,17 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 void resolveCommand() {
 
-		HAL_UART_Transmit(bluetooth->huart, (uint8_t*) "in \n", strlen("in \n"),
-				500);
-		HAL_UART_Transmit(bluetooth->huart, (uint8_t*) buff, strlen(buff), 500);
-		doCommand();
+	HAL_UART_Transmit(bluetooth->huart, (uint8_t*) "in \n", strlen("in \n"),
+			500);
+	HAL_UART_Transmit(bluetooth->huart, (uint8_t*) buff, strlen(buff), 500);
+	doCommand();
 
-		memset(buff, 0, sizeof(buff));
-		buffindex = 0;
-		timcnt = 0;
-		HAL_UART_Transmit(bluetooth->huart, (uint8_t*) "exit \n", strlen("exit \n"),
-				500);
-	}
+	memset(buff, 0, sizeof(buff));
+	buffindex = 0;
+	timcnt = 0;
+	HAL_UART_Transmit(bluetooth->huart, (uint8_t*) "exit \n", strlen("exit \n"),
+			500);
+}
 /* USER CODE END 0 */
 
 /**
@@ -138,14 +138,30 @@ int main(void) {
 	/* USER CODE BEGIN WHILE */
 
 	Ignit = igniter_init(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin,
-			IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
+	IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
+
 	Fill = motor_init(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,
-			FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim3, TIM_CHANNEL_3,
-			FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin,
-			FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
+	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim3, TIM_CHANNEL_3,
+	FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin,
+	FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
+
 	bluetooth = bluetooth_init(&huart3);
 
+///test silnika pod wpt
+	__HAL_TIM_SET_COMPARE(Fill->TIM_NR_EN, Fill->TIM_CHANNEL_EN, 1000);
+	do {
+		Fill->State_of_limit_switch_open = HAL_GPIO_ReadPin(
+				Fill->GPIO_PORT_LS_OPEN, Fill->PIN_LS_OPEN);
+		HAL_GPIO_WritePin(Fill->GPIO_PORT_IN1, Fill->PIN_IN1, 1);
+		HAL_GPIO_WritePin(Fill->GPIO_PORT_IN2, Fill->PIN_IN2, 0);
+	} while (Fill->State_of_limit_switch_open == 0);
+	motor_stop(Fill);
+///albo po prostu
 
+	/*
+	 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
+	 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_RESET);
+	 */
 
 	while (1) {
 

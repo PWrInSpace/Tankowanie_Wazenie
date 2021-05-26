@@ -32,8 +32,8 @@ void motor_opening(Motor *Mot){
 	__HAL_TIM_SET_COMPARE(Mot->TIM_NR_EN, Mot->TIM_CHANNEL_EN, 1000);
 	do{
 		Mot->State_of_limit_switch_open = HAL_GPIO_ReadPin(Mot->GPIO_PORT_LS_OPEN, Mot->PIN_LS_OPEN);
-		HAL_GPIO_WritePin(Mot->GPIO_PORT_IN1, Mot->PIN_IN1, 1);
-		HAL_GPIO_WritePin(Mot->GPIO_PORT_IN2, Mot->PIN_IN2, 0);
+		HAL_GPIO_WritePin(Mot->GPIO_PORT_IN1, Mot->PIN_IN1, GPIO_PIN_SET); // see if there are any changes in behavior
+		HAL_GPIO_WritePin(Mot->GPIO_PORT_IN2, Mot->PIN_IN2, GPIO_PIN_RESET);
 	}while(Mot->State_of_limit_switch_open == 0);
 	motor_stop(Mot);
 }

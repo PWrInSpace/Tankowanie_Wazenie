@@ -38,9 +38,10 @@ Bluetooth_module* bluetooth_init(UART_HandleTypeDef* _huart);
 
 
 /////////////////////////FUNCTIONS//////////////////////////////////
-//void resolveCommand();
+
 bool stringCompare(char array1[], char array2[], uint16_t lght);
 void interrupt_USART(UART_HandleTypeDef *_huart);
+void interrupt_TIM();
 void doCommand();
 ///////////////////////////////////////////////////////////////////
 #endif
