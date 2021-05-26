@@ -6,7 +6,7 @@
 #include "string.h"
 #include "tim.h"
 #include "stdlib.h"
-
+#include "L298.h"
 
 
 
@@ -17,10 +17,6 @@ typedef struct Bluetooth_module{
 	UART_HandleTypeDef* huart;
 
 }Bluetooth_module;
-
-
-
-
 
 
 

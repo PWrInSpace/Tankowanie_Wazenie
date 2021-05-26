@@ -48,13 +48,14 @@ bool stringCompare(char array1[], char array2[], uint16_t lght) {
 		return 0;
 }
 
-void doCommand(Bluetooth_module *Module) {
+void doCommand(Bluetooth_module *Module, Motor *Mot) {
 
 	if (stringCompare(buff, "TEST_MOTOR", strlen("TEST_MOTOR"))) {
 		HAL_UART_Transmit(Module->huart, (uint8_t*) "calibrating the valve \n",
 				strlen("calibrating the valve \n"), 500);
 		HAL_UART_Transmit(Module->huart, (uint8_t*) "Done... \n",
 				strlen("Done... \n"), 500);
+		motor_initial(Mot);
 		///////////////////////////
 	} else if (stringCompare(buff, "OPEN", strlen("OPEN"))) {
 		HAL_UART_Transmit(Module->huart, (uint8_t*) "Opening \n",
@@ -68,6 +69,9 @@ void doCommand(Bluetooth_module *Module) {
 		HAL_UART_Transmit(Module->huart, (uint8_t*) "Stopped \n",
 				strlen("Stopped \n"), 500);
 		///////////////
+	} else if (stringCompare(buff, "FIRE", strlen("FIRE"))) {
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "BOMBS AWAY \n",
+				strlen("BOMBS AWAY \n"), 500);
 	} else {
 		HAL_UART_Transmit(Module->huart,
 				(uint8_t*) strcat("Wrong command received: ", buff),

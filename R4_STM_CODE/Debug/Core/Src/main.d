@@ -30,7 +30,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Core/Inc/tim.h ../Core/Inc/main.h ../Core/Inc/usart.h \
  ../Core/Inc/usb.h ../Core/Inc/gpio.h ../Core/Inc/L298.h \
  ../Core/Inc/gpio.h ../Core/Inc/tim.h ../Core/Inc/Bluetooth.h \
- ../Core/Inc/Igniter.h
+ ../Core/Inc/L298.h ../Core/Inc/Igniter.h
 
 ../Core/Inc/main.h:
 
@@ -107,5 +107,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/tim.h:
 
 ../Core/Inc/Bluetooth.h:
+
+../Core/Inc/L298.h:
 
 ../Core/Inc/Igniter.h:

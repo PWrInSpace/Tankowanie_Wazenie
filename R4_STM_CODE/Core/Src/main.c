@@ -68,8 +68,7 @@ void resolveCommand() {
 	HAL_UART_Transmit(bluetooth->huart, (uint8_t*) "in \n", strlen("in \n"),
 			500);
 	HAL_UART_Transmit(bluetooth->huart, (uint8_t*) buff, strlen(buff), 500);
-	doCommand();
-
+	doCommand(bluetooth, Fill);
 	memset(buff, 0, sizeof(buff));
 	buffindex = 0;
 	timcnt = 0;
