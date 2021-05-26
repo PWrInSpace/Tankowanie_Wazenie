@@ -25,38 +25,32 @@ void interrupt(UART_HandleTypeDef *huart) {
 }
 
 void resolveCommand(Bluetooth_module *Module) {
+
 	HAL_UART_Transmit(Module->huart, (uint8_t*) "in \n", strlen("in \n"), 500);
 	HAL_UART_Transmit(Module->huart, (uint8_t*) buff, strlen(buff), 500);
 
-	if (stringCompare(buff, "INIT_V0", strlen("INIT_V0"))) {
-
-		HAL_UART_Transmit(Module->huart, (uint8_t*) "calibrating main valve \n",
-				strlen("calibrating main valve \n"), 500);
-		//String bufor = buff;
+	switch (whateva()) {
+	case 1:
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "calibrating the valve \n",
+				strlen("calibrating the valve \n"), 500);
 		HAL_UART_Transmit(Module->huart, (uint8_t*) "Done... \n",
 				strlen("Done... \n"), 500);
-	}
-	if (stringCompare(buff, "OPEN", strlen("OPEN"))) {
+		//
+	case 2:
 		HAL_UART_Transmit(Module->huart, (uint8_t*) "Opening \n",
 				strlen("Opening \n"), 500);
 		//motor_opening(Mot);
-	}
-
-	if (stringCompare(buff, "CLOSE", strlen("CLOSE"))) {
+	case 3:
 		HAL_UART_Transmit(Module->huart, (uint8_t*) "Closing \n",
 				strlen("Closing \n"), 500);
+		//
+	case 4:
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "Stopped \n",
+				strlen("Stopped \n"), 500);
+	default :
+		HAL_UART_Transmit(Module->huart, (uint8_t*) strcat("Wrong command received: ",buff),
+						strlen(strcat("Wrong command received: ",buff)), 500);
 	}
-
-	//motor_closing(Mot);
-	//else
-	//if()
-	//the rest of intruction go here below	
-	//in order to transmit data to the device via blueotooth
-	// HAL_UART_Transmit(&huart2, stringOrSth, Size, 500);
-
-	//then just clear the buffer
-	//this line added to test the push to github
-	//
 
 	memset(buff, 0, sizeof(buff));
 	buffindex = 0;
@@ -78,4 +72,20 @@ bool stringCompare(char array1[], char array2[], uint16_t lght) {
 		return 1;
 	else
 		return 0;
+}
+
+int whateva() {
+	if (stringCompare(buff, "TEST_MOTOR", strlen("TEST_MOTOR"))) {
+		return 1;
+	}
+	if (stringCompare(buff, "OPEN", strlen("OPEN"))) {
+		return 2;
+	}
+	if (stringCompare(buff, "CLOSE", strlen("CLOSE"))) {
+		return 3;
+	}
+	if (stringCompare(buff, "STOP", strlen("STOP"))) {
+		return 4;
+	}
+	else return 0;
 }

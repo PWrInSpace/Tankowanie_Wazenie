@@ -1,4 +1,5 @@
 Bluetooth.c:9:19:bluetooth_init	8	static
-Bluetooth.c:68:6:stringCompare	16	static
-Bluetooth.c:27:6:resolveCommand	16	static
+Bluetooth.c:62:6:stringCompare	16	static
+Bluetooth.c:77:5:whateva	8	static
+Bluetooth.c:27:6:resolveCommand	24	static
 Bluetooth.c:21:6:interrupt	24	static
