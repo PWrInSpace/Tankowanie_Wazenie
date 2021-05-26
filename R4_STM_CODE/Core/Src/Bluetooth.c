@@ -18,45 +18,19 @@ Bluetooth_module* bluetooth_init(UART_HandleTypeDef *_huart) {
 
 //code to implement inside USART_IRQHANDLER - just paste interrupt function with correct chosen for bluetooth communication
 
-void interrupt(UART_HandleTypeDef *huart) {
+void interrupt_USART(UART_HandleTypeDef *huart) {
 	HAL_UART_Receive(&huart, (uint8_t*) &buff[buffindex++], 1, 10);
 	if (buff[buffindex - 1] == '\n')
 		resolveCommand(); // do poprawy
 }
 
-void resolveCommand(Bluetooth_module *Module) {
-
-	HAL_UART_Transmit(Module->huart, (uint8_t*) "in \n", strlen("in \n"), 500);
-	HAL_UART_Transmit(Module->huart, (uint8_t*) buff, strlen(buff), 500);
-
-	switch (whateva()) {
-	case 1:
-		HAL_UART_Transmit(Module->huart, (uint8_t*) "calibrating the valve \n",
-				strlen("calibrating the valve \n"), 500);
-		HAL_UART_Transmit(Module->huart, (uint8_t*) "Done... \n",
-				strlen("Done... \n"), 500);
-		//
-	case 2:
-		HAL_UART_Transmit(Module->huart, (uint8_t*) "Opening \n",
-				strlen("Opening \n"), 500);
-		//motor_opening(Mot);
-	case 3:
-		HAL_UART_Transmit(Module->huart, (uint8_t*) "Closing \n",
-				strlen("Closing \n"), 500);
-		//
-	case 4:
-		HAL_UART_Transmit(Module->huart, (uint8_t*) "Stopped \n",
-				strlen("Stopped \n"), 500);
-	default :
-		HAL_UART_Transmit(Module->huart, (uint8_t*) strcat("Wrong command received: ",buff),
-						strlen(strcat("Wrong command received: ",buff)), 500);
+void interrupt_TIM() {
+	if (strlen(buff) > 0) {
+		timcnt = 0;
 	}
-
-	memset(buff, 0, sizeof(buff));
-	buffindex = 0;
-	timcnt = 0;
-	HAL_UART_Transmit(Module->huart, (uint8_t*) "exit \n", strlen("exit \n"),
-			500);
+	if (timcnt > 5) {
+		resolveCommand();
+	}
 }
 
 bool stringCompare(char array1[], char array2[], uint16_t lght) {
@@ -74,18 +48,30 @@ bool stringCompare(char array1[], char array2[], uint16_t lght) {
 		return 0;
 }
 
-int whateva() {
+void doCommand(Bluetooth_module *Module) {
+
 	if (stringCompare(buff, "TEST_MOTOR", strlen("TEST_MOTOR"))) {
-		return 1;
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "calibrating the valve \n",
+				strlen("calibrating the valve \n"), 500);
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "Done... \n",
+				strlen("Done... \n"), 500);
+		///////////////////////////
+	} else if (stringCompare(buff, "OPEN", strlen("OPEN"))) {
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "Opening \n",
+				strlen("Opening \n"), 500);
+		//////////////////
+	} else if (stringCompare(buff, "CLOSE", strlen("CLOSE"))) {
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "Closing \n",
+				strlen("Closing \n"), 500);
+		//////////////////////////
+	} else if (stringCompare(buff, "STOP", strlen("STOP"))) {
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "Stopped \n",
+				strlen("Stopped \n"), 500);
+		///////////////
+	} else {
+		HAL_UART_Transmit(Module->huart,
+				(uint8_t*) strcat("Wrong command received: ", buff),
+				strlen(strcat("Wrong command received: ", buff)), 500);
 	}
-	if (stringCompare(buff, "OPEN", strlen("OPEN"))) {
-		return 2;
-	}
-	if (stringCompare(buff, "CLOSE", strlen("CLOSE"))) {
-		return 3;
-	}
-	if (stringCompare(buff, "STOP", strlen("STOP"))) {
-		return 4;
-	}
-	else return 0;
 }
+
