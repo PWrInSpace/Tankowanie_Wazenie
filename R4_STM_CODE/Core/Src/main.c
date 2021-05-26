@@ -75,7 +75,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+ HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -114,10 +114,10 @@ int main(void)
  // HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
   HAL_Delay(1000);
 
-  //char buff[50];
-  memset(buff ,0,sizeof(buff));
-  // HAL_TIM_Base_Start_IT(&htim2);
-  __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+ char buff [50];
+ memset(buff ,0,sizeof(buff));
+  HAL_TIM_Base_Start_IT(&htim2);
+  __HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
 
   /* USER CODE END 2 */
 
@@ -125,18 +125,21 @@ int main(void)
 
   Igniter* Ignit = igniter_init(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
   Motor* Fill = motor_init(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port , FILL_CLOSE_Pin, &htim3 , TIM_CHANNEL_3, FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin, FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
+  Bluetooth_module* bluetooth = bluetooth_init(&huart3);
 
   while (1)
   {
-	  switch(state){
-	  case 0: //test state
-		  motor_initial(Fill);
-		  if(igniter_is_connected(Ignit)){
-			  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
-		  }
-		  HAL_Delay(1000);
-		  break;
-	  }
+
+
+//	  switch(state){
+//	  case 0: //test state
+//		  motor_initial(Fill);
+//		  if(igniter_is_connected(Ignit)){
+//			  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
+//		  }
+//		  HAL_Delay(1000);
+//		  break;
+//	  }
 
   }
     /* USER CODE END WHILE */

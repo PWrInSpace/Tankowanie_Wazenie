@@ -1,50 +1,81 @@
 #include <Bluetooth.h>
-#include <L298.h>
-
 
 ////////////////////VARIABLES//////////////////////
-char buff [50];
-uint8_t timcnt=0;
-uint8_t buffindex=0;
+char buff[50];
+uint8_t timcnt = 0;
+uint8_t buffindex = 0;
 //////////////////////////////////////////////////
 
+Bluetooth_module* bluetooth_init(UART_HandleTypeDef *_huart) {
 
-void resolveCommand(UART_HandleTypeDef* huart3, Motor* Mot){
-	char buff [50];
+	Bluetooth_module *module = malloc(sizeof(Bluetooth_module));
 
-	if(stringCompare(buff,"INIT_V0", strlen("INIT_V0"))){
-		HAL_UART_Transmit(huart3, (uint8_t*)"calibrating main valve \n",strlen("calibrating main valve \n"), 500);
+	module->huart = _huart;
+
+	return module;
+}
+;
+
+//code to implement inside USART_IRQHANDLER - just paste interrupt function with correct chosen for bluetooth communication
+
+void interrupt(UART_HandleTypeDef *huart) {
+	HAL_UART_Receive(&huart, (uint8_t*) &buff[buffindex++], 1, 10);
+	if (buff[buffindex - 1] == '\n')
+		resolveCommand(); // do poprawy
+}
+
+void resolveCommand(Bluetooth_module *Module) {
+	HAL_UART_Transmit(Module->huart, (uint8_t*) "in \n", strlen("in \n"), 500);
+	HAL_UART_Transmit(Module->huart, (uint8_t*) buff, strlen(buff), 500);
+
+	if (stringCompare(buff, "INIT_V0", strlen("INIT_V0"))) {
+
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "calibrating main valve \n",
+				strlen("calibrating main valve \n"), 500);
 		//String bufor = buff;
-		motor_initial(Mot);
-		HAL_UART_Transmit(huart3, (uint8_t*)"Done... \n",strlen("Done... \n"), 500);
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "Done... \n",
+				strlen("Done... \n"), 500);
 	}
-	if(stringCompare(buff,"OPEN", strlen("OPEN")))
-		motor_opening(Mot);
-	if(stringCompare(buff,"CLOSE", strlen("CLOSE")))
-		motor_closing(Mot);
+	if (stringCompare(buff, "OPEN", strlen("OPEN"))) {
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "Opening \n",
+				strlen("Opening \n"), 500);
+		//motor_opening(Mot);
+	}
+
+	if (stringCompare(buff, "CLOSE", strlen("CLOSE"))) {
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "Closing \n",
+				strlen("Closing \n"), 500);
+	}
+
+	//motor_closing(Mot);
 	//else
 	//if()
 	//the rest of intruction go here below	
-		//in order to transmit data to the device via blueotooth
-		// HAL_UART_Transmit(&huart2, stringOrSth, Size, 500);
-	
-		//then just clear the buffer
+	//in order to transmit data to the device via blueotooth
+	// HAL_UART_Transmit(&huart2, stringOrSth, Size, 500);
+
+	//then just clear the buffer
 	//this line added to test the push to github
 	//
-		memset(buff,0,sizeof(buff));
+
+	memset(buff, 0, sizeof(buff));
+	buffindex = 0;
+	timcnt = 0;
+	HAL_UART_Transmit(Module->huart, (uint8_t*) "exit \n", strlen("exit \n"),
+			500);
 }
 
-bool stringCompare(char array1[], char array2[], uint16_t lght){
+bool stringCompare(char array1[], char array2[], uint16_t lght) {
 	uint8_t var = 0;
 
-	for(int i=0;i<lght;i++){
-		if(array1[i]==array2[i]){
+	for (int i = 0; i < lght; i++) {
+		if (array1[i] == array2[i]) {
 			var++;
-		}
-		else var=0;
+		} else
+			var = 0;
 	}
-	if(var==lght)
+	if (var == lght)
 		return 1;
-	else 
+	else
 		return 0;
 }

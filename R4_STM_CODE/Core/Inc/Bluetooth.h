@@ -4,8 +4,24 @@
 #include "stdbool.h"
 #include "gpio.h"
 #include "string.h"
+#include "tim.h"
 #include "stdlib.h"
-#include <L298.h>
+
+
+
+
+
+
+typedef struct Bluetooth_module{
+	//USART
+	UART_HandleTypeDef* huart;
+
+}Bluetooth_module;
+
+
+
+
+
 
 
 
@@ -18,11 +34,12 @@ uint8_t buffindex;
 
 
 
-
+Bluetooth_module* bluetooth_init(UART_HandleTypeDef* _huart);
 
 
 /////////////////////////FUNCTIONS//////////////////////////////////
-void resolveCommand(UART_HandleTypeDef* huart1, Motor* Mot);
+void resolveCommand();
 bool stringCompare(char array1[], char array2[], uint16_t lght);
+void interrupt(UART_HandleTypeDef *_huart);
 ///////////////////////////////////////////////////////////////////
 #endif

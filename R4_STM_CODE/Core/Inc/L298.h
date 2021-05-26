@@ -39,6 +39,5 @@ void motor_closing(Motor *Mot);
 void motor_initial(Motor *Mot);
 
 
-Motor* test_motor;
 
 #endif /* L298_LIB */
