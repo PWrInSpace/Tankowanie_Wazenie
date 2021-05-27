@@ -22,9 +22,17 @@ bool igniter_is_connected(Igniter* Igniter){
 bool igniter_FIRE(Igniter* Igniter){
 	HAL_GPIO_WritePin(Igniter->GPIO_PORT_IGNITER, Igniter->PIN_IGNITER, 1);
 	if(igniter_is_connected(Igniter) == 1)
+	{
 		return 1;
+	}
 	else
 		return 0;
 }
 
+
+void toggle_Mosfet(){
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);
+	HAL_Delay(200);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_RESET);
+}
 

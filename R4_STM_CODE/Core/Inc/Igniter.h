@@ -20,5 +20,5 @@ Igniter* igniter_init(GPIO_TypeDef* _GPIO_PORT_IGNITER, uint16_t _PIN_IGNITER, G
 
 bool igniter_is_connected(Igniter* Igniter);
 bool igniter_FIRE(Igniter* Igniter);
-
+void toggle_Mosfet();
 #endif /* INC_IGNITER_H_ */

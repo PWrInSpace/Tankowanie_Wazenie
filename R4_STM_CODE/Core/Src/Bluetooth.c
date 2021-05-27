@@ -21,7 +21,7 @@ Bluetooth_module* bluetooth_init(UART_HandleTypeDef *_huart) {
 void interrupt_USART(UART_HandleTypeDef *huart) {
 	HAL_UART_Receive(&huart, (uint8_t*) &buff[buffindex++], 1, 10);
 	if (buff[buffindex - 1] == '\n')
-		resolveCommand(); // do poprawy
+		resolveCommand(); // do poprawy cała funkcja
 }
 
 void interrupt_TIM() {
@@ -48,7 +48,7 @@ bool stringCompare(char array1[], char array2[], uint16_t lght) {
 		return 0;
 }
 
-void doCommand(Bluetooth_module *Module, Motor *Mot) {
+void doCommand(Bluetooth_module *Module, Motor *Mot, Igniter* igniter) {
 
 	if (stringCompare(buff, "TEST_MOTOR", strlen("TEST_MOTOR"))) {
 		HAL_UART_Transmit(Module->huart, (uint8_t*) "calibrating the valve \n",
@@ -60,18 +60,24 @@ void doCommand(Bluetooth_module *Module, Motor *Mot) {
 	} else if (stringCompare(buff, "OPEN", strlen("OPEN"))) {
 		HAL_UART_Transmit(Module->huart, (uint8_t*) "Opening \n",
 				strlen("Opening \n"), 500);
+		motor_opening(Mot);
 		//////////////////
 	} else if (stringCompare(buff, "CLOSE", strlen("CLOSE"))) {
 		HAL_UART_Transmit(Module->huart, (uint8_t*) "Closing \n",
 				strlen("Closing \n"), 500);
+		motor_closing(Mot);
 		//////////////////////////
 	} else if (stringCompare(buff, "STOP", strlen("STOP"))) {
 		HAL_UART_Transmit(Module->huart, (uint8_t*) "Stopped \n",
 				strlen("Stopped \n"), 500);
+		motor_stop(Mot);
 		///////////////
 	} else if (stringCompare(buff, "FIRE", strlen("FIRE"))) {
 		HAL_UART_Transmit(Module->huart, (uint8_t*) "BOMBS AWAY \n",
 				strlen("BOMBS AWAY \n"), 500);
+		//igniter_FIRE(igniter);
+		toggle_Mosfet();
+
 	} else {
 		HAL_UART_Transmit(Module->huart,
 				(uint8_t*) strcat("Wrong command received: ", buff),

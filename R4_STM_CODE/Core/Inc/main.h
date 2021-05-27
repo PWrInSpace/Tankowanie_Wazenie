@@ -100,8 +100,6 @@ void Error_Handler(void);
 #define DEPR_OPEN_GPIO_Port GPIOB
 #define FILL_CLOSE_Pin GPIO_PIN_7
 #define FILL_CLOSE_GPIO_Port GPIOB
-#define FILL_EN_Pin GPIO_PIN_8
-#define FILL_EN_GPIO_Port GPIOB
 #define FILL_OPEN_Pin GPIO_PIN_9
 #define FILL_OPEN_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
