@@ -24,9 +24,12 @@
 #include "usart.h"
 #include "gpio.h"
 
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Igniter.hh"
+#include "stdio.h"
+#include "string.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,6 +50,7 @@
 
 /* USER CODE BEGIN PV */
 uint8_t state = 0;
+char data[40];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -114,8 +118,6 @@ int main(void)
     Motor Fill(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim3, TIM_CHANNEL_3, FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin, FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
     Motor QD(QD_D1_GPIO_Port, QD_D1_Pin, QD_D2_GPIO_Port, QD_D2_Pin, &htim3, TIM_CHANNEL_3, nullptr, 0, nullptr, 0);
 
-    uint16_t signal = 999; //placeholder, we need to do some signal managing with Michał
-
     state = 0; //touch only for tests
     while (1)
     {
@@ -126,32 +128,34 @@ int main(void)
   			  }
 
   			  //place for random tests
-  			  Fill.test_open_close();
+  			  //Fill.test_open_close();
 
   			  HAL_Delay(1000);
+  			  state = 1;
+  			  strcpy(data, "DINI");	//xd
   			  break;
   		  case 1:	//IDLE
-  			  if(signal == 23){  //signal == ready
+  			  if(strncmp(data, "DINI", 4) == 0){ // signal == init
   				  //TODO: send ready
   				  state = 2;
   			  }
   			  break;
-  		  case 2:	//ARMED(hard)
-  			  if(igniter.is_connected() && signal == 'h'){
+  		  case 2:	//ARMED(hard) DABR
+  			  if(igniter.is_connected() && strncmp(data, "DARM", 4) == 0){ // signal == arm
   			  	  state = 3;
   			  }
   			  break;
   		  case 3:	//ARMED(soft)
-  			  	  if(signal == 666){		//signal == fire
+  			  	  if(strncmp (data, "DSTA", 4) == 0){	//signal == fire
   			  		  igniter.FIRE();
   			  		  state = 5;
   			  	  }
-  			  	  else if(signal == 89){	//signal == arm
+  			  	  else if(strncmp (data, "DABR", 4) == 0){	//signal == abort
   			  		  state = 4;
   			  	  }
   			  break;
   		  case 4:	//ABORT
-  			  state = 2;
+  			  HAL_Delay(1000000);
   			  break;
   		  case 5:	//FLIGHT
   			  //TODO: Send "fired" 	//n - times
