@@ -26,13 +26,19 @@ void Motor::stop(){
 }
 
 void Motor::open(){
-	HAL_GPIO_WritePin(GPIO_PORT_IN1, PIN_IN1, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_RESET);
-	__HAL_TIM_SET_COMPARE(TIM_NR_EN, TIM_CHANNEL_EN, 1000);
-	status = Status::IDK;
-	while(HAL_GPIO_ReadPin(GPIO_PORT_LS_OPEN, PIN_LS_OPEN) == GPIO_PIN_RESET);
-	stop();
-	status = Status::OPEN;
+		HAL_GPIO_WritePin(GPIO_PORT_IN1, PIN_IN1, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_RESET);
+		__HAL_TIM_SET_COMPARE(TIM_NR_EN, TIM_CHANNEL_EN, 1000);
+		status = Status::IDK;
+	if(GPIO_PORT_LS_CLOSE != nullptr && GPIO_PORT_LS_OPEN != nullptr){
+		while(HAL_GPIO_ReadPin(GPIO_PORT_LS_OPEN, PIN_LS_OPEN) == GPIO_PIN_RESET);
+		stop();
+		status = Status::OPEN;
+	}
+	else{
+		HAL_Delay(1000);
+		stop();
+	}
 }
 
 void Motor::close(){
@@ -40,9 +46,15 @@ void Motor::close(){
 	HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_SET);
 	__HAL_TIM_SET_COMPARE(TIM_NR_EN, TIM_CHANNEL_EN, 1000);
 	status = Status::IDK;
-	while(HAL_GPIO_ReadPin(GPIO_PORT_LS_CLOSE, PIN_LS_CLOSE) == GPIO_PIN_RESET);
-	stop();
-	status = Status::CLOSE;
+	if(GPIO_PORT_LS_CLOSE != nullptr && GPIO_PORT_LS_OPEN != nullptr){
+		while(HAL_GPIO_ReadPin(GPIO_PORT_LS_CLOSE, PIN_LS_CLOSE) == GPIO_PIN_RESET);
+		stop();
+		status = Status::CLOSE;
+	}
+	else{
+		HAL_Delay(1000);
+		stop();
+	}
 }
 
 void Motor::test_open_close(){
