@@ -35,7 +35,7 @@ void Motor::open(){
 		status = Status::OPEN;
 	}
 	else{
-		HAL_Delay(1000);
+		HAL_Delay(4000);
 		stop();
 	}
 }
@@ -51,7 +51,7 @@ void Motor::close(){
 		status = Status::CLOSE;
 	}
 	else{
-		HAL_Delay(1000);
+		HAL_Delay(4000);
 		stop();
 	}
 }
