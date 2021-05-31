@@ -105,7 +105,7 @@ int main(void)
  // HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
   HAL_Delay(1000);
 
-  char* buff;
+  char data[40];
   //memset(buff ,0,sizeof(buff));
   // HAL_TIM_Base_Start_IT(&htim2);
   __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
@@ -117,56 +117,56 @@ int main(void)
   // INIT
   Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
 
-  uint16_t signal = 999; //placeholder, we need to do some signal managing with Michał
   state = 0; //touch only for tests
   while (1)
   {
 	  switch(state){
 		  case 0: //test state
 			  if(igniter.is_connected()){
-				  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
-			  }
-			  HAL_Delay(1000);
+   				  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
+   			  }
 
-			  //place for random tests
-
-
-			  break;
-		  case 1:	//IDLE
-			  if(signal == 23){  //signal == ready
-				  //TODO: send ready
-				  state = 2;
-			  }
-			  break;
-		  case 2:	//ARMED(hard)
-			  if(igniter.is_connected() && signal == 'h'){
-			  	  state = 3;
-			  }
-			  break;
-		  case 3:	//ARMED(soft)
-			  	  if(signal == 666){		//signal == fire
-			  		  igniter.FIRE();
-			  		  state = 5;
-			  	  }
-			  	  else if(signal == 89){	//signal == arm
-			  		  state = 4;
-			  	  }
-			  break;
-		  case 4:	//ABORT
-			  state = 2;
-			  break;
-		  case 5:	//FLIGHT
-			  //TODO: Send "fired" 	//n - times
-			  if( ! igniter.is_connected()){
-				  state = 6;
-			  }
-			  break;
-		  case 6:	//END
-			  HAL_Delay(1000000);
-			  break;
-	  }
-
-  }
+   			  //place for random tests
+   			  //Fill.test_open_close();
+   			  //QD.test_open_close();
+   			  HAL_Delay(1000);
+   			  //state = 1;
+   			  strcpy(data, "DINI");	//xd
+   			  break;
+   		  case 1:	//IDLE
+   			  if(strncmp(data, "DINI", 4) == 0){ // signal == init
+   				  //TODO: send ready
+   				  state = 2;
+   			  }
+   			  break;
+   		  case 2:	//ARMED(hard) DABR
+   			  if(igniter.is_connected() && strncmp(data, "DARM", 4) == 0){ // signal == arm
+   			  	  state = 3;
+   			  }
+   			  break;
+   		  case 3:	//ARMED(soft)
+   			  	  if(strncmp (data, "DSTA", 4) == 0){	//signal == fire
+   			  		  igniter.FIRE();
+   			  		  state = 5;
+   			  	  }
+   			  	  else if(strncmp (data, "DABR", 4) == 0){	//signal == abort
+   			  		  state = 4;
+   			  	  }
+   			  break;
+   		  case 4:	//ABORT
+   			  HAL_Delay(1000000);
+   			  break;
+   		  case 5:	//FLIGHT
+   			  //TODO: Send "fired" 	//n - times
+   			 if( ! igniter.is_connected()){
+   				  state = 6;
+   			  }
+   			  break;
+   		  case 6:	//END
+   			  HAL_Delay(1000000);
+   			  break;
+   	  	  }
+     }
 
     /* USER CODE END WHILE */
 
