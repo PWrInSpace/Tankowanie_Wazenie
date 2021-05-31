@@ -16,6 +16,7 @@ Motor::Motor(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1, GPIO_TypeDef* _GPI
 	GPIO_PORT_LS_CLOSE = _GPIO_PORT_LS_CLOSE;
 	PIN_LS_CLOSE = _PIN_LS_CLOSE;
 	status = Status::IDK;
+	 HAL_TIM_PWM_Start(TIM_NR_EN, TIM_CHANNEL_EN);
 }
 
 void Motor::stop(){
@@ -27,7 +28,7 @@ void Motor::stop(){
 void Motor::open(){
 		HAL_GPIO_WritePin(GPIO_PORT_IN1, PIN_IN1, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_RESET);
-		__HAL_TIM_SET_COMPARE(TIM_NR_EN, TIM_CHANNEL_EN, 1000);
+		__HAL_TIM_SET_COMPARE(TIM_NR_EN, TIM_CHANNEL_EN, 999);
 		status = Status::IDK;
 	if(GPIO_PORT_LS_CLOSE != nullptr && GPIO_PORT_LS_OPEN != nullptr){
 		while(HAL_GPIO_ReadPin(GPIO_PORT_LS_OPEN, PIN_LS_OPEN) == GPIO_PIN_SET);
@@ -43,7 +44,7 @@ void Motor::open(){
 void Motor::close(){
 	HAL_GPIO_WritePin(GPIO_PORT_IN1, PIN_IN1, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_SET);
-	__HAL_TIM_SET_COMPARE(TIM_NR_EN, TIM_CHANNEL_EN, 1000);
+	__HAL_TIM_SET_COMPARE(TIM_NR_EN, TIM_CHANNEL_EN, 999);
 	status = Status::IDK;
 	if(GPIO_PORT_LS_CLOSE != nullptr && GPIO_PORT_LS_OPEN != nullptr){
 		while(HAL_GPIO_ReadPin(GPIO_PORT_LS_CLOSE, PIN_LS_CLOSE) == GPIO_PIN_SET);

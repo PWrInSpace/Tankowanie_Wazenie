@@ -115,7 +115,7 @@ int main(void)
 
     // INIT
     Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
-    Motor Fill(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim3, TIM_CHANNEL_3, FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin, FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
+    Motor Fill(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3, FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin, FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
     Motor QD(QD_D1_GPIO_Port, QD_D1_Pin, QD_D2_GPIO_Port, QD_D2_Pin, &htim3, TIM_CHANNEL_3, nullptr, 0, nullptr, 0);
 
     state = 0; //touch only for tests
@@ -129,9 +129,9 @@ int main(void)
 
   			  //place for random tests
   			  //Fill.test_open_close();
-
+  			  //QD.test_open_close();
   			  HAL_Delay(1000);
-  			  state = 1;
+  			  //state = 1;
   			  strcpy(data, "DINI");	//xd
   			  break;
   		  case 1:	//IDLE

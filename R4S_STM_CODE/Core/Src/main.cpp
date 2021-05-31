@@ -130,6 +130,7 @@ int main(void)
 
 			  //place for random tests
 
+
 			  break;
 		  case 1:	//IDLE
 			  if(signal == 23){  //signal == ready
