@@ -129,7 +129,7 @@ int main(void)
 
   			  //place for random tests
   			  //Fill.test_open_close();
-  			  //QD.test_open_close();
+  			  QD.test_open_close();
   			  HAL_Delay(1000);
   			  //state = 1;
   			  strcpy(data, "DINI");	//xd
