@@ -39,7 +39,7 @@ int32_t HX711_Read_Value(GPIO_TypeDef *Dt_gpio, uint16_t Dt_pin, GPIO_TypeDef *S
 
 int32_t HX711_Average_Value(GPIO_TypeDef *Dt_gpio, uint16_t Dt_pin, GPIO_TypeDef *Sck_gpio, uint16_t Sck_pin, uint8_t times){
 	int32_t sum = 0;
-	uint8_t succesfulReads;
+	uint8_t succesfulReads = 0;
     for (uint8_t i = 0; i < times; ++i){
     	int32_t read = HX711_Read_Value(Dt_gpio, Dt_pin, Sck_gpio, Sck_pin);
     	if(read > -200000000){
