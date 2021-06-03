@@ -27,7 +27,7 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd_ex.h \
  ../Core/Inc/usart.h ../Core/Inc/main.h ../Core/Inc/usb.h \
  ../Core/Inc/gpio.h ../Core/Inc/Bluetooth.h ../Core/Inc/gpio.h \
- ../Core/Inc/Igniter.hh
+ ../Core/Inc/Igniter.hh ../Core/Inc/xbee.h ../Core/Inc/usart.h
 
 ../Core/Inc/main.h:
 
@@ -96,3 +96,7 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
 ../Core/Inc/gpio.h:
 
 ../Core/Inc/Igniter.hh:
+
+../Core/Inc/xbee.h:
+
+../Core/Inc/usart.h:

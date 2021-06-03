@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include <Bluetooth.h>
 #include <Igniter.hh>
+#include "xbee.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,6 +48,8 @@
 
 /* USER CODE BEGIN PV */
 uint8_t state = 0;
+char data[30];
+Xbee communication;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -100,12 +103,16 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
+  __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
+  HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded, DATA_LENGTH);
+
+  xbee_init(&communication, 0x0013A20041C283E5, &huart2); //inicjalizacja modułu xbee
+
 
 ///ADDED FOR BLUETOOTH///
  // HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
   HAL_Delay(1000);
 
-  char data[40];
   //memset(buff ,0,sizeof(buff));
   // HAL_TIM_Base_Start_IT(&htim2);
   __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
@@ -120,6 +127,8 @@ int main(void)
   state = 0; //touch only for tests
   while (1)
   {
+	  xbee_transmit_char(communication, data);
+	  HAL_Delay(50);
 	  switch(state){
 		  case 0: //test state
 			  if(igniter.is_connected()){
@@ -221,7 +230,26 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+	if(huart->Instance == USART2){
+		__HAL_UART_CLEAR_IDLEFLAG(&huart2);
+		HAL_UART_DMAStop(&huart2);
 
+		xbee_receive(); //odebranie całej wiadomości
+		if(xbee_rx.data_flag){  //jeżeli wiadomość była danymi to ta zmienna będzie miała wartość 1
+			/*
+			TUTAJ WEDLE UZNANIA PRZECHWYTUJECIE DANE KTORE PRZYSZŁY
+			macie do dyspozycji tablice 'xbee_rx.data_array' o wielkości 'DATA_ARRAY' - 30, w której są wartości
+			jeżeli chcecie zatrzymać te dane musicie skopiować wartości tej tabilicy
+			pobranie adresu jest złym pomysłem bo przy każdym odebraniu tablica zmienia swoją zawartosć
+			*/
+			if(1)
+				stpcpy(data, xbee_rx.data_array);
+		}
+		//tutaj zmienić tylko huart
+		HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded, DATA_LENGTH);
+	}
+}
 /* USER CODE END 4 */
 
 /**
