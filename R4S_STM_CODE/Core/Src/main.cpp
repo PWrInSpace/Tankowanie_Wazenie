@@ -243,7 +243,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 			jeżeli chcecie zatrzymać te dane musicie skopiować wartości tej tabilicy
 			pobranie adresu jest złym pomysłem bo przy każdym odebraniu tablica zmienia swoją zawartosć
 			*/
-			if(1)
+			if(xbee_rx.data_array[0] == 'D')
 				stpcpy(data, xbee_rx.data_array);
 		}
 		//tutaj zmienić tylko huart
