@@ -1,6 +1,24 @@
-#include "hx711.h"
+#include <hx711.hh>
 
-int32_t HX711_Read_Value(GPIO_TypeDef *Dt_gpio, uint16_t Dt_pin, GPIO_TypeDef *Sck_gpio, uint16_t Sck_pin){
+HX711::HX711(GPIO_TypeDef* _Dt_gpio, uint16_t _Dt_pin, GPIO_TypeDef* _Sck_gpio, uint16_t _Sck_pin){
+	Dt_gpio = _Dt_gpio;
+	Dt_pin = _Dt_pin;
+	Sck_gpio = _Sck_gpio;
+	Sck_pin = _Sck_pin;
+	offset = 0;
+	conversionFactor = 1;
+}
+
+void HX711::setConversionFactor(uint16_t newConversionFactor){
+	conversionFactor = newConversionFactor;
+}
+
+void HX711::addToOffset(uint16_t offsetDif){
+	offset += offsetDif;
+}
+
+
+int32_t HX711::Read_Value(){
     int32_t buffer=0;
 
     HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
@@ -37,15 +55,19 @@ int32_t HX711_Read_Value(GPIO_TypeDef *Dt_gpio, uint16_t Dt_pin, GPIO_TypeDef *S
     return (buffer<<7)/128;
 }
 
-int32_t HX711_Average_Value(GPIO_TypeDef *Dt_gpio, uint16_t Dt_pin, GPIO_TypeDef *Sck_gpio, uint16_t Sck_pin, uint8_t times){
+int32_t HX711::Average_Value(uint16_t times){
 	int32_t sum = 0;
-	uint8_t succesfulReads = 0;
-    for (uint8_t i = 0; i < times; ++i){
-    	int32_t read = HX711_Read_Value(Dt_gpio, Dt_pin, Sck_gpio, Sck_pin);
+	uint16_t succesfulReads = 0;
+    for (uint16_t i = 0; i < times; ++i){
+    	int32_t read = Read_Value();
     	if(read > -200000000){
     		sum += read;
     		++succesfulReads;
     	}
     }
     return sum / succesfulReads;
+}
+
+int32_t HX711::getWeigthPlusOffsetAfterConversion(uint16_t times){
+	return (Average_Value(times) + offset) / conversionFactor;
 }

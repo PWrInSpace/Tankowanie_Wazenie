@@ -350,24 +350,33 @@ Discarded input sections
  .group         0x0000000000000000        0xc Core/Src/hx711.o
  .group         0x0000000000000000        0xc Core/Src/hx711.o
  .group         0x0000000000000000        0xc Core/Src/hx711.o
+ .group         0x0000000000000000        0xc Core/Src/hx711.o
  .text          0x0000000000000000        0x0 Core/Src/hx711.o
  .data          0x0000000000000000        0x0 Core/Src/hx711.o
  .bss           0x0000000000000000        0x0 Core/Src/hx711.o
- .text.HX711_Read_Value
-                0x0000000000000000       0x74 Core/Src/hx711.o
- .text.HX711_Average_Value
-                0x0000000000000000       0x58 Core/Src/hx711.o
- .debug_info    0x0000000000000000      0x4cd Core/Src/hx711.o
- .debug_abbrev  0x0000000000000000      0x199 Core/Src/hx711.o
- .debug_loc     0x0000000000000000      0x2dd Core/Src/hx711.o
+ .text._ZN5HX711C2EP12GPIO_TypeDeftS1_t
+                0x0000000000000000       0x40 Core/Src/hx711.o
+ .text._ZN5HX71119setConversionFactorEt
+                0x0000000000000000       0x1c Core/Src/hx711.o
+ .text._ZN5HX71111addToOffsetEt
+                0x0000000000000000       0x24 Core/Src/hx711.o
+ .text._ZN5HX71110Read_ValueEv
+                0x0000000000000000      0x100 Core/Src/hx711.o
+ .text._ZN5HX71113Average_ValueEt
+                0x0000000000000000       0x5c Core/Src/hx711.o
+ .text._ZN5HX71134getWeigthPlusOffsetAfterConversionEt
+                0x0000000000000000       0x2e Core/Src/hx711.o
+ .debug_info    0x0000000000000000      0x5c0 Core/Src/hx711.o
+ .debug_abbrev  0x0000000000000000      0x25b Core/Src/hx711.o
  .debug_aranges
-                0x0000000000000000       0x28 Core/Src/hx711.o
- .debug_ranges  0x0000000000000000       0x48 Core/Src/hx711.o
- .debug_macro   0x0000000000000000      0x1e0 Core/Src/hx711.o
- .debug_macro   0x0000000000000000      0xa9c Core/Src/hx711.o
+                0x0000000000000000       0x48 Core/Src/hx711.o
+ .debug_ranges  0x0000000000000000       0x38 Core/Src/hx711.o
+ .debug_macro   0x0000000000000000      0x1e5 Core/Src/hx711.o
+ .debug_macro   0x0000000000000000      0xb74 Core/Src/hx711.o
  .debug_macro   0x0000000000000000      0x221 Core/Src/hx711.o
  .debug_macro   0x0000000000000000       0x2e Core/Src/hx711.o
  .debug_macro   0x0000000000000000       0x22 Core/Src/hx711.o
+ .debug_macro   0x0000000000000000       0x1c Core/Src/hx711.o
  .debug_macro   0x0000000000000000       0x22 Core/Src/hx711.o
  .debug_macro   0x0000000000000000       0x8e Core/Src/hx711.o
  .debug_macro   0x0000000000000000       0x51 Core/Src/hx711.o
@@ -381,7 +390,7 @@ Discarded input sections
  .debug_macro   0x0000000000000000     0xe097 Core/Src/hx711.o
  .debug_macro   0x0000000000000000       0x43 Core/Src/hx711.o
  .debug_macro   0x0000000000000000     0x3468 Core/Src/hx711.o
- .debug_macro   0x0000000000000000      0x174 Core/Src/hx711.o
+ .debug_macro   0x0000000000000000      0x17b Core/Src/hx711.o
  .debug_macro   0x0000000000000000       0x5c Core/Src/hx711.o
  .debug_macro   0x0000000000000000      0x5be Core/Src/hx711.o
  .debug_macro   0x0000000000000000      0x289 Core/Src/hx711.o
@@ -403,10 +412,10 @@ Discarded input sections
  .debug_macro   0x0000000000000000      0x249 Core/Src/hx711.o
  .debug_macro   0x0000000000000000       0x83 Core/Src/hx711.o
  .debug_macro   0x0000000000000000      0x118 Core/Src/hx711.o
- .debug_line    0x0000000000000000      0x7c6 Core/Src/hx711.o
- .debug_str     0x0000000000000000    0x85d7c Core/Src/hx711.o
+ .debug_line    0x0000000000000000      0x7ec Core/Src/hx711.o
+ .debug_str     0x0000000000000000    0x86391 Core/Src/hx711.o
  .comment       0x0000000000000000       0x54 Core/Src/hx711.o
- .debug_frame   0x0000000000000000       0x64 Core/Src/hx711.o
+ .debug_frame   0x0000000000000000       0xf4 Core/Src/hx711.o
  .ARM.attributes
                 0x0000000000000000       0x2d Core/Src/hx711.o
  .group         0x0000000000000000        0xc Core/Src/main.o
