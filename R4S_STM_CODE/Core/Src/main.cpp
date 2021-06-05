@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <Bluetooth.h>
+#include <vector>
 #include <Igniter.hh>
 #include "xbee.h"
 /* USER CODE END Includes */
@@ -48,7 +49,8 @@
 
 /* USER CODE BEGIN PV */
 uint8_t state = 0;
-char data[30];
+char dataIn[30];
+char dataOut[30];
 Xbee communication;
 /* USER CODE END PV */
 
@@ -105,9 +107,8 @@ int main(void)
 
   __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
   HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded, DATA_LENGTH);
-
   xbee_init(&communication, 0x0013A20041C283E5, &huart2); //inicjalizacja modułu xbee
-
+  __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
 
 ///ADDED FOR BLUETOOTH///
  // HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
@@ -115,7 +116,7 @@ int main(void)
 
   //memset(buff ,0,sizeof(buff));
   // HAL_TIM_Base_Start_IT(&htim2);
-  __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+
 
   /* USER CODE END 2 */
 
@@ -127,7 +128,7 @@ int main(void)
   state = 0; //touch only for tests
   while (1)
   {
-	  xbee_transmit_char(communication, data);
+	  xbee_transmit_char(communication, dataOut);
 	  HAL_Delay(50);
 	  switch(state){
 		  case 0: //test state
@@ -140,25 +141,25 @@ int main(void)
    			  //QD.test_open_close();
    			  HAL_Delay(1000);
    			  //state = 1;
-   			  strcpy(data, "DINI");	//xd
+   			  strcpy(dataIn, "DINI");	//xd
    			  break;
    		  case 1:	//IDLE
-   			  if(strncmp(data, "DINI", 4) == 0){ // signal == init
+   			  if(strncmp(dataIn, "DINI", 4) == 0){ // signal == init
    				  //TODO: send ready
    				  state = 2;
    			  }
    			  break;
    		  case 2:	//ARMED(hard) DABR
-   			  if(igniter.is_connected() && strncmp(data, "DARM", 4) == 0){ // signal == arm
+   			  if(igniter.is_connected() && strncmp(dataIn, "DARM", 4) == 0){ // signal == arm
    			  	  state = 3;
    			  }
    			  break;
    		  case 3:	//ARMED(soft)
-   			  	  if(strncmp (data, "DSTA", 4) == 0){	//signal == fire
+   			  	  if(strncmp (dataIn, "DSTA", 4) == 0){	//signal == fire
    			  		  igniter.FIRE();
    			  		  state = 5;
    			  	  }
-   			  	  else if(strncmp (data, "DABR", 4) == 0){	//signal == abort
+   			  	  else if(strncmp (dataIn, "DABR", 4) == 0){	//signal == abort
    			  		  state = 4;
    			  	  }
    			  break;
@@ -243,8 +244,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 			jeżeli chcecie zatrzymać te dane musicie skopiować wartości tej tabilicy
 			pobranie adresu jest złym pomysłem bo przy każdym odebraniu tablica zmienia swoją zawartosć
 			*/
-			if(xbee_rx.data_array[0] == 'D')
-				stpcpy(data, xbee_rx.data_array);
+			if(xbee_rx.data_array[0] == 'D'){
+				strcpy(dataIn, xbee_rx.data_array);
+			}
 		}
 		//tutaj zmienić tylko huart
 		HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded, DATA_LENGTH);
@@ -256,8 +258,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
   * @brief  This function is executed in case of error occurrence.
   * @retval None
   */
-void Error_Handler(void)
-{
+void Error_Handler(void){
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();

@@ -77,7 +77,7 @@ main-build: tanwaR4S.elf secondary-outputs
 
 # Tool invocations
 tanwaR4S.elf: $(OBJS) $(USER_OBJS) C:\Users\Quli\git\Tankowanie_Wazenie\R4S_STM_CODE\STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "tanwaR4S.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\Quli\git\Tankowanie_Wazenie\R4S_STM_CODE\STM32F103C8TX_FLASH.ld" -Wl,-Map="tanwaR4S.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+	arm-none-eabi-g++ -o "tanwaR4S.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\Quli\git\Tankowanie_Wazenie\R4S_STM_CODE\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="tanwaR4S.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
