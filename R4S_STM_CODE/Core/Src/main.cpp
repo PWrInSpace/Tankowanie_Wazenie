@@ -48,7 +48,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t state = 0;
+enum state {Init = 1, Idle = 2, ArmedHard = 3, ArmedSoft = 4, Abort = 6, End = 7};
 bool fired = 0;
 char dataIn[30];
 char dataOut[30];
@@ -73,7 +73,7 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	  HAL_Delay(1000);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -111,9 +111,8 @@ int main(void)
   xbee_init(&communication, 0x0013A20041C283E5, &huart2); //inicjalizacja modułu xbee
   __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
 
-///ADDED FOR BLUETOOTH///
- // HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
-  HAL_Delay(1000);
+  ///ADDED FOR BLUETOOTH///
+  	  // HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
 
   //memset(buff ,0,sizeof(buff));
   // HAL_TIM_Base_Start_IT(&htim2);
@@ -123,59 +122,71 @@ int main(void)
 
   /* USER CODE BEGIN WHILE */
 
-  // INIT
   Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
 
-  state = 0; //touch only for tests
+
+  state currState = Init;
   while (1)
   {
-	  sprintf(dataOut,"D;S%i;I%i;F%i;", state, igniter.is_connected(), fired);
+	  sprintf(dataOut,"D;S%i;I%i;F%i;", currState, igniter.is_connected(), fired);
 	  xbee_transmit_char(communication, dataOut);
 	  HAL_Delay(50);
-	  switch(state){
-		  case 0: //test state
+
+	  switch(currState){
+		  case Init: //test state		//1:INIT
+
+			  //place for random tests	//
 			  if(igniter.is_connected()){
    				  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
    			  }
-   			  //place for random tests
-   			  HAL_Delay(1000);
-   			  //state = 1;
-   			  strcpy(dataIn, "DINI");	//xd
+
+			  //strcpy(dataIn, "DINI");	//xd
+
+			  // (end) place for random test //
+
+   			  currState = Idle;
    			  break;
-   		  case 1:{	//IDLE
+   		  case Idle:{	//2:IDLE
    			  if(strncmp(dataIn, "DINI", 4) == 0){ // signal == init
-   				  state = 2;
+   				currState = ArmedHard;
    			  }
    			  HAL_Delay(5000);
    			  break;
    		  }
-   		  case 2:{	//ARMED(hard) DABR
+   		  case ArmedHard:{	//3:ARMED(hard)
    			  if(igniter.is_connected() && strncmp(dataIn, "DARM", 4) == 0){ // signal == arm
-   			  	  state = 3;
+   				currState = ArmedSoft;
    			  }
+   			  else if(strncmp (dataIn, "DABR", 4) == 0){	//signal == abort
+   				currState = Abort;
+			  }
    			  HAL_Delay(5000);
    			  break;
    		  }
-   		  case 3:{	//ARMED(soft)
+   		  case ArmedSoft:{	//4:ARMED(soft)
 			  if(strncmp (dataIn, "DSTA", 4) == 0){	//signal == fire
 				  igniter.FIRE();
 				  fired = 1;
 				  sprintf(dataOut,"ASTB");
 				  xbee_transmit_char(communication, dataOut);
-				  state = 5;
+				  currState = End;
 			  }
 			  else if(strncmp (dataIn, "DABR", 4) == 0){	//signal == abort
-				  state = 4;
+				  currState = Abort;
 			  }
 			  HAL_Delay(1000);
    			  break;
    		  }
-   		  case 4:{	//ABORT
+   		  case Abort:{	//6:ABORT
    			  HAL_Delay(1000);
    			  break;
    		  }
-   		  case 5:{	//END
+   		  case End:{	//7:END
    			  HAL_Delay(1000000);
+   			  break;
+   		  }
+   		  default:{
+   			  currState = Abort;
    			  break;
    		  }
 	  }
