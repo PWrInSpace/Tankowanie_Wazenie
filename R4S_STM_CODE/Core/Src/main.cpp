@@ -48,7 +48,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-enum state {Init = 1, Idle = 2, ArmedHard = 3, ArmedSoft = 4, Abort = 6, End = 7};
+enum state {Init = 1, Idle = 2, ArmedHard = 3, ArmedSoft = 4, Ready = 5, Abort = 6, End = 7};
 bool fired = 0;
 char dataIn[30];
 char dataOut[30];
@@ -164,6 +164,11 @@ int main(void)
    			  break;
    		  }
    		  case ArmedSoft:{	//4:ARMED(soft)
+   			  currState = Ready; // there should be a signal for this (at least in R4 it necessary)
+   			  HAL_Delay(100);
+   			  break;
+   		  }
+   		  case Ready:{	//5:Ready
 			  if(strncmp (dataIn, "DSTA", 4) == 0){	//signal == fire
 				  igniter.FIRE();
 				  fired = 1;
@@ -175,8 +180,8 @@ int main(void)
 				  currState = Abort;
 			  }
 			  HAL_Delay(1000);
-   			  break;
-   		  }
+			  break;
+		  }
    		  case Abort:{	//6:ABORT
    			  HAL_Delay(1000);
    			  break;
