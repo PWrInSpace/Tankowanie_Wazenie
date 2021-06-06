@@ -48,7 +48,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-enum state {Init = 1, Idle = 2, ArmedHard = 3, ArmedSoft = 4, Ready = 5, Abort = 6, End = 7};
+enum state {Init = 1, Idle = 2, ArmedHard = 3, ArmedSoft = 4, Ready = 5, End = 6, Abort = 7};
 bool fired = 0;
 char dataIn[30];
 char dataOut[30];
@@ -182,14 +182,14 @@ int main(void)
 			  HAL_Delay(1000);
 			  break;
 		  }
-   		  case Abort:{	//6:ABORT
-   			  HAL_Delay(1000);
-   			  break;
-   		  }
-   		  case End:{	//7:END
+   		  case End:{	//6:END
    			  HAL_Delay(1000000);
    			  break;
    		  }
+   		  case Abort:{	//7:ABORT
+			  HAL_Delay(1000);
+			  break;
+		  }
    		  default:{
    			  currState = Abort;
    			  break;
