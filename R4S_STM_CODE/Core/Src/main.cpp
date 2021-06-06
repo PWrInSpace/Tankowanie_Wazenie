@@ -160,6 +160,8 @@ int main(void)
 			  if(strncmp (dataIn, "DSTA", 4) == 0){	//signal == fire
 				  igniter.FIRE();
 				  fired = 1;
+				  sprintf(dataOut,"ASTB");
+				  xbee_transmit_char(communication, dataOut);
 				  state = 5;
 			  }
 			  else if(strncmp (dataIn, "DABR", 4) == 0){	//signal == abort
