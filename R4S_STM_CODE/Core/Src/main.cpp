@@ -49,6 +49,7 @@
 
 /* USER CODE BEGIN PV */
 uint8_t state = 0;
+bool fired = 0;
 char dataIn[30];
 char dataOut[30];
 Xbee communication;
@@ -128,6 +129,7 @@ int main(void)
   state = 0; //touch only for tests
   while (1)
   {
+	  sprintf(dataOut,"D;S%i;I%i;F%i;", state, igniter.is_connected(), fired);
 	  xbee_transmit_char(communication, dataOut);
 	  HAL_Delay(50);
 	  switch(state){
@@ -135,48 +137,47 @@ int main(void)
 			  if(igniter.is_connected()){
    				  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
    			  }
-
    			  //place for random tests
-   			  //Fill.test_open_close();
-   			  //QD.test_open_close();
    			  HAL_Delay(1000);
    			  //state = 1;
    			  strcpy(dataIn, "DINI");	//xd
    			  break;
-   		  case 1:	//IDLE
+   		  case 1:{	//IDLE
    			  if(strncmp(dataIn, "DINI", 4) == 0){ // signal == init
-   				  //TODO: send ready
    				  state = 2;
    			  }
+   			  HAL_Delay(5000);
    			  break;
-   		  case 2:	//ARMED(hard) DABR
+   		  }
+   		  case 2:{	//ARMED(hard) DABR
    			  if(igniter.is_connected() && strncmp(dataIn, "DARM", 4) == 0){ // signal == arm
    			  	  state = 3;
    			  }
+   			  HAL_Delay(5000);
    			  break;
-   		  case 3:	//ARMED(soft)
-   			  	  if(strncmp (dataIn, "DSTA", 4) == 0){	//signal == fire
-   			  		  igniter.FIRE();
-   			  		  state = 5;
-   			  	  }
-   			  	  else if(strncmp (dataIn, "DABR", 4) == 0){	//signal == abort
-   			  		  state = 4;
-   			  	  }
+   		  }
+   		  case 3:{	//ARMED(soft)
+			  if(strncmp (dataIn, "DSTA", 4) == 0){	//signal == fire
+				  igniter.FIRE();
+				  fired = 1;
+				  state = 5;
+			  }
+			  else if(strncmp (dataIn, "DABR", 4) == 0){	//signal == abort
+				  state = 4;
+			  }
+			  HAL_Delay(1000);
    			  break;
-   		  case 4:	//ABORT
+   		  }
+   		  case 4:{	//ABORT
+   			  HAL_Delay(1000);
+   			  break;
+   		  }
+   		  case 5:{	//END
    			  HAL_Delay(1000000);
    			  break;
-   		  case 5:	//FLIGHT
-   			  //TODO: Send "fired" 	//n - times
-   			 if( ! igniter.is_connected()){
-   				  state = 6;
-   			  }
-   			  break;
-   		  case 6:	//END
-   			  HAL_Delay(1000000);
-   			  break;
-   	  	  }
-     }
+   		  }
+	  }
+ }
 
     /* USER CODE END WHILE */
 
