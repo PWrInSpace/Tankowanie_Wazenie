@@ -144,13 +144,13 @@ int main(void)
 			  // (end) place for random test //
 
    			  currState = Idle;
-   			  HAL_Delay(1000);
+   			  HAL_Delay(450);
    			  break;
    		  case Idle:{	//2:IDLE
    			  if(strncmp(dataIn, "DINI", 4) == 0){ // signal == init
    				currState = ArmedHard;
    			  }
-   			  HAL_Delay(1000);
+   			  HAL_Delay(950);
    			  break;
    		  }
    		  case ArmedHard:{	//3:ARMED(hard)
@@ -160,12 +160,12 @@ int main(void)
    			  else if(strncmp (dataIn, "DABR", 4) == 0){	//signal == abort
    				currState = Abort;
 			  }
-   			  HAL_Delay(1000);
+   			  HAL_Delay(950);
    			  break;
    		  }
    		  case ArmedSoft:{	//4:ARMED(soft)
    			  currState = Ready; // *there should be a signal for this (at least in R4 it necessary)
-   			  HAL_Delay(100); 	 // !to test
+   			  HAL_Delay(50); 	 // !to test
    			  break;
    		  }
    		  case Ready:{	//5:Ready
@@ -178,7 +178,7 @@ int main(void)
 			  else if(strncmp (dataIn, "DABR", 4) == 0){	//signal == abort
 				  currState = Abort;
 			  }
-			  HAL_Delay(1000);
+			  HAL_Delay(950);
 			  break;
 		  }
    		  case End:{	//6:END aka FIRED
@@ -187,7 +187,7 @@ int main(void)
    			  break;
    		  }
    		  case Abort:{	//7:ABORT
-			  HAL_Delay(1000);
+			  HAL_Delay(950);
 			  break;
 		  }
    		  default:{
