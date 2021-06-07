@@ -49,7 +49,6 @@
 
 /* USER CODE BEGIN PV */
 enum state {Init = 1, Idle = 2, ArmedHard = 3, ArmedSoft = 4, Ready = 5, End = 6, Abort = 7};
-bool fired = 0;
 char dataIn[30];
 char dataOut[30];
 Xbee communication;
@@ -128,7 +127,7 @@ int main(void)
   state currState = Init;
   while (1)
   {
-	  sprintf(dataOut,"D;S%i;I%i;F%i;", currState, igniter.is_connected(), fired);
+	  sprintf(dataOut,"D;%i;%i", currState, igniter.is_connected());
 	  xbee_transmit_char(communication, dataOut);
 	  HAL_Delay(50);
 
@@ -145,33 +144,33 @@ int main(void)
 			  // (end) place for random test //
 
    			  currState = Idle;
+   			  HAL_Delay(1000);
    			  break;
    		  case Idle:{	//2:IDLE
    			  if(strncmp(dataIn, "DINI", 4) == 0){ // signal == init
    				currState = ArmedHard;
    			  }
-   			  HAL_Delay(5000);
+   			  HAL_Delay(1000);
    			  break;
    		  }
    		  case ArmedHard:{	//3:ARMED(hard)
-   			  if(igniter.is_connected() && strncmp(dataIn, "DARM", 4) == 0){ // signal == arm
+   			  if(strncmp(dataIn, "DARM", 4) == 0){ // signal == arm
    				currState = ArmedSoft;
    			  }
    			  else if(strncmp (dataIn, "DABR", 4) == 0){	//signal == abort
    				currState = Abort;
 			  }
-   			  HAL_Delay(5000);
+   			  HAL_Delay(1000);
    			  break;
    		  }
    		  case ArmedSoft:{	//4:ARMED(soft)
-   			  currState = Ready; // there should be a signal for this (at least in R4 it necessary)
-   			  HAL_Delay(100);
+   			  currState = Ready; // *there should be a signal for this (at least in R4 it necessary)
+   			  HAL_Delay(100); 	 // !to test
    			  break;
    		  }
    		  case Ready:{	//5:Ready
 			  if(strncmp (dataIn, "DSTA", 4) == 0){	//signal == fire
 				  igniter.FIRE();
-				  fired = 1;
 				  sprintf(dataOut,"ASTB");
 				  xbee_transmit_char(communication, dataOut);
 				  currState = End;
@@ -182,8 +181,9 @@ int main(void)
 			  HAL_Delay(1000);
 			  break;
 		  }
-   		  case End:{	//6:END
+   		  case End:{	//6:END aka FIRED
    			  HAL_Delay(1000000);
+   			  //
    			  break;
    		  }
    		  case Abort:{	//7:ABORT
