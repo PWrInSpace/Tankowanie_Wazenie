@@ -29,6 +29,7 @@
 #include <vector>
 #include <Igniter.hh>
 #include "xbee.h"
+#include "stdlib.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,6 +50,7 @@
 
 /* USER CODE BEGIN PV */
 enum state {Init = 1, Idle = 2, ArmedHard = 3, ArmedSoft = 4, Ready = 5, End = 6, Abort = 7};
+state currState = Init;
 char dataIn[30];
 char dataOut[30];
 Xbee communication;
@@ -72,7 +74,7 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	  HAL_Delay(1000);
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -81,7 +83,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  HAL_Delay(1000);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -108,9 +110,10 @@ int main(void)
   __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
   HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded, DATA_LENGTH);
   xbee_init(&communication, 0x0013A20041C283E5, &huart2); //inicjalizacja modułu xbee
-  __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+
 
   ///ADDED FOR BLUETOOTH///
+  	  //__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
   	  // HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
 
   //memset(buff ,0,sizeof(buff));
@@ -123,17 +126,13 @@ int main(void)
 
   Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
 
-
-  state currState = Init;
   while (1)
   {
 	  sprintf(dataOut,"DDAT;%i;%i", currState, igniter.is_connected());
 	  xbee_transmit_char(communication, dataOut);
 	  HAL_Delay(50);
-
 	  switch(currState){
 		  case Init: //test state		//1:INIT
-
 			  //place for random tests	//
 			  if(igniter.is_connected()){
    				  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
@@ -144,28 +143,18 @@ int main(void)
 			  // (end) place for random test //
 
    			  currState = Idle;
-   			  HAL_Delay(450);
+   			  HAL_Delay(950);
    			  break;
    		  case Idle:{	//2:IDLE
-   			  if(strncmp(dataIn, "DINI", 4) == 0){ // signal == init
-   				currState = ArmedHard;
-   			  }
-   			  HAL_Delay(950);
+   			  HAL_Delay(1950);
    			  break;
    		  }
    		  case ArmedHard:{	//3:ARMED(hard)
-   			  if(strncmp(dataIn, "DARM", 4) == 0){ // signal == arm
-   				currState = ArmedSoft;
-   			  }
-   			  else if(strncmp (dataIn, "DABR", 4) == 0){	//signal == abort
-   				currState = Abort;
-			  }
    			  HAL_Delay(950);
    			  break;
    		  }
    		  case ArmedSoft:{	//4:ARMED(soft)
-   			  currState = Ready; // *there should be a signal for this (at least in R4 it necessary)
-   			  HAL_Delay(50); 	 // !to test
+   			  HAL_Delay(950); 	 // !to test
    			  break;
    		  }
    		  case Ready:{	//5:Ready
@@ -175,10 +164,7 @@ int main(void)
 				  xbee_transmit_char(communication, dataOut);
 				  currState = End;
 			  }
-			  else if(strncmp (dataIn, "DABR", 4) == 0){	//signal == abort
-				  currState = Abort;
-			  }
-			  HAL_Delay(950);
+			  HAL_Delay(250);
 			  break;
 		  }
    		  case End:{	//6:END aka FIRED
@@ -187,14 +173,10 @@ int main(void)
    			  break;
    		  }
    		  case Abort:{	//7:ABORT
-			  HAL_Delay(950);
+			  HAL_Delay(1950);
 			  break;
 		  }
-   		  default:{
-   			  currState = Abort;
-   			  break;
-   		  }
-	  }
+   	  }
  }
 
     /* USER CODE END WHILE */
@@ -263,7 +245,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 			jeżeli chcecie zatrzymać te dane musicie skopiować wartości tej tabilicy
 			pobranie adresu jest złym pomysłem bo przy każdym odebraniu tablica zmienia swoją zawartosć
 			*/
-			if(xbee_rx.data_array[0] == 'D'){
+			if(strncmp(xbee_rx.data_array, "STAT", 4) == 0){
+				currState = (state)(((int)(xbee_rx.data_array[7])) - 48);
+			}
+			else if(xbee_rx.data_array[0] == 'D'){
 				strcpy(dataIn, xbee_rx.data_array);
 			}
 		}

@@ -1,7 +1,5 @@
 #include "xbee.h"
 
-
-
 //Wpisanie opcji api do tablicy
 //Tutaj bez dynamicznych bo nie ma kiedy zwolnić tablicy
 void xbee_options_init(uint8_t *options){
