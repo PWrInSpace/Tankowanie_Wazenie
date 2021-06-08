@@ -127,7 +127,7 @@ int main(void)
   state currState = Init;
   while (1)
   {
-	  sprintf(dataOut,"D;%i;%i", currState, igniter.is_connected());
+	  sprintf(dataOut,"DDAT;%i;%i", currState, igniter.is_connected());
 	  xbee_transmit_char(communication, dataOut);
 	  HAL_Delay(50);
 
