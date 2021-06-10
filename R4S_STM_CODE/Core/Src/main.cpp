@@ -1,5 +1,6 @@
 /* USER CODE BEGIN Header */
 /**
+
  ******************************************************************************
  * @file           : main.c
  * @brief          : Main program body
@@ -16,6 +17,7 @@
  *
  ******************************************************************************
  */
+
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -68,6 +70,7 @@ Xbee communication;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_NVIC_Init(void);
+
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -93,6 +96,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+
 	HAL_Delay(1000);
   /* USER CODE END Init */
 
@@ -115,6 +119,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
 //  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); test timer
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -122,7 +127,7 @@ int main(void)
 
 	__HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
 	HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded, DATA_LENGTH);
-	xbee_init(&communication, 0x0013A20041C283E5, &huart2); //inicjalizacja modułu xbee
+	xbee_init(&communication, 0x0013A20041C283E5, &huart2); //inicjalizacja moduÅ‚u xbee
 
 	///ADDED FOR BLUETOOTH///
 	//__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
@@ -188,6 +193,7 @@ int main(void)
 		}
 	}
 
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -240,6 +246,7 @@ void SystemClock_Config(void)
   }
 }
 
+
 /**
   * @brief NVIC Configuration.
   * @retval None
@@ -263,24 +270,28 @@ static void MX_NVIC_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if (huart->Instance == USART2) {
+
 		__HAL_UART_CLEAR_IDLEFLAG(&huart2);
 		HAL_UART_DMAStop(&huart2);
 
-		xbee_receive(); //odebranie całej wiadomości
-		if (xbee_rx.data_flag) { //jeżeli wiadomość była danymi to ta zmienna będzie miała wartość 1
+		xbee_receive(); //odebranie caÅ‚ej wiadomoÅ›ci
+
+		if (xbee_rx.data_flag) { //jeÅ¼eli wiadomoÅ›Ä‡ byÅ‚a danymi to ta zmienna bÄ™dzie miaÅ‚a wartoÅ›Ä‡ 1
 			/*
-			 TUTAJ WEDLE UZNANIA PRZECHWYTUJECIE DANE KTORE PRZYSZŁY
-			 macie do dyspozycji tablice 'xbee_rx.data_array' o wielkości 'DATA_ARRAY' - 30, w której są wartości
-			 jeżeli chcecie zatrzymać te dane musicie skopiować wartości tej tabilicy
-			 pobranie adresu jest złym pomysłem bo przy każdym odebraniu tablica zmienia swoją zawartosć
+			 TUTAJ WEDLE UZNANIA PRZECHWYTUJECIE DANE KTORE PRZYSZÅY
+			 macie do dyspozycji tablice 'xbee_rx.data_array' o wielkoÅ›ci 'DATA_ARRAY' - 30, w ktÃ³rej sÄ… wartoÅ›ci
+			 jeÅ¼eli chcecie zatrzymaÄ‡ te dane musicie skopiowaÄ‡ wartoÅ›ci tej tabilicy
+			 pobranie adresu jest zÅ‚ym pomysÅ‚em bo przy kaÅ¼dym odebraniu tablica zmienia swojÄ… zawartosÄ‡
 			 */
 			if (strncmp(xbee_rx.data_array, "STAT", 4) == 0) {
 				currState = (state) (((int) (xbee_rx.data_array[7])) - 48);
 			} else if (xbee_rx.data_array[0] == 'D') {
+
 				strcpy(dataIn, xbee_rx.data_array);
 			}
 		}
-		//tutaj zmienić tylko huart
+		//tutaj zmieniÄ‡ tylko huart
+
 		HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded,
 				DATA_LENGTH);
 	}
@@ -294,10 +305,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
+
 	/* User can add his own implementation to report the HAL error return state */
 	__disable_irq();
 	while (1) {
 	}
+
   /* USER CODE END Error_Handler_Debug */
 }
 
