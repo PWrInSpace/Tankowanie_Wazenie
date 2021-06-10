@@ -64,6 +64,8 @@ void Error_Handler(void);
 #define IGN_TEST_CON_GPIO_Port GPIOC
 #define IGN_FIRE_Pin GPIO_PIN_10
 #define IGN_FIRE_GPIO_Port GPIOA
+#define CONNECTION_TEST_Pin GPIO_PIN_15
+#define CONNECTION_TEST_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
