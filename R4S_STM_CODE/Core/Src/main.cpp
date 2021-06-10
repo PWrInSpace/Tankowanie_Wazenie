@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "usart.h"
 #include "usb.h"
 #include "gpio.h"
@@ -95,6 +96,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_USB_PCD_Init();
   MX_USART3_UART_Init();
@@ -238,7 +240,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 		xbee_receive(); //odebranie całej wiadomości
 		if(xbee_rx.data_flag){  //jeżeli wiadomość była danymi to ta zmienna będzie miała wartość 1
 			/*
-			TUTAJ WEDLE UZNANIA PRZECHWYTUJECIE DANE KTORE PRZYSZŁY
+			TUTAJ WEDLE UZNANIA PRZECHWYTUJECIE DANE KTORE PRZYSZ�?Y
 			macie do dyspozycji tablice 'xbee_rx.data_array' o wielkości 'DATA_ARRAY' - 30, w której są wartości
 			jeżeli chcecie zatrzymać te dane musicie skopiować wartości tej tabilicy
 			pobranie adresu jest złym pomysłem bo przy każdym odebraniu tablica zmienia swoją zawartosć
@@ -260,7 +262,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
   * @brief  This function is executed in case of error occurrence.
   * @retval None
   */
-void Error_Handler(void){
+void Error_Handler(void)
+{
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
