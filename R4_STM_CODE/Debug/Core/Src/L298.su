@@ -1,5 +1,0 @@
-L298.cpp:4:1:Motor::Motor(GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, TIM_HandleTypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t)	24	static
-L298.cpp:22:6:void Motor::stop()	16	static
-L298.cpp:28:6:void Motor::open(uint8_t)	16	static
-L298.cpp:43:6:void Motor::close(uint8_t)	16	static
-L298.cpp:58:6:void Motor::test_open_close()	16	static
