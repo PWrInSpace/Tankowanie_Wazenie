@@ -117,7 +117,7 @@ int main(void)
   	  // HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
 
   //memset(buff ,0,sizeof(buff));
-  // HAL_TIM_Base_Start_IT(&htim2);
+  // HAL_TIM_Base_Start_IT(&htim3);
 
 
   /* USER CODE END 2 */
