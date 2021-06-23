@@ -13,13 +13,22 @@ int32_t HX711::getWeigthPlusOffsetAfterConversion(uint16_t times){
 	return Average_Value(times) / calibrationFactor + offset;
 }
 
-void HX711::setConversionFactor(uint16_t newConversionFactor){
-	calibrationFactor = newConversionFactor;
+int32_t HX711::getOffset() const{
+	return offset;
 }
 
-void HX711::addToOffset(uint16_t offsetDif){
+int32_t HX711::getCalibrationFactor() const{
+	return calibrationFactor;
+}
+
+void HX711::addToOffset(int32_t offsetDif){
 	offset += offsetDif;
 }
+
+void HX711::setCalibrationFactor(int32_t newCalibrationFactor){
+	calibrationFactor = newCalibrationFactor;
+}
+
 
 int32_t HX711::Read_Value(){
     int32_t buffer=0;
@@ -38,7 +47,7 @@ int32_t HX711::Read_Value(){
     for (uint8_t i = 0; i < 25; ++i){
     	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
         buffer = buffer << 1 ;
-        buffer+=HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
+        buffer+= HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
         HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
     }
 
@@ -54,8 +63,7 @@ int32_t HX711::Read_Value(){
        		break;
     	else
     		continue;
-   }
-
+    }
     return (buffer<<7)/128;
 }
 

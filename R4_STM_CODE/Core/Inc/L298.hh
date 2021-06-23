@@ -37,5 +37,4 @@ public:
 	void test_open_close();
 };
 
-
 #endif /* L298_LIB */

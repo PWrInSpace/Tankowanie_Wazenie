@@ -19,6 +19,7 @@ Motor::Motor(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1,
 	PIN_LS_CLOSE = _PIN_LS_CLOSE;
 	status = Status::IDK;
 	HAL_TIM_PWM_Start(TIM_NR_EN, TIM_CHANNEL_EN);
+	stop();
 }
 
 void Motor::stop(){
