@@ -29,6 +29,15 @@ void HX711::setCalibrationFactor(int32_t newCalibrationFactor){
 	calibrationFactor = newCalibrationFactor;
 }
 
+void HX711::initialCalibration(uint32_t testWeightInGrams){
+	if (testWeightInGrams == 0)
+		return;
+	uint64_t readDifference = Average_Value();
+	HAL_Delay(10000);
+	readDifference = Average_Value() - readDifference;
+	calibrationFactor = readDifference / testWeightInGrams;
+	offset = testWeightInGrams - Average_Value() * calibrationFactor;
+}
 
 int32_t HX711::Read_Value(){
     int32_t buffer=0;
