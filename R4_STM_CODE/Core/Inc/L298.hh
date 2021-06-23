@@ -26,8 +26,10 @@ private:
 	uint16_t PIN_LS_CLOSE;
 	Status status;
 public:
-	Motor(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1, GPIO_TypeDef* _GPIO_PORT_IN2, uint16_t _PIN_IN2,
-			TIM_HandleTypeDef* _TIM_NR_EN, uint16_t _TIM_CHANNEL_EN, GPIO_TypeDef* _GPIO_PORT_LS_OPEN, uint16_t _PIN_LS_OPEN,
+	Motor(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1,
+			GPIO_TypeDef* _GPIO_PORT_IN2, uint16_t _PIN_IN2,
+			TIM_HandleTypeDef* _TIM_NR_EN, uint16_t _TIM_CHANNEL_EN,
+			GPIO_TypeDef* _GPIO_PORT_LS_OPEN, uint16_t _PIN_LS_OPEN,
 			GPIO_TypeDef* _GPIO_PORT_LS_CLOSE, uint16_t _PIN_LS_CLOSE);
 	void stop();
 	void open(uint8_t secs = 5);

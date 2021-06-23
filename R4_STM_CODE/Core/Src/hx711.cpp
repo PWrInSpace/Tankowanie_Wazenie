@@ -5,12 +5,16 @@ HX711::HX711(GPIO_TypeDef* _Dt_gpio, uint16_t _Dt_pin, GPIO_TypeDef* _Sck_gpio, 
 	Dt_pin = _Dt_pin;
 	Sck_gpio = _Sck_gpio;
 	Sck_pin = _Sck_pin;
-	offset = 0;
-	conversionFactor = 1;
+	calibrationFactor = 1;
+	offset = -Average_Value(5);
+}
+
+int32_t HX711::getWeigthPlusOffsetAfterConversion(uint16_t times){
+	return Average_Value(times) / calibrationFactor + offset;
 }
 
 void HX711::setConversionFactor(uint16_t newConversionFactor){
-	conversionFactor = newConversionFactor;
+	calibrationFactor = newConversionFactor;
 }
 
 void HX711::addToOffset(uint16_t offsetDif){
@@ -71,6 +75,3 @@ int32_t HX711::Average_Value(uint16_t times){
     	return 0;
 }
 
-int32_t HX711::getWeigthPlusOffsetAfterConversion(uint16_t times){
-	return Average_Value(times) / conversionFactor + offset;
-}
