@@ -27,10 +27,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <Bluetooth.h>
-#include <Igniter.hh>
 #include "xbee.h"
-#include "stdlib.h"
+#include "Igniter.hh"
+#include "hx711.hh"
+#include "L298.hh"
+#include "Bluetooth.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -146,7 +148,6 @@ int main(void)
 				if (igniter.is_connected()) {
 					HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 				}
-
 				// (end) place for random test //
 
 				currState = Idle;
@@ -176,7 +177,6 @@ int main(void)
 			}
 			case End: {	//6:END aka FIRED
 				HAL_Delay(1000000);
-				//
 				break;
 			}
 			case Abort: {	//7:ABORT
@@ -247,14 +247,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 		xbee_receive(); //odebranie całej wiadomości
 		if (xbee_rx.data_flag) { //jeżeli wiadomość była danymi to ta zmienna będzie miała wartość 1
 			/*
-			 TUTAJ WEDLE UZNANIA PRZECHWYTUJECIE DANE KTORE PRZYSZ�?Y
+			 TUTAJ WEDLE UZNANIA PRZECHWYTUJECIE DANE KTORE PRZYSZŁY
 			 macie do dyspozycji tablice 'xbee_rx.data_array' o wielkości 'DATA_ARRAY' - 30, w której są wartości
 			 jeżeli chcecie zatrzymać te dane musicie skopiować wartości tej tabilicy
 			 pobranie adresu jest złym pomysłem bo przy każdym odebraniu tablica zmienia swoją zawartosć
 			 */
 			if (strncmp(xbee_rx.data_array, "STAT", 4) == 0) {
 				currState = (state) (((int) (xbee_rx.data_array[7])) - 48);
-			} else if (xbee_rx.data_array[0] == 'D') {
+			}
+			else if (xbee_rx.data_array[0] == 'D') {
 				strcpy(dataIn, xbee_rx.data_array);
 			}
 		}
