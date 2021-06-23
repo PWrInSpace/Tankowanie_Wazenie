@@ -1,35 +1,36 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include <L298.hh>
 #include "main.h"
+#include "dma.h"
 #include "tim.h"
 #include "usart.h"
+#include "usb.h"
 #include "gpio.h"
-
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "Igniter.hh"
-#include "stdio.h"
-#include "string.h"
+#include <Bluetooth.h>
+#include <Igniter.hh>
+#include "xbee.h"
+#include "stdlib.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,8 +50,19 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t state = 0;
-char data[40];
+enum state {
+	Init = 1,
+	Idle = 2,
+	ArmedHard = 3,
+	ArmedSoft = 4,
+	Ready = 5,
+	End = 6,
+	Abort = 7
+};
+state currState = Init;
+char dataIn[30];
+char dataOut[30];
+Xbee communication;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -80,7 +92,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+	HAL_Delay(1000);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -92,86 +104,91 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_TIM3_Init();
   MX_TIM4_Init();
   MX_USART3_UART_Init();
+  MX_USB_PCD_Init();
   /* USER CODE BEGIN 2 */
 
+//  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); test timer
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  HAL_Delay(1000);
 
-   // char* buff;
-    //memset(buff ,0,sizeof(buff));
-    // HAL_TIM_Base_Start_IT(&htim2);
-    __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+	__HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
+	HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded, DATA_LENGTH);
+	xbee_init(&communication, 0x0013A20041C283E5, &huart2); //inicjalizacja modułu xbee
 
-    /* USER CODE END 2 */
+	///ADDED FOR BLUETOOTH///
+	//__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
+	// HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
 
-    /* USER CODE BEGIN WHILE */
+	//memset(buff ,0,sizeof(buff));
+	// HAL_TIM_Base_Start_IT(&htim3);
 
-    // INIT
-    Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, IGN_TEST_CON_GPIO_Port, IGN_TEST_CON_Pin);
-    Motor Fill(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3, FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin, FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
-    Motor QD(QD_D1_GPIO_Port, QD_D1_Pin, QD_D2_GPIO_Port, QD_D2_Pin, &htim3, TIM_CHANNEL_3, nullptr, 0, nullptr, 0);
+	/* USER CODE END 2 */
 
-    state = 0; //touch only for tests
-    while (1)
-    {
-  	  switch(state){
-  		  case 0: //test state
-  			  if(igniter.is_connected()){
-  				  HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
-  			  }
+	/* USER CODE BEGIN WHILE */
 
-  			  //place for random tests
-  			  //Fill.test_open_close();
-  			  QD.test_open_close();
-  			  HAL_Delay(1000);
-  			  //state = 1;
-  			  strcpy(data, "DINI");	//xd
-  			  break;
-  		  case 1:	//IDLE
-  			  if(strncmp(data, "DINI", 4) == 0){ // signal == init
-  				  //TODO: send ready
-  				  state = 2;
-  			  }
-  			  break;
-  		  case 2:	//ARMED(hard) DABR
-  			  if(igniter.is_connected() && strncmp(data, "DARM", 4) == 0){ // signal == arm
-  			  	  state = 3;
-  			  }
-  			  break;
-  		  case 3:	//ARMED(soft)
-  			  	  if(strncmp (data, "DSTA", 4) == 0){	//signal == fire
-  			  		  igniter.FIRE();
-  			  		  state = 5;
-  			  	  }
-  			  	  else if(strncmp (data, "DABR", 4) == 0){	//signal == abort
-  			  		  state = 4;
-  			  	  }
-  			  break;
-  		  case 4:	//ABORT
-  			  HAL_Delay(1000000);
-  			  break;
-  		  case 5:	//FLIGHT
-  			  //TODO: Send "fired" 	//n - times
-  			 if( ! igniter.is_connected()){
-  				  state = 6;
-  			  }
-  			  break;
-  		  case 6:	//END
-  			  HAL_Delay(1000000);
-  			  break;
-  	  }
-    }
+	Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, CONNECTION_TEST_GPIO_Port,
+			CONNECTION_TEST_Pin);
 
-  /* USER CODE END WHILE */
+	while (1) {
+		sprintf(dataOut, "DDAT;%i;%i", currState, igniter.is_connected());
+		xbee_transmit_char(communication, dataOut);
+		HAL_Delay(50);
+		switch (currState) {
+			case Init: //test state		//1:INIT
+				//place for random tests	//
+				if (igniter.is_connected()) {
+					HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
+				}
 
-  /* USER CODE BEGIN 3 */
+				// (end) place for random test //
+
+				currState = Idle;
+				HAL_Delay(4500);
+				break;
+			case Idle: {	//2:IDLE
+				HAL_Delay(4500);
+				break;
+			}
+			case ArmedHard: {	//3:ARMED(hard)
+				HAL_Delay(4500);
+				break;
+			}
+			case ArmedSoft: {	//4:ARMED(soft)
+				HAL_Delay(4500); 	 // !to test
+				break;
+			}
+			case Ready: {	//5:Ready
+				if (strncmp(dataIn, "DSTA", 4) == 0){	//signal == fire
+					igniter.FIRE();
+					sprintf(dataOut, "ASTB");
+					xbee_transmit_char(communication, dataOut);
+					currState = End;
+				}
+				HAL_Delay(2500);
+				break;
+			}
+			case End: {	//6:END aka FIRED
+				HAL_Delay(1000000);
+				//
+				break;
+			}
+			case Abort: {	//7:ABORT
+				HAL_Delay(4500);
+				break;
+			}
+		}
+	}
+
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
 
   /* USER CODE END 3 */
 }
@@ -222,7 +239,30 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+	if (huart->Instance == USART2) {
+		__HAL_UART_CLEAR_IDLEFLAG(&huart2);
+		HAL_UART_DMAStop(&huart2);
 
+		xbee_receive(); //odebranie całej wiadomości
+		if (xbee_rx.data_flag) { //jeżeli wiadomość była danymi to ta zmienna będzie miała wartość 1
+			/*
+			 TUTAJ WEDLE UZNANIA PRZECHWYTUJECIE DANE KTORE PRZYSZ�?Y
+			 macie do dyspozycji tablice 'xbee_rx.data_array' o wielkości 'DATA_ARRAY' - 30, w której są wartości
+			 jeżeli chcecie zatrzymać te dane musicie skopiować wartości tej tabilicy
+			 pobranie adresu jest złym pomysłem bo przy każdym odebraniu tablica zmienia swoją zawartosć
+			 */
+			if (strncmp(xbee_rx.data_array, "STAT", 4) == 0) {
+				currState = (state) (((int) (xbee_rx.data_array[7])) - 48);
+			} else if (xbee_rx.data_array[0] == 'D') {
+				strcpy(dataIn, xbee_rx.data_array);
+			}
+		}
+		//tutaj zmienić tylko huart
+		HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded,
+				DATA_LENGTH);
+	}
+}
 /* USER CODE END 4 */
 
 /**
@@ -232,11 +272,10 @@ void SystemClock_Config(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
+	/* User can add his own implementation to report the HAL error return state */
+	__disable_irq();
+	while (1) {
+	}
   /* USER CODE END Error_Handler_Debug */
 }
 

@@ -15,8 +15,8 @@ bool Igniter::is_connected() const{
 		return 0;
 }
 
-void Igniter::FIRE(){
+void Igniter::FIRE(uint8_t milisecs){
 	HAL_GPIO_WritePin(GPIO_PORT_IGNITER, PIN_IGNITER, GPIO_PIN_SET);
+	HAL_Delay(milisecs);
+	HAL_GPIO_WritePin(GPIO_PORT_IGNITER, PIN_IGNITER, GPIO_PIN_RESET);
 }
-
-

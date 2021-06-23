@@ -67,10 +67,10 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(BUILD_IN_LED_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = IGN_TEST_CON_Pin;
+  GPIO_InitStruct.Pin = CONNECTION_TEST_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(IGN_TEST_CON_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(CONNECTION_TEST_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PAPin PAPin PAPin PAPin
                            PAPin */
