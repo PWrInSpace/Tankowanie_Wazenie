@@ -63,15 +63,20 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
 void resolveCommand() {
 
 	HAL_UART_Transmit(bluetooth->huart, (uint8_t*) "in \n", strlen("in \n"),
 			500);
 	HAL_UART_Transmit(bluetooth->huart, (uint8_t*) buff, strlen(buff), 500);
-	doCommand(bluetooth, Fill);
+
+	doCommand1(bluetooth);
+
 	memset(buff, 0, sizeof(buff));
 	buffindex = 0;
 	timcnt = 0;
+
+
 	HAL_UART_Transmit(bluetooth->huart, (uint8_t*) "exit \n", strlen("exit \n"),
 			500);
 }
