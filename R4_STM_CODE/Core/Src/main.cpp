@@ -260,8 +260,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 			}
 		}
 		//tutaj zmienić tylko huart
-		HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded,
-				DATA_LENGTH);
+		HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded, DATA_LENGTH);
 	}
 }
 /* USER CODE END 4 */

@@ -50,7 +50,7 @@ void Motor::close(uint8_t secs){
 	HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_SET);
 	__HAL_TIM_SET_COMPARE(TIM_NR_EN, TIM_CHANNEL_EN, 999);
 	status = Status::IDK;
-	for(uint8_t steps =  0; steps < secs * 100 ; ++steps ){
+	for(uint8_t steps =  0; steps < secs * 100; ++steps){
 		if(GPIO_PORT_LS_CLOSE != nullptr && GPIO_PORT_LS_OPEN != nullptr){ //if has limit switch
 			if(HAL_GPIO_ReadPin(GPIO_PORT_LS_OPEN, PIN_LS_OPEN) == GPIO_PIN_RESET){
 				status = Status::OPEN;
