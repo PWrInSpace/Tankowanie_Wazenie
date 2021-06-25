@@ -11,7 +11,7 @@ HX711::HX711(GPIO_TypeDef* _Dt_gpio, uint16_t _Dt_pin,
 	OffsetInGrams = 0;
 }
 
-int32_t HX711::getWeigthWithOffset(uint16_t times){
+int32_t HX711::getWeigthInGramsWithOffset(uint16_t times){
 	return AverageValue(times) / BitsToGramRatio + OffsetInGrams;
 }
 
