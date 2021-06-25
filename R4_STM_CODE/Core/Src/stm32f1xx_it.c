@@ -59,6 +59,7 @@
 extern DMA_HandleTypeDef hdma_usart2_rx;
 extern DMA_HandleTypeDef hdma_usart2_tx;
 extern UART_HandleTypeDef huart2;
+extern UART_HandleTypeDef huart3;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -92,6 +93,8 @@ void HardFault_Handler(void)
   while (1)
   {
     /* USER CODE BEGIN W1_HardFault_IRQn 0 */
+	  HAL_UART_Transmit(&huart3, (uint8_t*)"err\n", strlen("err\n"), 500);
+	  break;
     /* USER CODE END W1_HardFault_IRQn 0 */
   }
 }
@@ -241,6 +244,20 @@ void USART2_IRQHandler(void)
   /* USER CODE BEGIN USART2_IRQn 1 */
   if(__HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE)) HAL_UART_RxCpltCallback(&huart2);
   /* USER CODE END USART2_IRQn 1 */
+}
+
+/**
+  * @brief This function handles USART3 global interrupt.
+  */
+void USART3_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART3_IRQn 0 */
+
+  /* USER CODE END USART3_IRQn 0 */
+  HAL_UART_IRQHandler(&huart3);
+  /* USER CODE BEGIN USART3_IRQn 1 */
+
+  /* USER CODE END USART3_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

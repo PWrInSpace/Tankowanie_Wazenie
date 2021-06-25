@@ -129,18 +129,19 @@ int main(void)
 	// HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
 
 	//memset(buff ,0,sizeof(buff));
-	// HAL_TIM_Base_Start_IT(&htim3);
 
+	 HAL_UART_Transmit(&huart3, (uint8_t*)"INIT\n", strlen("INIT\n"), 500);
 	/* USER CODE END 2 */
 
 	/* USER CODE BEGIN WHILE */
 
 	Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, CONNECTION_TEST_GPIO_Port, CONNECTION_TEST_Pin);
-	HX711 RocketWeight(HX1_SCL_GPIO_Port, HX1_SCL_Pin, HX1_SDA_GPIO_Port, HX1_SDA_Pin);
+	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin);
 
 	while (1) {
-		sprintf(dataOut, "DDAT;%i;%i", currState, igniter.is_connected());
-		xbee_transmit_char(communication, dataOut);
+		sprintf(dataOut, "DDAT;%i;%i;%i\n", currState, igniter.is_connected(),RocketWeight.ReadValue());
+		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
+		//xbee_transmit_char(communication, dataOut);
 		HAL_Delay(50);
 		switch (currState) {
 			case Init: //test state		//1:INIT
@@ -149,12 +150,13 @@ int main(void)
 					HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 				}
 				// (end) place for random test //
-
+				//RocketWeight.initialCalibration();
 				currState = Idle;
-				HAL_Delay(4500);
+				HAL_Delay(500);
 				break;
 			case Idle: {	//2:IDLE
-				HAL_Delay(4500);
+				HAL_UART_Transmit(&huart3, (uint8_t*) dataOut, strlen(dataOut), 500);
+				HAL_Delay(500);
 				break;
 			}
 			case ArmedHard: {	//3:ARMED(hard)
