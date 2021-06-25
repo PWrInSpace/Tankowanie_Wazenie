@@ -1,12 +1,14 @@
 #include <hx711.hh>
 
-HX711::HX711(GPIO_TypeDef* _Dt_gpio, uint16_t _Dt_pin, GPIO_TypeDef* _Sck_gpio, uint16_t _Sck_pin){
+HX711::HX711(GPIO_TypeDef* _Dt_gpio, uint16_t _Dt_pin,
+			 GPIO_TypeDef* _Sck_gpio, uint16_t _Sck_pin)
+{
 	Dt_gpio = _Dt_gpio;
 	Dt_pin = _Dt_pin;
 	Sck_gpio = _Sck_gpio;
 	Sck_pin = _Sck_pin;
 	BitsToGramRatio = 1;
-	OffsetInGrams = -AverageValue(5);
+	OffsetInGrams = 0;
 }
 
 int32_t HX711::getWeigthWithOffset(uint16_t times){
@@ -32,9 +34,9 @@ void HX711::setBitsToGramRatio(int32_t newBitsToGramRatio){
 void HX711::initialCalibration(uint32_t testWeightInGrams){
 	if (testWeightInGrams == 0)
 		return;
-	int64_t initialWeight = AverageValue();
+	int32_t initialWeight = AverageValue();
 	HAL_Delay(10000); //put testWeight on load cell
-	int64_t readDifference = AverageValue() - initialWeight;
+	int32_t readDifference = AverageValue() - initialWeight;
 	BitsToGramRatio = readDifference / testWeightInGrams;
 	OffsetInGrams = testWeightInGrams - AverageValue() / BitsToGramRatio;
 }
@@ -77,7 +79,7 @@ int32_t HX711::ReadValue(){
 }
 
 int32_t HX711::AverageValue(uint16_t times){
-	int64_t sum = 0;
+	int32_t sum = 0;
 	uint16_t succesfulReads = 0;
     for (uint16_t i = 0; i < times; ++i){
     	int32_t read = ReadValue();

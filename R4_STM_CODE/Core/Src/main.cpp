@@ -135,8 +135,8 @@ int main(void)
 
 	/* USER CODE BEGIN WHILE */
 
-	Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, CONNECTION_TEST_GPIO_Port,
-			CONNECTION_TEST_Pin);
+	Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, CONNECTION_TEST_GPIO_Port, CONNECTION_TEST_Pin);
+	HX711 RocketWeight(HX1_SCL_GPIO_Port, HX1_SCL_Pin, HX1_SDA_GPIO_Port, HX1_SDA_Pin);
 
 	while (1) {
 		sprintf(dataOut, "DDAT;%i;%i", currState, igniter.is_connected());

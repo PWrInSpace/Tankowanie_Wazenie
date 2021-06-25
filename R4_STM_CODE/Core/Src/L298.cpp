@@ -2,10 +2,10 @@
 
 //make struct 'Motor', fill it, return pointer to it    (names for args start with '_' sign)
 Motor::Motor(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1,
-			GPIO_TypeDef* _GPIO_PORT_IN2, uint16_t _PIN_IN2,
-			TIM_HandleTypeDef* _TIM_NR_EN, uint16_t _TIM_CHANNEL_EN,
-			GPIO_TypeDef* _GPIO_PORT_LS_OPEN, uint16_t _PIN_LS_OPEN,
-			GPIO_TypeDef* _GPIO_PORT_LS_CLOSE, uint16_t _PIN_LS_CLOSE)
+			 GPIO_TypeDef* _GPIO_PORT_IN2, uint16_t _PIN_IN2,
+			 TIM_HandleTypeDef* _TIM_NR_EN, uint16_t _TIM_CHANNEL_EN,
+			 GPIO_TypeDef* _GPIO_PORT_LS_OPEN, uint16_t _PIN_LS_OPEN,
+			 GPIO_TypeDef* _GPIO_PORT_LS_CLOSE, uint16_t _PIN_LS_CLOSE)
 {
 	GPIO_PORT_IN1 = _GPIO_PORT_IN1;
 	PIN_IN1 = _PIN_IN1;

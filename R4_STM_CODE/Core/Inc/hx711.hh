@@ -11,7 +11,8 @@ class HX711{
 	int32_t BitsToGramRatio;
 
 public:
-	HX711(GPIO_TypeDef *Dt_gpio, uint16_t Dt_pin, GPIO_TypeDef *Sck_gpio, uint16_t Sck_pin);
+	HX711(GPIO_TypeDef *Dt_gpio, uint16_t Dt_pin,
+		  GPIO_TypeDef *Sck_gpio, uint16_t Sck_pin);
 	int32_t getWeigthWithOffset(uint16_t times = 10);
 	int32_t getOffsetInGrams() const;
 	int32_t getBitsToGramRatio() const;
