@@ -12,7 +12,8 @@ HX711::HX711(GPIO_TypeDef* _Dt_gpio, uint16_t _Dt_pin,
 }
 
 int32_t HX711::getWeigthInGramsWithOffset(uint16_t times){
-	return AverageValue(times) / BitsToGramRatio + OffsetInGrams;
+	if(BitsToGramRatio != 0)
+		return AverageValue(times) / BitsToGramRatio + OffsetInGrams;
 }
 
 int32_t HX711::getOffsetInGrams() const{
@@ -32,21 +33,23 @@ void HX711::setBitsToGramRatio(int32_t newBitsToGramRatio){
 }
 
 void HX711::initialCalibration(uint8_t testWeightInGrams){
-	if (testWeightInGrams == 0)
+	if(testWeightInGrams == 0)
 		return;
 	int32_t initialWeight = AverageValue();
 	HAL_Delay(10000); //put testWeight on load cell
 	int32_t readDifference = AverageValue() - initialWeight;
 	BitsToGramRatio = readDifference / testWeightInGrams;
-	OffsetInGrams = testWeightInGrams - AverageValue() / BitsToGramRatio;
+	if(BitsToGramRatio != 0){
+		OffsetInGrams = testWeightInGrams - AverageValue() / BitsToGramRatio;
+	}
 }
 
 int32_t HX711::ReadValue(){
-    int32_t buffer=0;
+    int32_t buffer = 0;
 
     HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
     //wait for 0 on Dt_Pin
-    for(uint8_t i = 0; i < 1000; ++i){
+    for(uint16_t i = 0; i < 1000; ++i){
     	if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 0 )
     		break;
     	else if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 1 && i > 990)
@@ -69,7 +72,7 @@ int32_t HX711::ReadValue(){
 //    }
 
     //wait for 1 on Dt_Pin
-    for(uint8_t i = 0; i < 1000; ++i){
+    for(uint16_t i = 0; i < 1000; ++i){
     	if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 1)
        		break;
     	else
@@ -83,7 +86,7 @@ int32_t HX711::AverageValue(uint16_t times){
 	uint16_t succesfulReads = 0;
     for (uint16_t i = 0; i < times; ++i){
     	int32_t read = ReadValue();
-    	if(read > 0){
+    	if(read != 0){
     		sum += read;
     		++succesfulReads;
     	}
