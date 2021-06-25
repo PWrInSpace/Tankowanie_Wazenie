@@ -60,6 +60,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define BUILD_IN_LED_Pin GPIO_PIN_13
 #define BUILD_IN_LED_GPIO_Port GPIOC
+#define VOLTAGE_MEASURE_Pin GPIO_PIN_14
+#define VOLTAGE_MEASURE_GPIO_Port GPIOC
 #define CONNECTION_TEST_Pin GPIO_PIN_15
 #define CONNECTION_TEST_GPIO_Port GPIOC
 #define HX2_SDA_Pin GPIO_PIN_4
