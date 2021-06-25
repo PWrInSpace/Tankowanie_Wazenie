@@ -31,7 +31,7 @@ void HX711::setBitsToGramRatio(int32_t newBitsToGramRatio){
 	BitsToGramRatio = newBitsToGramRatio;
 }
 
-void HX711::initialCalibration(uint32_t testWeightInGrams){
+void HX711::initialCalibration(uint8_t testWeightInGrams){
 	if (testWeightInGrams == 0)
 		return;
 	int32_t initialWeight = AverageValue();
