@@ -62,6 +62,7 @@ enum state {
 	Abort = 7
 };
 state currState = Init;
+int32_t buf = -1, buf2 = -1;
 char dataIn[30];
 char dataOut[30];
 Xbee communication;
@@ -137,9 +138,13 @@ int main(void)
 
 	Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, CONNECTION_TEST_GPIO_Port, CONNECTION_TEST_Pin);
 	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin);
+	HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin);
+
 
 	while (1) {
-		sprintf(dataOut, "DDAT;%i;%i;%i\n", currState, igniter.is_connected(),RocketWeight.ReadValue());
+		buf = RocketWeight.ReadValue();
+		//buf2 =TankWeight.ReadValue();
+		sprintf(dataOut, "DDAT;%i;%i;%li:%li\n", currState, igniter.is_connected(), buf, buf2);
 		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
 		//xbee_transmit_char(communication, dataOut);
 		HAL_Delay(50);
