@@ -64,6 +64,7 @@ enum state {
 state currState = Init;
 char dataIn[30];
 char dataOut[30];
+int32_t buf = 0;
 Xbee communication;
 /* USER CODE END PV */
 
@@ -94,7 +95,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-	HAL_Delay(1000);
+  HAL_Delay(1000);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -136,11 +137,11 @@ int main(void)
 	/* USER CODE BEGIN WHILE */
 
 	Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, CONNECTION_TEST_GPIO_Port, CONNECTION_TEST_Pin);
-	HX711 RocketWeight(HX1_SCL_GPIO_Port, HX1_SCL_Pin, HX1_SDA_GPIO_Port, HX1_SDA_Pin);
+	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin);
 
 	while (1) {
-		sprintf(dataOut, "DDAT;%i;%i", currState, igniter.is_connected());
-		xbee_transmit_char(communication, dataOut);
+		sprintf(dataOut, "DDAT;%i;%i;%i", currState, igniter.is_connected(), RocketWeight.ReadValue());
+//		xbee_transmit_char(communication, dataOut);
 		HAL_Delay(50);
 		switch (currState) {
 			case Init: //test state		//1:INIT
@@ -148,10 +149,11 @@ int main(void)
 				if (igniter.is_connected()) {
 					HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 				}
+				buf = RocketWeight.ReadValue();
 				// (end) place for random test //
 
-				currState = Idle;
-				HAL_Delay(4500);
+	//			currState = Idle;
+	//			HAL_Delay(4500);
 				break;
 			case Idle: {	//2:IDLE
 				HAL_Delay(4500);
