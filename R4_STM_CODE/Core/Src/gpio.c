@@ -98,10 +98,17 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : PtPin */
+  GPIO_InitStruct.Pin = HX1_SCL_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(HX1_SCL_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pins : PBPin PBPin PBPin PBPin
-                           PBPin PBPin PBPin */
-  GPIO_InitStruct.Pin = HX1_SCL_Pin|QD_D2_Pin|QD_D1_Pin|DEPR_CLOSE_Pin
-                          |DEPR_OPEN_Pin|FILL_CLOSE_Pin|FILL_OPEN_Pin;
+                           PBPin PBPin */
+  GPIO_InitStruct.Pin = QD_D2_Pin|QD_D1_Pin|DEPR_CLOSE_Pin|DEPR_OPEN_Pin
+                          |FILL_CLOSE_Pin|FILL_OPEN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
