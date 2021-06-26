@@ -58,7 +58,7 @@ int32_t HX711::ReadValue(){
 
     while(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 1 );
     //read weight
-    for (uint8_t i = 0; i < 25; ++i){
+    for (uint8_t i = 0; i < 24; ++i){
     	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
         buffer = buffer << 1 ;
         buffer+= HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
