@@ -8,7 +8,7 @@ Igniter::Igniter(GPIO_TypeDef* _GPIO_PORT_IGNITER, uint16_t _PIN_IGNITER, GPIO_T
 	PIN_TEST_CON = _IGN_PIN_TEST_CON;
 }
 
-bool Igniter::is_connected() const{
+bool Igniter::isConnected() const{
 	if(HAL_GPIO_ReadPin(GPIO_PORT_TEST_CON, PIN_TEST_CON) == GPIO_PIN_SET)
 		return 1;
 	else

@@ -139,28 +139,29 @@ int main(void)
 	Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, CONNECTION_TEST_GPIO_Port, CONNECTION_TEST_Pin);
 	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin);
 	HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin);
+	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
+					FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin,	FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
 
-
-	while (1) {
+	while(1){
 		buf = RocketWeight.ReadValue();
 		//buf2 =TankWeight.ReadValue();
-		sprintf(dataOut, "DDAT;%i;%i;%li:%li\n", currState, igniter.is_connected(), buf, buf2);
+		sprintf(dataOut, "DDAT;%i;%i;%li:%li\n", currState, igniter.isConnected(), buf, buf2);
 		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
 		//xbee_transmit_char(communication, dataOut);
 		HAL_Delay(50);
 		switch (currState) {
 			case Init: //test state		//1:INIT
 				//place for random tests	//
-				if (igniter.is_connected()) {
+				if (igniter.isConnected()){
 					HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 				}
 				// (end) place for random test //
 				//RocketWeight.initialCalibration();
-				currState = Idle;
+
+				//currState = Idle;
 				HAL_Delay(500);
 				break;
 			case Idle: {	//2:IDLE
-				HAL_UART_Transmit(&huart3, (uint8_t*) dataOut, strlen(dataOut), 500);
 				HAL_Delay(500);
 				break;
 			}
