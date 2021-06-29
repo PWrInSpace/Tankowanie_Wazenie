@@ -62,7 +62,7 @@ enum state {
 	Abort = 7
 };
 state currState = Init;
-int32_t buf = -1, buf2 = -1;
+int32_t buf = -1, buf2 = -1, buf3 = -1;
 char dataIn[30];
 char dataOut[30];
 Xbee communication;
@@ -145,6 +145,7 @@ int main(void)
 	while(1){
 		buf = RocketWeight.ReadValue();
 		//buf2 =TankWeight.ReadValue();
+		buf3 = RocketWeight.getOffsetInGrams();
 		sprintf(dataOut, "DDAT;%i;%i;%li:%li\n", currState, igniter.isConnected(), buf, buf2);
 		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
 		//xbee_transmit_char(communication, dataOut);
