@@ -62,6 +62,7 @@ enum state {
 	Abort = 7
 };
 state currState = Init;
+int32_t buf = -1, buf2 = -1, buf3 = -1;
 char dataIn[30];
 char dataOut[30];
 int32_t buf = 0;
@@ -130,33 +131,41 @@ int main(void)
 	// HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
 
 	//memset(buff ,0,sizeof(buff));
-	// HAL_TIM_Base_Start_IT(&htim3);
 
+	 HAL_UART_Transmit(&huart3, (uint8_t*)"INIT\n", strlen("INIT\n"), 500);
 	/* USER CODE END 2 */
 
 	/* USER CODE BEGIN WHILE */
 
 	Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, CONNECTION_TEST_GPIO_Port, CONNECTION_TEST_Pin);
 	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin);
+	HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin);
+	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
+					FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin,	FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
 
-	while (1) {
-		sprintf(dataOut, "DDAT;%i;%i;%i", currState, igniter.is_connected(), RocketWeight.ReadValue());
-//		xbee_transmit_char(communication, dataOut);
+	while(1){
+		buf = RocketWeight.ReadValue();
+		//buf2 =TankWeight.ReadValue();
+		buf3 = RocketWeight.getOffsetInGrams();
+		sprintf(dataOut, "DDAT;%i;%i;%li:%li\n", currState, igniter.isConnected(), buf, buf2);
+		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
+		//xbee_transmit_char(communication, dataOut);
 		HAL_Delay(50);
 		switch (currState) {
 			case Init: //test state		//1:INIT
 				//place for random tests	//
-				if (igniter.is_connected()) {
+				if (igniter.isConnected()){
 					HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 				}
 				buf = RocketWeight.ReadValue();
 				// (end) place for random test //
+				//RocketWeight.initialCalibration();
 
-	//			currState = Idle;
-	//			HAL_Delay(4500);
+				//currState = Idle;
+				HAL_Delay(500);
 				break;
 			case Idle: {	//2:IDLE
-				HAL_Delay(4500);
+				HAL_Delay(500);
 				break;
 			}
 			case ArmedHard: {	//3:ARMED(hard)
