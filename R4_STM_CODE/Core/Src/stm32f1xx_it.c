@@ -19,10 +19,13 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
+
+#include <main.hh>
 #include "stm32f1xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "string.h"
+//#include <Bluetooth.hh>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -238,9 +241,9 @@ void DMA1_Channel7_IRQHandler(void)
 void TIM2_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM2_IRQn 0 */
-	if(strlen(buff)>0)
+	if(strlen(BLUETOOTH_LIB::buff)>0)
 		{
-			timcnt=0;
+			BLUETOOTH_LIB.timcnt=0;
 		}
 			if(timcnt>5)
 			{

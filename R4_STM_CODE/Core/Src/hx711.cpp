@@ -42,7 +42,7 @@ void HX711::initialCalibration(uint32_t testLoadInGrams){
 	int32_t weightWithLoad = AverageValue();
 	BitsToGramRatio = (weightWithLoad - initialWeight) / testLoadInGrams;
 	if(BitsToGramRatio != 0){
-		OffsetInGrams = testWeightInGrams - AverageValue() / BitsToGramRatio;
+		OffsetInGrams = testLoadInGrams - AverageValue() / BitsToGramRatio;
 	}
 }
 

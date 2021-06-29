@@ -18,7 +18,8 @@
  */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
+
+#include <main.hh>
 #include "dma.h"
 #include "tim.h"
 #include "usart.h"
@@ -31,8 +32,7 @@
 #include "Igniter.hh"
 #include "hx711.hh"
 #include "L298.hh"
-#include "Bluetooth.h"
-
+#include <Bluetooth.hh>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -65,7 +65,6 @@ state currState = Init;
 int32_t buf = -1, buf2 = -1, buf3 = -1;
 char dataIn[30];
 char dataOut[30];
-int32_t buf = 0;
 Xbee communication;
 /* USER CODE END PV */
 
@@ -77,6 +76,9 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+
+void resolveCommand();
 
 /* USER CODE END 0 */
 
@@ -127,7 +129,7 @@ int main(void)
 	xbee_init(&communication, 0x0013A20041C283E5, &huart2); //inicjalizacja modułu xbee
 
 	///ADDED FOR BLUETOOTH///
-	//__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
+	__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
 	// HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
 
 	//memset(buff ,0,sizeof(buff));

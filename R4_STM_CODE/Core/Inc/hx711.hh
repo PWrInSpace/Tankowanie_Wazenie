@@ -1,6 +1,6 @@
 #ifndef HX711__LIB
 #define HX711__LIB
-#include <main.h>
+#include <main.hh>
 
 class HX711{
 	GPIO_TypeDef *Dt_gpio;
