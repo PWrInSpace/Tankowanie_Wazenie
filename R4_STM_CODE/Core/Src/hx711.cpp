@@ -32,7 +32,7 @@ void HX711::setBitsToGramRatio(int32_t newBitsToGramRatio){
 }
 
 void HX711::initialCalibration(uint32_t testLoadInGrams){
-	if (testWeightInGrams == 0)
+	if (testLoadInGrams == 0)
 		return;
 	int32_t initialWeight = AverageValue();
 	//HAL_Delay(10000); //put testWeight on load cell //odkomentowaxc pozniej
