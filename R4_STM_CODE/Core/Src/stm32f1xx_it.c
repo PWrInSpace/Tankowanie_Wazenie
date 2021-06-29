@@ -225,10 +225,11 @@ void DMA1_Channel7_IRQHandler(void) {
 void TIM2_IRQHandler(void) {
 	/* USER CODE BEGIN TIM2_IRQn 0 */
 
-	/* USER CODE END TIM2_IRQn 0 */
-	HAL_TIM_IRQHandler(&htim2);
-	/* USER CODE BEGIN TIM2_IRQn 1 */
-	/* USER CODE END TIM2_IRQn 1 */
+
+		/* USER CODE END TIM2_IRQn 0 */
+		HAL_TIM_IRQHandler(&htim2);
+		/* USER CODE BEGIN TIM2_IRQn 1 */
+		/* USER CODE END TIM2_IRQn 1 */
 }
 
 /**
@@ -250,6 +251,7 @@ void USART2_IRQHandler(void) {
  */
 void USART3_IRQHandler(void) {
 	/* USER CODE BEGIN USART3_IRQn 0 */
+
 	/* USER CODE END USART3_IRQn 0 */
 	HAL_UART_IRQHandler(&huart3);
 	/* USER CODE BEGIN USART3_IRQn 1 */
