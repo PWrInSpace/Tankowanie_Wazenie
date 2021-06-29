@@ -65,6 +65,7 @@ state currState = Init;
 int32_t buf = -1, buf2 = -1, buf3 = -1;
 char dataIn[30];
 char dataOut[30];
+char buff[50];
 Xbee communication;
 /* USER CODE END PV */
 
@@ -132,7 +133,7 @@ int main(void)
 	__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
 	// HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
 
-	//memset(buff ,0,sizeof(buff));
+	memset(buff ,0,sizeof(buff));
 
 	 HAL_UART_Transmit(&huart3, (uint8_t*)"INIT\n", strlen("INIT\n"), 500);
 	/* USER CODE END 2 */

@@ -1,26 +1,30 @@
 #include <Bluetooth.hh>
 
+
+Bluetooth_module::Bluetooth_module(UART_HandleTypeDef* _huart)
+{
+	huart=_huart;
+}
+
 ////////////////////VARIABLES//////////////////////
 char buff[50];
 uint8_t timcnt = 0;
 uint8_t buffindex = 0;
 //////////////////////////////////////////////////
 
-Bluetooth_module* bluetooth_init(UART_HandleTypeDef *_huart) {
 
-	Bluetooth_module *module = new Bluetooth_module;
 
-	module->huart = _huart;
 
-	return module;
-};
+
+
 
 //code to implement inside USART_IRQHANDLER - just paste interrupt function with correct chosen for bluetooth communication
 
 void interrupt_USART(UART_HandleTypeDef *huart) {
 	HAL_UART_Receive(huart, (uint8_t*) &buff[buffindex++], 1, 10);
 	if (buff[buffindex - 1] == '\n')
-		resolveCommand(); // do poprawy cała funkcja
+		;/////
+		//resolveCommand(); // do poprawy cała funkcja/////
 }
 
 void interrupt_TIM() {
@@ -28,9 +32,41 @@ void interrupt_TIM() {
 		timcnt = 0;
 	}
 	if (timcnt > 5) {
-		resolveCommand();
+	//	resolveCommand();
 	}
 }
+
+
+
+void TIM2_IRQHandler(void) {
+	/* USER CODE BEGIN TIM2_IRQn 0 */
+		if (strlen(buff) > 0) {
+			timcnt = 0;
+		}
+		if (timcnt > 5) {
+			resolveCommand(&huart3); // do poprawy
+		}
+
+		/* USER CODE END TIM2_IRQn 0 */
+		HAL_TIM_IRQHandler(&htim2);
+		/* USER CODE BEGIN TIM2_IRQn 1 */
+		/* USER CODE END TIM2_IRQn 1 */
+}
+
+
+void USART3_IRQHandler(void) {
+	/* USER CODE BEGIN USART3_IRQn 0 */
+	HAL_UART_Receive(&huart3, (uint8_t*) &buff[buffindex++], 1, 10);
+	if (buff[buffindex - 1] == '\n')
+		resolveCommand(&huart3); // do poprawy
+	/* USER CODE END USART3_IRQn 0 */
+	HAL_UART_IRQHandler(&huart3);
+	/* USER CODE BEGIN USART3_IRQn 1 */
+
+	/* USER CODE END USART3_IRQn 1 */
+}
+
+
 
 bool stringCompare(char array1[], char array2[], uint16_t lght) {
 	uint8_t var = 0;

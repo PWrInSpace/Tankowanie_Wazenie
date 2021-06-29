@@ -1,35 +1,36 @@
 #ifndef BLUETOOTH_LIB
 #define BLUETOOTH_LIB // spelling error
 
+
+
 #include "stdbool.h"
 #include "gpio.h"
 #include "string.h"
 #include "tim.h"
 #include "stdlib.h"
 #include "L298.hh"
-
-
-
-
-
+#include "main.hh"
+#include "usart.h"
+#include "stm32f1xx_it.h"
 
 class Bluetooth_module{
-	//USART
+
 
 
 
 public:
-	UART_HandleTypeDef* huart;
+	UART_HandleTypeDef *huart;
+	Bluetooth_module(UART_HandleTypeDef *huart);
 
 ////////////////////VARIABLES//////////////////////
-char buff [50];
-uint8_t timcnt;
-uint8_t buffindex;
+ char buff [50];
+ uint8_t timcnt;
+ uint8_t buffindex;
 //////////////////////////////////////////////////
 
 
 
-Bluetooth_module* bluetooth_init(UART_HandleTypeDef* _huart);
+
 
 
 /////////////////////////FUNCTIONS//////////////////////////////////
