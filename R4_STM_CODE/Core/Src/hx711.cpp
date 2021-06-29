@@ -31,15 +31,14 @@ void HX711::setBitsToGramRatio(int32_t newBitsToGramRatio){
 	BitsToGramRatio = newBitsToGramRatio;
 }
 
-void HX711::initialCalibration(uint32_t testWeightInGrams){
+void HX711::initialCalibration(uint32_t testLoadInGrams){
 	if (testWeightInGrams == 0)
 		return;
 	int32_t initialWeight = AverageValue();
 	//HAL_Delay(10000); //put testWeight on load cell //odkomentowaxc pozniej
-	int32_t readDifference = AverageValue() - initialWeight;
-	BitsToGramRatio = readDifference / testWeightInGrams;
-	OffsetInGrams = testWeightInGrams - AverageValue() / BitsToGramRatio;
-
+	int32_t weightWithLoad = AverageValue();
+	BitsToGramRatio = (weightWithLoad - initialWeight) / testLoadInGrams;
+	OffsetInGrams = testLoadInGrams - weightWithLoad / BitsToGramRatio;
 }
 
 int32_t HX711::ReadValue(){
