@@ -24,7 +24,7 @@
 #include "stm32f1xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "Bluetooth.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -237,7 +237,7 @@ void TIM2_IRQHandler(void) {
  */
 void USART2_IRQHandler(void) {
 	/* USER CODE BEGIN USART2_IRQn 0 */
-
+	interrupt_TIM();
 	/* USER CODE END USART2_IRQn 0 */
 	HAL_UART_IRQHandler(&huart2);
 	/* USER CODE BEGIN USART2_IRQn 1 */
@@ -251,7 +251,9 @@ void USART2_IRQHandler(void) {
  */
 void USART3_IRQHandler(void) {
 	/* USER CODE BEGIN USART3_IRQn 0 */
-
+	HAL_UART_Receive(&huart3, (uint8_t*) &buff[buffindex++], 1, 10);
+			if (buff[buffindex - 1] == '\n')
+				resolveCommand(); // do poprawy
 	/* USER CODE END USART3_IRQn 0 */
 	HAL_UART_IRQHandler(&huart3);
 	/* USER CODE BEGIN USART3_IRQn 1 */

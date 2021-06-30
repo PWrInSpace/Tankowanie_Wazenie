@@ -32,7 +32,7 @@
 #include "Igniter.hh"
 #include "hx711.hh"
 #include "L298.hh"
-#include <Bluetooth.hh>
+#include "Bluetooth.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -63,11 +63,13 @@ enum state {
 };
 state currState = Init;
 int32_t buf = -1, buf2 = -1, buf3 = -1;
+
 char dataIn[30];
 char dataOut[30];
 
 Xbee communication;
-Bluetooth_module bluetooth(&huart3);
+
+Bluetooth_module bluetooth;
 //Bluetooth_module bluetooth = new Bluetooth_module(huart3);
 /* USER CODE END PV */
 
@@ -84,7 +86,6 @@ void SystemClock_Config(void);
 
 
 
-
 /* USER CODE END 0 */
 
 /**
@@ -94,6 +95,8 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
+
 
   /* USER CODE END 1 */
 
@@ -137,7 +140,7 @@ int main(void)
 	__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
 	// HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
 
-	memset(bluetooth.buff ,0,sizeof(bluetooth.buff));
+	memset(buff ,0,sizeof(buff));
 
 	 HAL_UART_Transmit(&huart3, (uint8_t*)"INIT\n", strlen("INIT\n"), 500);
 	/* USER CODE END 2 */
@@ -155,7 +158,7 @@ int main(void)
 		//buf2 =TankWeight.ReadValue();
 	//	buf3 = RocketWeight.getOffsetInGrams();
 		sprintf(dataOut, "DDAT;%i;%i;%li:%li\n", currState, igniter.isConnected(), buf, buf2);
-		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
+	//	HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
 		//xbee_transmit_char(communication, dataOut);
 		HAL_Delay(50);
 		switch (currState) {
@@ -257,34 +260,6 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
-void USART2_IRQHandler(void) {
-	/* USER CODE BEGIN USART2_IRQn 0 */
-
-	/* USER CODE END USART2_IRQn 0 */
-	HAL_UART_IRQHandler(&huart2);
-	/* USER CODE BEGIN USART2_IRQn 1 */
-	if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE))
-		HAL_UART_RxCpltCallback(&huart2);
-	/* USER CODE END USART2_IRQn 1 */
-}
-
-
-
-void USART3_IRQHandler(void) {
-	/* USER CODE BEGIN USART3_IRQn 0 */
-	HAL_UART_Receive(&huart3, (uint8_t*) &bluetooth.buff[bluetooth.buffindex++], 1, 10);
-	if (bluetooth.buff[bluetooth.buffindex - 1] == '\n')
-		bluetooth.resolveCommand(); // do poprawy
-	/* USER CODE END USART3_IRQn 0 */
-	HAL_UART_IRQHandler(&huart3);
-	/* USER CODE BEGIN USART3_IRQn 1 */
-
-	/* USER CODE END USART3_IRQn 1 */
-}
-
-
-
 
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
