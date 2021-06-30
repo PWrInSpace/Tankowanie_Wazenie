@@ -1,4 +1,4 @@
-#include <Bluetooth.h>
+#include <Bluetooth.hh>
 
 ////////////////////VARIABLES//////////////////////
 //char buff[50];
@@ -6,53 +6,46 @@
 //uint8_t buffindex = 0;
 //////////////////////////////////////////////////
 
-Bluetooth_module* bluetooth_init(UART_HandleTypeDef *_huart) {
+Bluetooth::Bluetooth(UART_HandleTypeDef *_huart) {
 
-	Bluetooth_module *module = malloc(sizeof(Bluetooth_module));
+	huart = _huart;
 
-	module->huart = _huart;
 
-	return module;
 }
-;
 
 //code to implement inside USART_IRQHANDLER - just paste interrupt function with correct chosen for bluetooth communication
 
-
-
-
 void resolveCommand() {
 
-	HAL_UART_Transmit(&huart3, (uint8_t*) "in \n", strlen("in \n"),
-			500);
+	HAL_UART_Transmit(&huart3, (uint8_t*) "in \n", strlen("in \n"), 500);
 	HAL_UART_Transmit(&huart3, (uint8_t*) buff, strlen(buff), 500);
 
 	doCommand1();
 
-	memset(buff, 0, sizeof(buff));
+	memset(buff, 0, sizeof(MAX_BUFF));
 	buffindex = 0;
 	timcnt = 0;
 
-
-	HAL_UART_Transmit(&huart3, (uint8_t*) "exit \n", strlen("exit \n"),
-			500);
+	HAL_UART_Transmit(&huart3, (uint8_t*) "exit \n", strlen("exit \n"), 500);
 }
 
 
+void interrupt_USART() {
 
+	HAL_UART_Receive(&huart3,(uint8_t*) &buff[buffindex++], 1, 10);
 
-void interrupt_USART(UART_HandleTypeDef *huart) {
-	HAL_UART_Receive(&huart, &buff[buffindex++], 1, 10);
 	if (buff[buffindex - 1] == '\n')
-		resolveCommand(); // do poprawy cała funkcja
+		;//resolveCommand(); // do poprawy cała funkcja
 }
 
-void interrupt_TIM() {
+void interrupt_TIM(char *buff, uint8_t timcnt) {
 	if (strlen(buff) > 0) {
 		timcnt = 0;
 	}
 	if (timcnt > 5) {
-		resolveCommand();
+
+		//resolveCommand();
+
 	}
 }
 
@@ -71,7 +64,7 @@ bool stringCompare(char array1[], char array2[], uint16_t lght) {
 		return 0;
 }
 
-//void doCommand(Bluetooth_module *Module, Motor *Mot, Igniter* igniter) {
+//void doCommand(Motor *Mot, Igniter* igniter) {
 //
 //	if (stringCompare(buff, "TEST_MOTOR", strlen("TEST_MOTOR"))) {
 //		HAL_UART_Transmit(Module->huart, (uint8_t*) "calibrating the valve \n",
@@ -140,6 +133,7 @@ void doCommand1() {
 		//igniter_FIRE(igniter);
 
 	} else {
-		HAL_UART_Transmit(&huart3, (uint8_t*) "^ wrong command received \n",	strlen("^ wrong command received \n"), 500);
+		HAL_UART_Transmit(&huart3, (uint8_t*) "^ wrong command received \n",
+				strlen("^ wrong command received \n"), 500);
 	}
 }

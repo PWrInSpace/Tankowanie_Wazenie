@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 
+#include <Bluetooth.hh>
 #include <main.hh>
 #include "dma.h"
 #include "tim.h"
@@ -32,7 +33,6 @@
 #include "Igniter.hh"
 #include "hx711.hh"
 #include "L298.hh"
-#include "Bluetooth.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -68,8 +68,8 @@ char dataIn[30];
 char dataOut[30];
 
 Xbee communication;
+Bluetooth bluetooth(&huart3);
 
-Bluetooth_module bluetooth;
 //Bluetooth_module bluetooth = new Bluetooth_module(huart3);
 /* USER CODE END PV */
 
@@ -140,7 +140,7 @@ int main(void)
 	__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
 	// HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
 
-	memset(buff ,0,sizeof(buff));
+	//memset(buff ,0,sizeof(buff));
 
 	 HAL_UART_Transmit(&huart3, (uint8_t*)"INIT\n", strlen("INIT\n"), 500);
 	/* USER CODE END 2 */
