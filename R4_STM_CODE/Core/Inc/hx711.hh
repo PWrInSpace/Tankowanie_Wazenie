@@ -20,7 +20,7 @@ public:
 	void addToOffsetInGrams(int32_t offsetDif);
 	void initialCalibration(uint32_t testWeightInGrams = 1000);
 	int32_t ReadValue();
-	int32_t AverageValue(uint16_t times = 10);
+	int32_t AverageValue(uint16_t times = 20);
 };
 
 #endif
