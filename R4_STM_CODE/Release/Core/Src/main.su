@@ -1,4 +1,4 @@
-main.cpp:202:6:void SystemClock_Config()	96	static,ignoring_inline_asm
-main.cpp:85:5:int main()	48	static
-main.cpp:244:6:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	16	static
-main.cpp:275:6:void Error_Handler()	0	static,ignoring_inline_asm
+main.c:67:6:resolveCommand	16	static
+main.c:196:6:SystemClock_Config	96	static,ignoring_inline_asm
+main.c:89:5:main	32	static
+main.c:245:6:Error_Handler	0	static,ignoring_inline_asm

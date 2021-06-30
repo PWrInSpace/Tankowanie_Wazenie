@@ -1,6 +1,5 @@
-Core/Src/L298.o: ../Core/Src/L298.cpp ../Core/Inc/L298.hh \
- ../Core/Inc/gpio.h ../Core/Inc/main.h \
- ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
+Core/Src/L298.o: ../Core/Src/L298.c ../Core/Inc/L298.h ../Core/Inc/gpio.h \
+ ../Core/Inc/main.h ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
  ../Core/Inc/stm32f1xx_hal_conf.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h \
@@ -30,7 +29,7 @@ Core/Src/L298.o: ../Core/Src/L298.cpp ../Core/Inc/L298.hh \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pcd_ex.h \
  ../Core/Inc/tim.h
 
-../Core/Inc/L298.hh:
+../Core/Inc/L298.h:
 
 ../Core/Inc/gpio.h:
 

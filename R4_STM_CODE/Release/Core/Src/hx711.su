@@ -1,0 +1,2 @@
+hx711.c:3:9:HX711_Read_Value	32	static
+hx711.c:31:9:HX711_Average_Value	32	static

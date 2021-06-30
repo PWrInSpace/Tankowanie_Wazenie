@@ -19,7 +19,7 @@ Bluetooth_module* bluetooth_init(UART_HandleTypeDef *_huart) {
 //code to implement inside USART_IRQHANDLER - just paste interrupt function with correct chosen for bluetooth communication
 
 void interrupt_USART(UART_HandleTypeDef *huart) {
-	HAL_UART_Receive(&huart, (uint8_t*) &buff[buffindex++], 1, 10);
+	HAL_UART_Receive(&huart, &buff[buffindex++], 1, 10);
 	if (buff[buffindex - 1] == '\n')
 		resolveCommand(); // do poprawy cała funkcja
 }
