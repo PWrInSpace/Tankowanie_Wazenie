@@ -23,5 +23,4 @@ void doCommand(Bluetooth_module *Module, Motor *Mot, Motor *Depr, Motor *Quickre
 void doCommand_noacc(Bluetooth_module *Module);
 
 
-
 #endif /* INC_COMMANDS_H_ */

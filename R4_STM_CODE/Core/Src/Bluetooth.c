@@ -11,7 +11,7 @@ Bluetooth_module* bluetooth_init(UART_HandleTypeDef *_huart) {
 	Bluetooth_module *module = malloc(sizeof(Bluetooth_module));
 
 	module->huart = _huart;
-
+	memset(buff, 0, sizeof(buff));
 	return module;
 }
 ;
@@ -19,9 +19,9 @@ Bluetooth_module* bluetooth_init(UART_HandleTypeDef *_huart) {
 //code to implement inside USART_IRQHANDLER - just paste interrupt function with correct chosen for bluetooth communication
 
 void interrupt_USART(UART_HandleTypeDef *huart) {
-	HAL_UART_Receive(&huart, &buff[buffindex++], 1, 10);
+	HAL_UART_Receive(huart, (uint8_t*) &buff[buffindex++], 1, 10);
 	if (buff[buffindex - 1] == '\n')
-		resolveCommand(); // do poprawy cała funkcja
+		resolveCommand(); // do poprawy
 }
 
 void interrupt_TIM() {
@@ -86,4 +86,38 @@ bool stringCompare(char array1[], char array2[], uint16_t lght) {
 //
 //
 //}
+void doCommand1(Bluetooth_module *Module) {
 
+	if (stringCompare(buff, "TEST_MOTOR", strlen("TEST_MOTOR"))) {
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "calibrating the valve \n",
+				strlen("calibrating the valve \n"), 500);
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "Done... \n",
+				strlen("Done... \n"), 500);
+
+		///////////////////////////
+	} else if (stringCompare(buff, "OPEN", strlen("OPEN"))) {
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "Opening \n",
+				strlen("Opening \n"), 500);
+
+		//////////////////
+	} else if (stringCompare(buff, "CLOSE", strlen("CLOSE"))) {
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "Closing \n",
+				strlen("Closing \n"), 500);
+
+		//////////////////////////
+	} else if (stringCompare(buff, "STOP", strlen("STOP"))) {
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "Stopped \n",
+				strlen("Stopped \n"), 500);
+
+		///////////////
+	} else if (stringCompare(buff, "FIRE", strlen("FIRE"))) {
+		HAL_UART_Transmit(Module->huart, (uint8_t*) "BOMBS AWAY \n",
+				strlen("BOMBS AWAY \n"), 500);
+		//igniter_FIRE(igniter);
+
+	} else {
+		HAL_UART_Transmit(Module->huart,
+				(uint8_t*) "^ wrong command received \n",
+				strlen("^ wrong command received \n"), 500);
+	}
+}

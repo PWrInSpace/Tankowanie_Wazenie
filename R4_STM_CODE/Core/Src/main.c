@@ -74,8 +74,8 @@ void resolveCommand() {
 			500);
 	HAL_UART_Transmit(bluetooth->huart, (uint8_t*) buff, strlen(buff), 500);
 
-	//doCommand1(bluetooth);
 	doCommand_noacc(bluetooth);
+	//doCommand(bluetooth, Fill, Depr, Quickrel);
 	memset(buff, 0, sizeof(buff));
 	buffindex = 0;
 	timcnt = 0;
@@ -136,7 +136,7 @@ int main(void) {
 	HAL_Delay(1000);
 
 	//char buff[50];
-	memset(buff, 0, sizeof(buff));
+
 	HAL_TIM_Base_Start_IT(&htim2);
 	__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
 	HAL_UART_Transmit(&huart3, (uint8_t*) "INIT\n", strlen("INIT\n"), 500);

@@ -92,7 +92,7 @@ void HardFault_Handler(void)
   while (1)
   {
     /* USER CODE BEGIN W1_HardFault_IRQn 0 */
-	  HAL_UART_Transmit(&huart3, "err\n", strlen("err\n"), 500);
+	  HAL_UART_Transmit(&huart3, "err, reset blth\n", strlen("err reset blth\n"), 500);
 	  return;
     /* USER CODE END W1_HardFault_IRQn 0 */
   }
@@ -223,9 +223,7 @@ void TIM2_IRQHandler(void)
 void USART3_IRQHandler(void)
 {
   /* USER CODE BEGIN USART3_IRQn 0 */
-	HAL_UART_Receive(&huart3, (uint8_t*) &buff[buffindex++], 1, 10);
-		if (buff[buffindex - 1] == '\n')
-			resolveCommand(); // do poprawy
+	interrupt_USART(&huart3);
   /* USER CODE END USART3_IRQn 0 */
   HAL_UART_IRQHandler(&huart3);
   /* USER CODE BEGIN USART3_IRQn 1 */
