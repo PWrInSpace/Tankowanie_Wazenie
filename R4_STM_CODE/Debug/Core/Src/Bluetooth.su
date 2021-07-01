@@ -2,5 +2,4 @@ Bluetooth.c:9:19:bluetooth_init	8	static
 Bluetooth.c:21:6:interrupt_USART	24	static
 Bluetooth.c:27:6:interrupt_TIM	8	static
 Bluetooth.c:36:6:stringCompare	16	static
-Bluetooth.c:51:6:doCommand	24	static
 Bluetooth.c:89:6:doCommand1	8	static
