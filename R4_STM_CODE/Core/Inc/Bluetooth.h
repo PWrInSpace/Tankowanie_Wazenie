@@ -40,7 +40,7 @@ bool stringCompare(char array1[], char array2[], uint16_t lght);
 void interrupt_USART(UART_HandleTypeDef *_huart);
 void interrupt_TIM();
 //void doCommand(Bluetooth_module *Module, Motor *Mot, Igniter* igniter);
-void doCommand1(Bluetooth_module *Module);
+//void doCommand1(Bluetooth_module *Module);
 ///////////////////////////////////////////////////////////////////
 #endif
 

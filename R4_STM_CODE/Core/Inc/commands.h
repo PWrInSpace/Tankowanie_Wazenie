@@ -20,7 +20,7 @@
 
 
 void doCommand(Bluetooth_module *Module, Motor *Mot, Motor *Depr, Motor *Quickrel);
-
+void doCommand_noacc(Bluetooth_module *Module);
 
 
 

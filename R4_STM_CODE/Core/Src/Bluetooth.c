@@ -86,36 +86,4 @@ bool stringCompare(char array1[], char array2[], uint16_t lght) {
 //
 //
 //}
-void doCommand1(Bluetooth_module *Module) {
 
-	if (stringCompare(buff, "TEST_MOTOR", strlen("TEST_MOTOR"))) {
-		HAL_UART_Transmit(Module->huart, (uint8_t*) "calibrating the valve \n",
-				strlen("calibrating the valve \n"), 500);
-		HAL_UART_Transmit(Module->huart, (uint8_t*) "Done... \n",
-				strlen("Done... \n"), 500);
-
-		///////////////////////////
-	} else if (stringCompare(buff, "OPEN", strlen("OPEN"))) {
-		HAL_UART_Transmit(Module->huart, (uint8_t*) "Opening \n",
-				strlen("Opening \n"), 500);
-
-		//////////////////
-	} else if (stringCompare(buff, "CLOSE", strlen("CLOSE"))) {
-		HAL_UART_Transmit(Module->huart, (uint8_t*) "Closing \n",
-				strlen("Closing \n"), 500);
-
-		//////////////////////////
-	} else if (stringCompare(buff, "STOP", strlen("STOP"))) {
-		HAL_UART_Transmit(Module->huart, (uint8_t*) "Stopped \n",
-				strlen("Stopped \n"), 500);
-
-		///////////////
-	} else if (stringCompare(buff, "FIRE", strlen("FIRE"))) {
-		HAL_UART_Transmit(Module->huart, (uint8_t*) "BOMBS AWAY \n",
-				strlen("BOMBS AWAY \n"), 500);
-		//igniter_FIRE(igniter);
-
-	} else {
-		HAL_UART_Transmit(Module->huart, (uint8_t*) "^ wrong command received \n",	strlen("^ wrong command received \n"), 500);
-	}
-}
