@@ -1,5 +1,5 @@
 #ifndef BLUETOOTH_LIB
-#define BLUETOOTH_LIB // spelling error
+#define BLUETOOTH_LIB
 
 #include "stdbool.h"
 #include "gpio.h"
@@ -37,8 +37,8 @@ Bluetooth_module* bluetooth_init(UART_HandleTypeDef* _huart);
 /////////////////////////FUNCTIONS//////////////////////////////////
 
 bool stringCompare(char array1[], char array2[], uint16_t lght);
-void interrupt_USART(UART_HandleTypeDef *_huart);
-void interrupt_TIM();
+void interrupt_USART(UART_HandleTypeDef *_huart); // implement in USART(nr)_IRQHandler(void) chosen for blth
+void interrupt_TIM(); // implement in timer chosen for blth
 
 
 ///////////////////////////////////////////////////////////////////

@@ -1,4 +1,4 @@
 main.c:71:6:resolveCommand	16	static
-main.c:205:6:SystemClock_Config	88	static,ignoring_inline_asm
+main.c:206:6:SystemClock_Config	88	static,ignoring_inline_asm
 main.c:92:5:main	32	static
-main.c:250:6:Error_Handler	0	static,ignoring_inline_asm
+main.c:251:6:Error_Handler	0	static,ignoring_inline_asm

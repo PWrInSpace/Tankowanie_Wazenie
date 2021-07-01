@@ -55,7 +55,7 @@ Igniter *Ignit;
 Motor *Fill;
 Motor *Depr;
 Motor *Quickrel;
-Bluetooth_module *bluetooth;
+Bluetooth_module *Bluetooth;
 
 /* USER CODE END PV */
 
@@ -70,18 +70,18 @@ void SystemClock_Config(void);
 
 void resolveCommand() {
 
-	HAL_UART_Transmit(bluetooth->huart, (uint8_t*) "in \n", strlen("in \n"),
-			500);
-	HAL_UART_Transmit(bluetooth->huart, (uint8_t*) buff, strlen(buff), 500);
+	HAL_UART_Transmit(Bluetooth->huart, (uint8_t*) "in \n", strlen("in \n"),
+			500); //for debug
+	HAL_UART_Transmit(Bluetooth->huart, (uint8_t*) buff, strlen(buff), 500);  //echo for debug
 
-	doCommand_noacc(bluetooth);
-	//doCommand(bluetooth, Fill, Depr, Quickrel);
+	doCommand_noacc(Bluetooth); // implement a function which will act based on the content of the buffer
+	//doCommand(Bluetooth, Fill, Depr, Quickrel);
 	memset(buff, 0, sizeof(buff));
 	buffindex = 0;
 	timcnt = 0;
 
-	HAL_UART_Transmit(bluetooth->huart, (uint8_t*) "exit \n", strlen("exit \n"),
-			500);
+	HAL_UART_Transmit(Bluetooth->huart, (uint8_t*) "exit \n", strlen("exit \n"),
+			500);  //for debug
 }
 /* USER CODE END 0 */
 
@@ -139,8 +139,10 @@ int main(void) {
 
 	HAL_TIM_Base_Start_IT(&htim2);
 	__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
-	HAL_UART_Transmit(&huart3, (uint8_t*) "INIT\n", strlen("INIT\n"), 500);
 
+	HAL_UART_Transmit(&huart3, (uint8_t*) "INIT\n", strlen("INIT\n"), 500);
+	Bluetooth = bluetooth_init(&huart3);
+	HAL_UART_Transmit(&huart3, (uint8_t*) "READY\n", strlen("READY\n"), 500);
 	/* USER CODE END 2 */
 
 	/* USER CODE BEGIN WHILE */
@@ -160,7 +162,6 @@ int main(void) {
 
 	//Quickrel = motor_init(QD_, _PIN_IN1, _GPIO_PORT_IN2, _PIN_IN2, _TIM_NR_EN, _TIM_CHANNEL_EN, _GPIO_PORT_LS_OPEN, _PIN_LS_OPEN, _GPIO_PORT_LS_CLOSE, _PIN_LS_CLOSE)
 
-	bluetooth = bluetooth_init(&huart3);
 
 ///test silnika pod wpt
 	/*	__HAL_TIM_SET_COMPARE(Fill->TIM_NR_EN, Fill->TIM_CHANNEL_EN, 1000);
