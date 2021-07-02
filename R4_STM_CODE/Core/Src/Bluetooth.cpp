@@ -38,7 +38,7 @@ void interrupt_USART() {
 		;//resolveCommand(); // do poprawy cała funkcja
 }
 
-void interrupt_TIM(char *buff, uint8_t timcnt) {
+void interrupt_TIM() {
 	if (strlen(buff) > 0) {
 		timcnt = 0;
 	}

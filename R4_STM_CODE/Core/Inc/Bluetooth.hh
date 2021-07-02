@@ -25,9 +25,9 @@ public:
 
 };
 
-char *buff;
-	uint8_t timcnt;
-	uint8_t buffindex;
+static	char *buff;
+static	uint8_t timcnt;
+static	uint8_t buffindex;
 
 bool stringCompare(char array1[], char array2[], uint16_t lght);
 void interrupt_USART();

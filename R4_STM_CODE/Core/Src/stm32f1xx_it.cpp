@@ -21,10 +21,10 @@
 /* Includes ------------------------------------------------------------------*/
 
 #include <main.hh>
-#include "stm32f1xx_it.h"
+#include <stm32f1xx_it.hh>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "Bluetooth.h"
+#include "Bluetooth.hh"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -224,8 +224,7 @@ void DMA1_Channel7_IRQHandler(void) {
  */
 void TIM2_IRQHandler(void) {
 	/* USER CODE BEGIN TIM2_IRQn 0 */
-
-
+	interrupt_TIM();
 		/* USER CODE END TIM2_IRQn 0 */
 		HAL_TIM_IRQHandler(&htim2);
 		/* USER CODE BEGIN TIM2_IRQn 1 */
@@ -237,7 +236,7 @@ void TIM2_IRQHandler(void) {
  */
 void USART2_IRQHandler(void) {
 	/* USER CODE BEGIN USART2_IRQn 0 */
-	interrupt_TIM();
+
 	/* USER CODE END USART2_IRQn 0 */
 	HAL_UART_IRQHandler(&huart2);
 	/* USER CODE BEGIN USART2_IRQn 1 */
