@@ -8,18 +8,14 @@ HX711::HX711(GPIO_TypeDef* _Dt_gpio, uint16_t _Dt_pin,
 	Sck_gpio = _Sck_gpio;
 	Sck_pin = _Sck_pin;
 	BitsToGramRatio = 1;
-	OffsetInGrams = 0;
+	OffsetInBits = -AverageValue();
 }
 
 int32_t HX711::getWeigthInGramsWithOffset(uint16_t times){
 	if(BitsToGramRatio != 0)
-		return AverageValue(times) / BitsToGramRatio + OffsetInGrams;
+		return (AverageValue(times) + OffsetInGrams) / BitsToGramRatio;
 	else
 		return 0;
-}
-
-int32_t HX711::getOffsetInGrams() const{
-	return OffsetInGrams;
 }
 
 int32_t HX711::getBitsToGramRatio() const{
@@ -30,9 +26,10 @@ void HX711::addToOffsetInGrams(int32_t OffsetInGramsDif){
 	OffsetInGrams += OffsetInGramsDif;
 }
 
-void HX711::setBitsToGramRatio(int32_t newBitsToGramRatio){
-	BitsToGramRatio = newBitsToGramRatio;
+void tare(uint16_t times){
+	;
 }
+
 
 void HX711::initialCalibration(uint32_t testLoadInGrams){
 	if (testLoadInGrams == 0)
