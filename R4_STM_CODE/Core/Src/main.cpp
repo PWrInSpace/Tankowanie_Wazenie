@@ -65,7 +65,6 @@ state currState = Init;
 int32_t buf = -1, buf2 = -1, buf3 = -1;
 char dataIn[30];
 char dataOut[30];
-int32_t buf = 0;
 Xbee communication;
 /* USER CODE END PV */
 
