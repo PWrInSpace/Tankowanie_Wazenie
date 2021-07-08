@@ -159,7 +159,6 @@ int main(void)
 				if (igniter.isConnected()){
 					HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 				}
-				buf = RocketWeight.ReadValue();
 				// (end) place for random test //
 
 				//currState = Idle;
