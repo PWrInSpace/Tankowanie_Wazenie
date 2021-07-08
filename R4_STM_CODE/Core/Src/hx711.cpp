@@ -22,7 +22,6 @@ void HX711::tare(uint16_t times){
 	OffsetInBits = -AverageValue();
 }
 
-
 void HX711::initialCalibration(uint32_t testLoadInGrams){
 	if (testLoadInGrams == 0)
 		return;

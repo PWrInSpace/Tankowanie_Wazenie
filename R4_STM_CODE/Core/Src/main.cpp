@@ -142,6 +142,9 @@ int main(void)
 	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
 					FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin,	FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
 
+	RocketWeight.initialCalibration();
+	RocketWeight.tare();
+
 	while(1){
 		buf = RocketWeight.ReadValue();
 		//buf2 =TankWeight.ReadValue();
@@ -158,7 +161,6 @@ int main(void)
 				}
 				buf = RocketWeight.ReadValue();
 				// (end) place for random test //
-				//RocketWeight.initialCalibration();
 
 				//currState = Idle;
 				HAL_Delay(500);

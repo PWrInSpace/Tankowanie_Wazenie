@@ -18,7 +18,7 @@ public:
 	int32_t getBitsToGramRatio() const;
 	void setBitsToGramRatio(int32_t newCalibrationFactor);
 	//void addToOffsetInGrams(int32_t offsetDif);
-	void initialCalibration(uint32_t testLoadInGrams);
+	void initialCalibration(uint32_t testLoadInGrams = 1000);
 	void tare(uint16_t times = 10);
 	int32_t ReadValue();
 	int32_t AverageValue(uint16_t times = 10);
