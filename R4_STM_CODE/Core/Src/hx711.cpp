@@ -25,48 +25,45 @@ void HX711::tare(uint16_t times){
 void HX711::initialCalibration(uint32_t testLoadInGrams){
 	if (testLoadInGrams == 0)
 		return;
+	//leave load cell empty
 	int32_t initialWeight = AverageValue();
-	HAL_Delay(10000); //put testWeight on load cell //odkomentowaxc pozniej
+	//put testWeight on load cell
+	HAL_Delay(10000);
 	int32_t weightWithLoad = AverageValue();
 	BitsToGramRatio = (weightWithLoad - initialWeight) / testLoadInGrams;
 }
 
 int32_t HX711::ReadValue(){
     int32_t buffer = 0;
-
     HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
- 
-  //wait for 0 on Dt_Pin
-  //while(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 1); //alt
-
+	//wait for 0 on Dt_Pin
+    uint8_t DT = 0;
     for(uint16_t i = 0; i < 10000; ++i){
-    	if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 0 )
+    	DT = HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
+    	if(DT == 0 )
     		break;
-      	else if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 1 && i > 990)
+      	else if(DT == 1 && i > 9990)
     		return 0;
     	else
     		continue;
     }
-
     //read weight
+    __disable_irq();// Disable interrupts
     for (uint8_t i = 0; i < 24; ++i){
     	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
         buffer = buffer << 1 ;
         buffer+= HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
         HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
     }
-
-/* if gain is not 128: (gain(channel B)==32):gain=1; (gain==64):gain=2; */
-//    for (uint8_t i=0; i < gain; i++){xbee.c
-//    	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
-//    	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
-//    }
+    __enable_irq(); // Enable interrupts back
 
     //wait for 1 on Dt_Pin
     for(uint16_t i = 0; i < 10000; ++i){
-
-    	if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 1)
+    	DT = HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
+    	if(DT == 1)
        		break;
+     	else if(DT == 1 && i > 9990)
+        	return 0;
     	else
     		continue;
     }
@@ -86,5 +83,5 @@ int32_t HX711::AverageValue(uint16_t times){
     if(succesfulReads != 0)
     	return sum / succesfulReads;
     else
-    	return 0;
+    	return -1;
 }
