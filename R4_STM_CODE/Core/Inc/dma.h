@@ -25,7 +25,7 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include <main.hh>
+#include "main.h"
 
 /* DMA memory to memory transfer handles -------------------------------------*/
 
