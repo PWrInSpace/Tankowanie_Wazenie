@@ -1,4 +1,4 @@
-Core/Src/usb.o: ../Core/Src/usb.c ../Core/Inc/usb.h ../Core/Inc/main.h \
+Core/Src/usb.o: ../Core/Src/usb.c ../Core/Inc/usb.h ../Core/Inc/main.hh \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
  ../Core/Inc/stm32f1xx_hal_conf.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h \
@@ -30,7 +30,7 @@ Core/Src/usb.o: ../Core/Src/usb.c ../Core/Inc/usb.h ../Core/Inc/main.h \
 
 ../Core/Inc/usb.h:
 
-../Core/Inc/main.h:
+../Core/Inc/main.hh:
 
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 
