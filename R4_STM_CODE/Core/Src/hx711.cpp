@@ -34,9 +34,9 @@ void HX711::initialCalibration(uint32_t testLoadInGrams){
 }
 
 int32_t HX711::ReadValue(){
-    int32_t buffer = 0;
-    HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
-	//wait for 0 on Dt_Pin
+	int32_t buffer = 0;
+	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
+    //wait for 0 on Dt_Pin
     uint8_t DT = 0;
     for(uint16_t i = 0; i < 10000; ++i){
     	DT = HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
@@ -47,7 +47,7 @@ int32_t HX711::ReadValue(){
     	else
     		continue;
     }
-    //read weight
+    //main read loop
     __disable_irq();// Disable interrupts
     for (uint8_t i = 0; i < 24; ++i){
     	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
@@ -67,7 +67,7 @@ int32_t HX711::ReadValue(){
     	else
     		continue;
     }
-    return (buffer<<7)/128;
+    return (buffer<<7) / 128;
 }
 
 int32_t HX711::AverageValue(uint16_t sampleSize){
