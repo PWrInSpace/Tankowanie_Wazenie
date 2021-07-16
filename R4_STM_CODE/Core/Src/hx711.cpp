@@ -4,7 +4,7 @@ HX711::HX711(GPIO_TypeDef* _Dt_gpio, uint16_t _Dt_pin,
 			 GPIO_TypeDef* _Sck_gpio, uint16_t _Sck_pin):
 	Dt_gpio(_Dt_gpio), Dt_pin(_Dt_pin), Sck_gpio(_Sck_gpio), Sck_pin(_Sck_pin), BitsToGramRatio(1)
 {
-	OffsetInBits = -AverageValue();
+	tare();
 }
 
 int32_t HX711::getWeigthInGramsWithOffset(uint16_t times){
@@ -18,7 +18,7 @@ int32_t HX711::getBitsToGramRatio() const{
 	return BitsToGramRatio;
 }
 
-void HX711::tare(uint16_t times){
+void HX711::tare(){
 	OffsetInBits = -AverageValue();
 }
 
@@ -70,18 +70,27 @@ int32_t HX711::ReadValue(){
     return (buffer<<7)/128;
 }
 
-int32_t HX711::AverageValue(uint16_t times){
-	int32_t sum = 0;
+int32_t HX711::AverageValue(uint16_t sampleSize){
+	int32_t sum = 0, highestValue = 0, lowestValue = 0;
 	uint16_t succesfulReads = 0;
-    for (uint16_t i = 0; i < times; ++i){
+    for (uint16_t i = 0; i < sampleSize; ++i){
     	int32_t read = ReadValue();
     	if(read != 0){
-    		sum += read;
+    	    if(read > highestValue){
+    	    	highestValue = read;
+    	    }
+    	    else if(read < lowestValue){
+    	    	lowestValue = read;
+    		}
+    	    sum += read;
     		++succesfulReads;
     	}
     }
-    if(succesfulReads != 0)
-    	return sum / succesfulReads;
+    //cut lowest and highest reads
+    sum = sum - (lowestValue + highestValue);
+    succesfulReads -= 2;
+    if(succesfulReads > 0)
+    	return sum / (succesfulReads);
     else
     	return -1;
 }
