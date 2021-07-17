@@ -7,6 +7,7 @@
 #include "tim.h"
 #include "stdlib.h"
 #include "usart.h"
+#include "commands.hh"
 
 #define MAX_BUFF 50
 
