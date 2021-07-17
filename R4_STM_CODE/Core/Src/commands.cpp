@@ -94,12 +94,13 @@ void doCommand(Bluetooth *Module, Motor *Mot, Motor *Depr, Motor *Quickrel) {
 	}
 }
 
-void doCommand_noacc() {
+void doCommand_noacc(char buff[]) {
 	char num = buff[0];
 
+	for (int i = 0; i < 49; i++) {
+			buff[i] = buff[i + 1];
+		}
 
-	HAL_UART_Transmit(&huart3, (uint8_t*) num,
-						sizeof(char), 500);
 	switch (num) {
 	case '1':
 		if (stringCompare(buff, "TEST_MOTOR", strlen("TEST_MOTOR"))) {

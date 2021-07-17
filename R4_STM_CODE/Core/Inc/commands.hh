@@ -20,7 +20,7 @@
 
 
 void doCommand(Motor *Mot, Motor *Depr,Motor *Quickrel);
-void doCommand_noacc();
+void doCommand_noacc(char buff[]);
 
 
 #endif /* INC_COMMANDS_HH_ */

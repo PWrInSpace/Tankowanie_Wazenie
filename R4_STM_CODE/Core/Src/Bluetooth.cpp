@@ -20,7 +20,7 @@ void resolveCommand() {
 			500); //for debug
 	HAL_UART_Transmit(&huart3, (uint8_t*) buff, strlen(buff), 500); //echo for debug
 
-	doCommand_noacc(); // implement a function which will act based on the content of the buffer
+	doCommand_noacc(buff); // implement a function which will act based on the content of the buffer
 	//doCommand(Bluetooth, Fill, Depr, Quickrel);
 	HAL_UART_Transmit(&huart3, (uint8_t*) buff, strlen(buff), 500); //echo for debug
 	memset(buff, 0, sizeof(buff));
