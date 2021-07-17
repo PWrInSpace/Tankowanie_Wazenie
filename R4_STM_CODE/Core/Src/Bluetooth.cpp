@@ -9,33 +9,31 @@
 Bluetooth::Bluetooth(UART_HandleTypeDef *_huart) {
 
 	huart = _huart;
-
-
+	//memset(buff, 0, sizeof(buff));
 }
 
 //code to implement inside USART_IRQHANDLER - just paste interrupt function with correct chosen for bluetooth communication
 
 void resolveCommand() {
 
-	HAL_UART_Transmit(&huart3, (uint8_t*) "in \n", strlen("in \n"), 500);
-	HAL_UART_Transmit(&huart3, (uint8_t*) buff, strlen(buff), 500);
+	HAL_UART_Transmit(&huart3, (uint8_t*) "in \n", strlen("in \n"),
+			500); //for debug
+	HAL_UART_Transmit(&huart3, (uint8_t*) buff, strlen(buff), 500); //echo for debug
 
-	doCommand1();
-
-	memset(buff, 0, sizeof(MAX_BUFF));
+	doCommand1(); // implement a function which will act based on the content of the buffer
+	//doCommand(Bluetooth, Fill, Depr, Quickrel);
+	memset(buff, 0, sizeof(buff));
 	buffindex = 0;
 	timcnt = 0;
 
-	HAL_UART_Transmit(&huart3, (uint8_t*) "exit \n", strlen("exit \n"), 500);
+	HAL_UART_Transmit(&huart3, (uint8_t*) "exit \n", strlen("exit \n"),
+			500);  //for debug
 }
 
-
-void interrupt_USART() {
-
-	HAL_UART_Receive(&huart3,(uint8_t*) &buff[buffindex++], 1, 10);
-
-	if (buff[buffindex - 1] == '\n')
-		;//resolveCommand(); // do poprawy cała funkcja
+void interrupt_USART(UART_HandleTypeDef *huart) {
+	HAL_UART_Receive(huart,(uint8_t*)  &buff[buffindex++], 1, 10);
+			if (buff[buffindex - 1] == '\n')
+				resolveCommand(); // do poprawy
 }
 
 void interrupt_TIM() {
@@ -45,6 +43,7 @@ void interrupt_TIM() {
 	if (timcnt > 5) {
 
 		//resolveCommand();
+		;
 
 	}
 }

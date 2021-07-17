@@ -25,12 +25,12 @@ public:
 
 };
 
-static	char *buff;
+static	char buff [MAX_BUFF];
 static	uint8_t timcnt;
 static	uint8_t buffindex;
 
 bool stringCompare(char array1[], char array2[], uint16_t lght);
-void interrupt_USART();
+void interrupt_USART(UART_HandleTypeDef *huart);
 void interrupt_TIM();
 void resolveCommand();
 void doCommand1();
