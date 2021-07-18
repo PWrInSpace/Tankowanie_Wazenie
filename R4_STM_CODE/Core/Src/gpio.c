@@ -78,9 +78,9 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(CONNECTION_TEST_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PAPin PAPin PAPin PAPin
-                           PAPin */
-  GPIO_InitStruct.Pin = HX2_SDA_Pin|HX2_SCL_Pin|DEPR_C_LIMIT_SW_Pin|DEPR_O_LIMIT_SW_Pin
-                          |FILL_C_LIMIT_SW_Pin;
+                           PAPin PAPin PAPin */
+  GPIO_InitStruct.Pin = HX2_SDA_Pin|HX2_SCL_Pin|QD_CLOSE_LIMIT_SW_Pin|QD_OPEN_LIMIT_SW_Pin
+                          |DEPR_CLOSE_LIMIT_SW_Pin|DEPR_OPEN_LIMIT_SW_Pin|FILL_CLOSE_LIMIT_SW_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -93,7 +93,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PBPin PBPin */
-  GPIO_InitStruct.Pin = HX1_SDA_Pin|FILL_O_LIMIT_SW_Pin;
+  GPIO_InitStruct.Pin = HX1_SDA_Pin|FILL_OPEN_LIMIT_SW_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);

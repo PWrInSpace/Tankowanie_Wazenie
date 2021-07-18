@@ -21,7 +21,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include <main.hh>
 #include "stm32f1xx_it.h"
-#include <string.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */

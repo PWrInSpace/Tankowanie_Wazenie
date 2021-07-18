@@ -7,7 +7,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under BSD 3-Clause license,
@@ -84,16 +84,20 @@ void Error_Handler(void);
 #define QD_D2_GPIO_Port GPIOB
 #define QD_D1_Pin GPIO_PIN_15
 #define QD_D1_GPIO_Port GPIOB
-#define DEPR_C_LIMIT_SW_Pin GPIO_PIN_8
-#define DEPR_C_LIMIT_SW_GPIO_Port GPIOA
-#define DEPR_O_LIMIT_SW_Pin GPIO_PIN_9
-#define DEPR_O_LIMIT_SW_GPIO_Port GPIOA
+#define QD_CLOSE_LIMIT_SW_Pin GPIO_PIN_8
+#define QD_CLOSE_LIMIT_SW_GPIO_Port GPIOA
+#define QD_OPEN_LIMIT_SW_Pin GPIO_PIN_9
+#define QD_OPEN_LIMIT_SW_GPIO_Port GPIOA
 #define IGN_FIRE_Pin GPIO_PIN_10
 #define IGN_FIRE_GPIO_Port GPIOA
-#define FILL_C_LIMIT_SW_Pin GPIO_PIN_15
-#define FILL_C_LIMIT_SW_GPIO_Port GPIOA
-#define FILL_O_LIMIT_SW_Pin GPIO_PIN_3
-#define FILL_O_LIMIT_SW_GPIO_Port GPIOB
+#define DEPR_CLOSE_LIMIT_SW_Pin GPIO_PIN_11
+#define DEPR_CLOSE_LIMIT_SW_GPIO_Port GPIOA
+#define DEPR_OPEN_LIMIT_SW_Pin GPIO_PIN_12
+#define DEPR_OPEN_LIMIT_SW_GPIO_Port GPIOA
+#define FILL_CLOSE_LIMIT_SW_Pin GPIO_PIN_15
+#define FILL_CLOSE_LIMIT_SW_GPIO_Port GPIOA
+#define FILL_OPEN_LIMIT_SW_Pin GPIO_PIN_3
+#define FILL_OPEN_LIMIT_SW_GPIO_Port GPIOB
 #define DEPR_CLOSE_Pin GPIO_PIN_4
 #define DEPR_CLOSE_GPIO_Port GPIOB
 #define DEPR_EN_Pin GPIO_PIN_5
