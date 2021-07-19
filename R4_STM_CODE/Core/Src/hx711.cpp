@@ -52,7 +52,7 @@ int32_t HX711::ReadValue(){
     for (uint8_t i = 0; i < 24; ++i){
     	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
         buffer = buffer << 1 ;
-        buffer+= HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
+        buffer += HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
         HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
     }
     __enable_irq(); // Enable interrupts back
@@ -78,10 +78,10 @@ int32_t HX711::ReadValue(){
 }
 
 int32_t HX711::AverageValue(uint16_t sampleSize){
-	int32_t sum = 0, highestValue = 0, lowestValue = 0;
+	int32_t sum = 0, read = 0, highestValue = 99999999, lowestValue = -999999999;
 	uint16_t succesfulReads = 0;
     for (uint16_t i = 0; i < sampleSize; ++i){
-    	int32_t read = ReadValue();
+    	read = ReadValue();
     	if(read != 0){
     	    if(read > highestValue){
     	    	highestValue = read;
