@@ -48,52 +48,30 @@ void HX711::setGain(uint8_t gain){
 }
 
 int32_t HX711::ReadValue(){
-	HAL_Delay(200);
-	int32_t buffer = 0, filler = 0;
-	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
-    //wait for 0 on Dt_Pin
-    uint8_t DT = 0;
-    for(uint16_t i = 0; i < 10000; ++i){
-    	DT = HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
-    	if(DT == 0 )
-    		break;
-      	else if(DT == 1 && i > 9990)
-    		return 0;
-    	else
-    		continue;
-    }
-    //main read loop
-    __disable_irq();// Disable interrupts
-    for (uint8_t i = 0; i < 24; ++i){
-    	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
-        buffer = buffer << 1 ;
-        buffer += HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
-        HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
-    }
-    for (unsigned int i = 0; i < GAIN; i++){
-    	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
-    	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
-   	}
-    __enable_irq(); // Enable interrupts back
+	 int32_t buffer=0;
 
-    //wait for 1 on Dt_Pin
-    for(uint16_t i = 0; i < 10000; ++i){
-    	DT = HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
-    	if(DT == 1)
-       		break;
-     	else if(DT == 1 && i > 9990)
-        	return 0;
-    	else
-    		continue;
-    }
-    if(buffer & 0x800000){
-    	filler = 0xFF000000;
-    }
-    else{
-    	filler = 0x00000000;
-	}
-    buffer = buffer | filler;
-    return (buffer<<7) / 128;
+	    HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
+
+	    while (HAL_GPIO_ReadPin(Dt_gpio, Dt_pin)==1)
+	    	;
+
+	    for (uint8_t i = 0; i < 25; i++){
+	    	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
+	        buffer = buffer << 1 ;
+	        buffer+=HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
+	        HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
+	    }
+
+	/* if gain is not 128: (gain(channel B)==32):gain=1; (gain==64):gain=2; */
+	//    for (uint8_t i=0; i < gain; i++){
+	//    	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
+	//    	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
+	//    }
+
+	    while (HAL_GPIO_ReadPin(Dt_gpio, Dt_pin)==0)
+	    	;
+
+	    return (buffer<<7)/128;
 }
 
 int32_t HX711::AverageValue(uint16_t sampleSize){

@@ -140,12 +140,12 @@ int main(void)
 	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
 					FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,	FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin);
 
-	RocketWeight.initialCalibration();
+	//RocketWeight.initialCalibration();
 	RocketWeight.tare();
 
 	while(1){
 		buf = RocketWeight.ReadValue();
-		//buf2 =TankWeight.ReadValue();
+		buf2 =TankWeight.AverageValue(7);
 		//buf3 = RocketWeight.getOffsetInGrams();
 		sprintf(dataOut, "DDAT;%i;%i;%li:%li\n", currState, igniter.isConnected(), buf, buf2);
 		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
