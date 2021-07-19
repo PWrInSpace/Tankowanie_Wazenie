@@ -33,7 +33,22 @@ void HX711::initialCalibration(uint32_t testLoadInGrams){
 	BitsToGramRatio = (weightWithLoad - initialWeight) / testLoadInGrams;
 }
 
+void HX711::setGain(uint8_t gain){
+	switch (gain) {
+		case 128:		// channel A, gain factor 128
+			GAIN = 1;
+			break;
+		case 64:		// channel A, gain factor 64
+			GAIN = 3;
+			break;
+		case 32:		// channel B, gain factor 32
+			GAIN = 2;
+			break;
+	}
+}
+
 int32_t HX711::ReadValue(){
+	HAL_Delay(200);
 	int32_t buffer = 0, filler = 0;
 	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
     //wait for 0 on Dt_Pin
@@ -55,6 +70,10 @@ int32_t HX711::ReadValue(){
         buffer += HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
         HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
     }
+    for (unsigned int i = 0; i < GAIN; i++){
+    	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
+    	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
+   	}
     __enable_irq(); // Enable interrupts back
 
     //wait for 1 on Dt_Pin
@@ -78,7 +97,7 @@ int32_t HX711::ReadValue(){
 }
 
 int32_t HX711::AverageValue(uint16_t sampleSize){
-	int32_t sum = 0, read = 0, highestValue = 99999999, lowestValue = -999999999;
+	int32_t sum = 0, read = 0, highestValue = -99999999, lowestValue = 99999999;
 	uint16_t succesfulReads = 0;
     for (uint16_t i = 0; i < sampleSize; ++i){
     	read = ReadValue();

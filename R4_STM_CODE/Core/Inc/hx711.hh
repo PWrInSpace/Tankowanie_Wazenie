@@ -9,6 +9,7 @@ class HX711{
 	uint16_t Sck_pin;
 	int32_t OffsetInBits;
 	int32_t BitsToGramRatio;
+	uint8_t GAIN = 1;
 
 public:
 	HX711(GPIO_TypeDef *Dt_gpio, uint16_t Dt_pin,
@@ -20,6 +21,7 @@ public:
 	//void addToOffsetInGrams(int32_t offsetDif);
 	void initialCalibration(uint32_t testLoadInGrams = 1000);
 	void tare();
+	void setGain(uint8_t gain = 128);
 	int32_t ReadValue();
 	int32_t AverageValue(uint16_t sampleSize = 10);
 };

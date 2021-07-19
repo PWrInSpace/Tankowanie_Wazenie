@@ -160,7 +160,7 @@ int main(void)
 				// (end) place for random test //
 
 				//currState = Idle;
-				HAL_Delay(500);
+				HAL_Delay(1000);
 				break;
 			case Idle: {	//2:IDLE
 				HAL_Delay(500);
