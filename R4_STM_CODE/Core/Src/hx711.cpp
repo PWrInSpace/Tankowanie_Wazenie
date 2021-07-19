@@ -34,7 +34,7 @@ void HX711::initialCalibration(uint32_t testLoadInGrams){
 }
 
 int32_t HX711::ReadValue(){
-	int32_t buffer = 0;
+	int32_t buffer = 0, filler = 0;
 	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
     //wait for 0 on Dt_Pin
     uint8_t DT = 0;
@@ -67,6 +67,13 @@ int32_t HX711::ReadValue(){
     	else
     		continue;
     }
+    if(buffer & 0x800000){
+    	filler = 0xFF000000;
+    }
+    else{
+    	filler = 0x00000000;
+	}
+    buffer = buffer | filler;
     return (buffer<<7) / 128;
 }
 
