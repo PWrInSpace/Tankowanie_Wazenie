@@ -72,3 +72,7 @@ void Motor::test_open_close(){
 	close();
 	stop();
 }
+
+
+
+

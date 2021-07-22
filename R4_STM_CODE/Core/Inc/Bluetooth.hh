@@ -1,5 +1,5 @@
 #ifndef BLUETOOTH_LIB
-#define BLUETOOTH_LIB // spelling error
+#define BLUETOOTH_LIB
 
 #include "stdbool.h"
 #include "gpio.h"
@@ -7,7 +7,8 @@
 #include "tim.h"
 #include "stdlib.h"
 #include "usart.h"
-#include "commands.hh"
+#include <main.hh>
+#include <Commands.hh>
 
 #define MAX_BUFF 50
 
@@ -17,25 +18,22 @@ public:
 	/////////////////////////VARS//////////////////////////////////
 	UART_HandleTypeDef *huart;
 
-
-
-
-
 	/////////////////////////FUNCTIONS//////////////////////////////////
 	Bluetooth(UART_HandleTypeDef *_huart);
+	void setFunc(void(*func)(void));
 
 };
 
-static	char buff [MAX_BUFF];
-static	uint8_t timcnt;
-static	uint8_t buffindex;
+static char buff[MAX_BUFF];
+static uint8_t timcnt;
+static uint8_t buffindex;
 
-bool stringCompare(char array1[], char array2[], uint16_t lght);
+//bool stringCompare(const char array1[], const char array2[], uint16_t lght);
 void interrupt_USART(UART_HandleTypeDef *huart);
 void interrupt_TIM();
 void resolveCommand();
 void doCommand1();
 
 ///////////////////////////////////////////////////////////////////
-#endif /* BLUETOOTH_LIB */
-
+/* BLUETOOTH_LIB */
+#endif

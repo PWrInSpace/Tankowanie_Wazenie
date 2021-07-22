@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 
 #include <Bluetooth.hh>
+#include <Commands.hh>
 #include <main.hh>
 #include "dma.h"
 #include "tim.h"
@@ -67,10 +68,18 @@ int32_t buf = -1, buf2 = -1, buf3 = -1;
 char dataIn[30];
 char dataOut[30];
 
+
+
+
+//Motor* FillMotor;
+//Motor* DeprMotor;
+//Motor* Quickrel;
+
 Xbee communication;
+
 Bluetooth bluetooth(&huart3);
 
-//Bluetooth_module bluetooth = new Bluetooth_module(huart3);
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -81,10 +90,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-
-
-
 
 /* USER CODE END 0 */
 
@@ -140,7 +145,7 @@ int main(void)
 	__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
 	// HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
 
-	memset(buff ,0,sizeof(buff));
+
 
 	 HAL_UART_Transmit(&huart3, (uint8_t*)"INIT\n", strlen("INIT\n"), 500);
 	/* USER CODE END 2 */
@@ -150,8 +155,8 @@ int main(void)
 	Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, CONNECTION_TEST_GPIO_Port, CONNECTION_TEST_Pin);
 	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin);
 	HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin);
-	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
-					FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin,	FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
+	//Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
+				//	FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin,	FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
 
 	while(1){
 		//buf = RocketWeight.ReadValue();
