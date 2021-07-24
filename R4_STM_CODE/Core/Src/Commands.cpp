@@ -8,11 +8,11 @@
  */
 
 Commands::Commands(){
-//fill = new Motor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
-	//					FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin,	FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
+fill = new Motor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
+						FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin,	FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
 
-//depr = new Motor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	DEPR_CLOSE_GPIO_Port, DEPR_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
-	//	DEPR_O_LIMIT_SW_GPIO_Port, DEPR_O_LIMIT_SW_Pin,	DEPR_C_LIMIT_SW_GPIO_Port, DEPR_C_LIMIT_SW_Pin);
+depr = new Motor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	DEPR_CLOSE_GPIO_Port, DEPR_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
+		DEPR_O_LIMIT_SW_GPIO_Port, DEPR_O_LIMIT_SW_Pin,	DEPR_C_LIMIT_SW_GPIO_Port, DEPR_C_LIMIT_SW_Pin);
 
 }
 
@@ -46,13 +46,14 @@ bool stringCompare(const char array1[], const char array2[], uint16_t lght) {
 
 void Commands::doCommand(char buff[]) {
 	char num = buff[0];
-	for (int i = 0; i < 49; i++) {
-		buff[i] = buff[i + 1];
-	}
+
+		for (int i = 0; i < 49; i++) {
+			buff[i] = buff[i + 1];
+		}
 
 
 	switch (num) {
-	case 1:
+	case '1':
 		if (stringCompare(buff, "TEST_MOTOR", strlen("TEST_MOTOR"))) {
 			HAL_UART_Transmit(huart,
 					(uint8_t*) "calibrating the valve \n",
@@ -88,7 +89,6 @@ void Commands::doCommand(char buff[]) {
 					(uint8_t*) "^ wrong command received \n",
 					strlen("^ wrong command received \n"), 500);
 		}
-
 		break;
 	case '2':
 		if (stringCompare(buff, "TEST_MOTOR", strlen("TEST_MOTOR"))) {
@@ -125,7 +125,6 @@ void Commands::doCommand(char buff[]) {
 					(uint8_t*) "^ wrong command received \n",
 					strlen("^ wrong command received \n"), 500);
 		}
-
 		break;
 	default:
 		break;

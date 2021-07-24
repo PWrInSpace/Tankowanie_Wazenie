@@ -71,13 +71,11 @@ char dataOut[30];
 
 
 
-//Motor* FillMotor;
-//Motor* DeprMotor;
+Motor* FillMotor;
+Motor* DeprMotor;
 //Motor* Quickrel;
 
 Xbee communication;
-
-Bluetooth bluetooth(&huart3);
 
 
 /* USER CODE END PV */
@@ -155,10 +153,13 @@ int main(void)
 	Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, CONNECTION_TEST_GPIO_Port, CONNECTION_TEST_Pin);
 	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin);
 	HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin);
-	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
-					FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin,	FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
-	Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	DEPR_CLOSE_GPIO_Port, DEPR_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
-						DEPR_O_LIMIT_SW_GPIO_Port, DEPR_O_LIMIT_SW_Pin,	DEPR_C_LIMIT_SW_GPIO_Port, DEPR_C_LIMIT_SW_Pin);
+//	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
+//					FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin,	FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
+//	Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	DEPR_CLOSE_GPIO_Port, DEPR_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
+//						DEPR_O_LIMIT_SW_GPIO_Port, DEPR_O_LIMIT_SW_Pin,	DEPR_C_LIMIT_SW_GPIO_Port, DEPR_C_LIMIT_SW_Pin);
+	FillMotor = new Motor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
+							FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin,	FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
+
 
 	while(1){
 		//buf = RocketWeight.ReadValue();

@@ -54,7 +54,8 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+Commands command;
+Bluetooth bluetooth(&huart3,command);
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -224,12 +225,7 @@ void DMA1_Channel7_IRQHandler(void) {
  */
 void TIM2_IRQHandler(void) {
 	/* USER CODE BEGIN TIM2_IRQn 0 */
-	if (strlen(buff) > 0) {
-			timcnt = 0;
-		}
-		if (timcnt > 5) {
-			Bluetooth::resolveCommand();
-		}
+	bluetooth.interrupt_TIM();
 		/* USER CODE END TIM2_IRQn 0 */
 		HAL_TIM_IRQHandler(&htim2);
 		/* USER CODE BEGIN TIM2_IRQn 1 */
@@ -255,8 +251,7 @@ void USART2_IRQHandler(void) {
  */
 void USART3_IRQHandler(void) {
 	/* USER CODE BEGIN USART3_IRQn 0 */
-	interrupt_USART(&huart3);
-
+	bluetooth.interrupt_USART();
 	/* USER CODE END USART3_IRQn 0 */
 	HAL_UART_IRQHandler(&huart3);
 	/* USER CODE BEGIN USART3_IRQn 1 */

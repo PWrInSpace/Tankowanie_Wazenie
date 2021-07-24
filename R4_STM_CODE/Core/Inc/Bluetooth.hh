@@ -7,7 +7,7 @@
 #include "tim.h"
 #include "stdlib.h"
 #include "usart.h"
-#include <main.hh>
+#include "main.hh"
 #include <Commands.hh>
 
 #define MAX_BUFF 50
@@ -15,26 +15,30 @@
 class Bluetooth {
 	//USART
 private:
-	static Commands* commands = new Commands();
+	char buff[MAX_BUFF];
+		uint8_t timcnt;
+		uint8_t buffindex;
 public:
 	/////////////////////////VARS//////////////////////////////////
 	UART_HandleTypeDef *huart;
-
+	Commands commands;
 	/////////////////////////FUNCTIONS//////////////////////////////////
-	Bluetooth(UART_HandleTypeDef *_huart);
+	Bluetooth(UART_HandleTypeDef *_huart, Commands _commands);
 	void setFunc(void(*func)(void));
-	static void resolveCommand();
+	void resolveCommand();
+	void interrupt_USART();
+	void interrupt_TIM();
+
+
+
 
 };
 
-static char buff[MAX_BUFF];
-static uint8_t timcnt;
-static uint8_t buffindex;
+
 
 //bool stringCompare(const char array1[], const char array2[], uint16_t lght);
-Commands* getCommands();
-void interrupt_USART(UART_HandleTypeDef *huart);
-void interrupt_TIM();
+Commands getCommands();
+
 
 void doCommand1();
 
