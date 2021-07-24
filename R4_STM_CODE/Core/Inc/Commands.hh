@@ -25,8 +25,8 @@ class Commands {
 private:
 	UART_HandleTypeDef *huart = &huart3;
 	//Motor quickrel;
-	Motor*fill = &Fill;
-	Motor*	depr = &Depr;
+	Motor*fill;
+	Motor*	depr;
 
 public:
 
