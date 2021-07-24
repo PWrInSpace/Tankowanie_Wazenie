@@ -7,7 +7,14 @@
  *      Author: KooBeK
  */
 
+Commands::Commands(){
+//fill = new Motor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
+	//					FILL_O_LIMIT_SW_GPIO_Port, FILL_O_LIMIT_SW_Pin,	FILL_C_LIMIT_SW_GPIO_Port, FILL_C_LIMIT_SW_Pin);
 
+//depr = new Motor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	DEPR_CLOSE_GPIO_Port, DEPR_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
+	//	DEPR_O_LIMIT_SW_GPIO_Port, DEPR_O_LIMIT_SW_Pin,	DEPR_C_LIMIT_SW_GPIO_Port, DEPR_C_LIMIT_SW_Pin);
+
+}
 
 Motor* Commands::getFill() {
 	return fill;

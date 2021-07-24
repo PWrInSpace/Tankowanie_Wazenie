@@ -16,14 +16,14 @@ Bluetooth::Bluetooth(UART_HandleTypeDef *_huart) {
 
 //code to implement inside USART_IRQHANDLER - just paste interrupt function with correct chosen for bluetooth communication
 
-void resolveCommand() {
+void Bluetooth::resolveCommand() {
 
 	HAL_UART_Transmit(&huart3, (uint8_t*) "in \n", strlen("in \n"),
 			500); //for debug
 	HAL_UART_Transmit(&huart3, (uint8_t*) buff, strlen(buff), 500); //echo for debug
 
 	Commands::doCommand_noacc(buff); // implement a function which will act based on the content of the buffer
-
+	commands->doCommand(buff);
 	//doCommand(Bluetooth, Fill, Depr, Quickrel);
 	HAL_UART_Transmit(&huart3, (uint8_t*) buff, strlen(buff), 500); //echo for debug
 	memset(buff, 0, sizeof(buff));
@@ -36,7 +36,7 @@ void resolveCommand() {
 void interrupt_USART(UART_HandleTypeDef *huart) {
 	HAL_UART_Receive(huart,(uint8_t*)  &buff[buffindex++], 1, 10);
 			if (buff[buffindex - 1] == '\n')
-				resolveCommand();
+				Bluetooth::resolveCommand();
 }
 
 void interrupt_TIM() {
@@ -44,7 +44,7 @@ void interrupt_TIM() {
 		timcnt = 0;
 	}
 	if (timcnt > 5) {
-		resolveCommand();
+	Bluetooth::resolveCommand();
 
 
 	}

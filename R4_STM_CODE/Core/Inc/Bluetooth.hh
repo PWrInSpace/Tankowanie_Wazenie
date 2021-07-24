@@ -14,6 +14,8 @@
 
 class Bluetooth {
 	//USART
+private:
+	static Commands* commands = new Commands();
 public:
 	/////////////////////////VARS//////////////////////////////////
 	UART_HandleTypeDef *huart;
@@ -21,6 +23,7 @@ public:
 	/////////////////////////FUNCTIONS//////////////////////////////////
 	Bluetooth(UART_HandleTypeDef *_huart);
 	void setFunc(void(*func)(void));
+	static void resolveCommand();
 
 };
 
@@ -29,9 +32,10 @@ static uint8_t timcnt;
 static uint8_t buffindex;
 
 //bool stringCompare(const char array1[], const char array2[], uint16_t lght);
+Commands* getCommands();
 void interrupt_USART(UART_HandleTypeDef *huart);
 void interrupt_TIM();
-void resolveCommand();
+
 void doCommand1();
 
 ///////////////////////////////////////////////////////////////////

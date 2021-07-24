@@ -228,7 +228,7 @@ void TIM2_IRQHandler(void) {
 			timcnt = 0;
 		}
 		if (timcnt > 5) {
-			resolveCommand();
+			Bluetooth::resolveCommand();
 		}
 		/* USER CODE END TIM2_IRQn 0 */
 		HAL_TIM_IRQHandler(&htim2);
