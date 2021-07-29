@@ -140,13 +140,12 @@ int main(void)
 	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
 					FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,	FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin);
 
-	//RocketWeight.initialCalibration();
-	RocketWeight.tare();
+	RocketWeight.initialCalibration(3700);
 
 	while(1){
 		buf = RocketWeight.ReadValue();
 		buf2 = RocketWeight.AverageValue(5);
-		//buf3 = RocketWeight.getOffsetInGrams();
+		buf3 = RocketWeight.getBitsToGramRatio();
 		sprintf(dataOut, "DDAT;%i;%i;%li:%li\n", currState, igniter.isConnected(), buf, buf2);
 		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
 		//xbee_transmit_char(communication, dataOut);
