@@ -48,10 +48,18 @@ void HX711::setGain(uint8_t gain){
 }
 
 int32_t HX711::ReadValue(){
-	 HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
-	 int32_t buffer=0, filler = 0;
-	while (HAL_GPIO_ReadPin(Dt_gpio, Dt_pin)==1)
-		;
+	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
+	HAL_Delay(100);
+	int32_t buffer=0, filler = 0;
+
+	for(uint16_t i = 0; i < 10000; ++i){
+		if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 0 )
+			break;
+		else if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 1 && i > 990)
+			return 0;
+		else
+			continue;
+	}
 
 	for (uint8_t i = 0; i < 24; ++i){
 		HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
@@ -62,8 +70,12 @@ int32_t HX711::ReadValue(){
 	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
 
-	while (HAL_GPIO_ReadPin(Dt_gpio, Dt_pin)==0)
-		;
+    for(uint16_t i = 0; i < 10000; ++i){
+		if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 1)
+			break;
+		else
+			continue;
+    }
 
 	if (buffer & 0x800000) {
 			filler = 0xFF000000;
