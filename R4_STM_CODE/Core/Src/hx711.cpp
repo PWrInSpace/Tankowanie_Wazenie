@@ -50,32 +50,32 @@ void HX711::setGain(uint8_t gain){
 int32_t HX711::ReadValue(){
 	 HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
 	 int32_t buffer=0, filler = 0;
-	    while (HAL_GPIO_ReadPin(Dt_gpio, Dt_pin)==1)
-	    	;
+	while (HAL_GPIO_ReadPin(Dt_gpio, Dt_pin)==1)
+		;
 
-	    for (uint8_t i = 0; i < 24; i++){
-	    	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
-	        buffer = buffer << 1 ;
-	        buffer+=HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
-	        HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
-	    }
-    	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
+	for (uint8_t i = 0; i < 24; ++i){
+		HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
+		buffer = buffer << 1 ;
+		buffer+=HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
+		HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
+	}
+	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
 
-	    while (HAL_GPIO_ReadPin(Dt_gpio, Dt_pin)==0)
-	    	;
+	while (HAL_GPIO_ReadPin(Dt_gpio, Dt_pin)==0)
+		;
 
-	    if (buffer & 0x800000) {
-	    		filler = 0xFF000000;
-	    	} else {
-	    		filler = 0x00000000;
-	    	}
-	    buffer |= filler;
-	    return buffer;
+	if (buffer & 0x800000) {
+			filler = 0xFF000000;
+		} else {
+			filler = 0x00000000;
+		}
+	buffer |= filler;
+	return buffer;
 }
 
 int32_t HX711::AverageValue(uint16_t sampleSize){
-	int32_t sum = 0, read = 0, highestValue = -99999999, lowestValue = 99999999;
+	int32_t sum = 0, read = 0, highestValue = -9999999, lowestValue = 9999999;
 	uint16_t succesfulReads = 0;
     for (uint16_t i = 0; i < sampleSize; ++i){
     	read = ReadValue();
