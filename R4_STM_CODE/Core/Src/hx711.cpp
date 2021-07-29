@@ -55,7 +55,7 @@ int32_t HX711::ReadValue(){
 	for(uint16_t i = 0; i < 10000; ++i){
 		if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 0 )
 			break;
-		else if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 1 && i > 990)
+		else if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 1 && i > 9990)
 			return 0;
 		else
 			continue;
