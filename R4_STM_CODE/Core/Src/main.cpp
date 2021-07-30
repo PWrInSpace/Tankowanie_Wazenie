@@ -140,7 +140,7 @@ int main(void)
 	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
 					FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,	FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin);
 
-	RocketWeight.initialCalibration(3700);
+	RocketWeight.initialCalibration(200);
 
 	while(1){
 		buf = RocketWeight.ReadValue();

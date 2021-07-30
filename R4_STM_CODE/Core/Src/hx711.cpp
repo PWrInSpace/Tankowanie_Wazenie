@@ -55,7 +55,7 @@ void HX711::setGain(uint8_t gain){
 int32_t HX711::ReadValue(){
 	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
 	HAL_Delay(100);
-	int32_t buffer=0, filler = 0;
+	int32_t buffer = 0;
 
 	for(uint16_t i = 0; i < 10000; ++i){
 		if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 0 )
@@ -81,19 +81,17 @@ int32_t HX711::ReadValue(){
 		else
 			continue;
     }
-
-	if (buffer & 0x800000) {
-			filler = 0xFF000000;
-		} else {
-			filler = 0x00000000;
-		}
-	buffer |= filler;
+    if (buffer & 0x800000){
+    	buffer |= 0xFF000000;
+    }
 	return buffer;
+
 }
 
 int32_t HX711::AverageValue(uint16_t sampleSize){
-	int32_t sum = 0, read = 0, highestValue = -9999999, lowestValue = 9999999;
-	uint16_t succesfulReads = 0;
+	int64_t sum = 0;
+	int32_t read = 0, highestValue = 0x80000000, lowestValue = 0x7fffffff;
+	int16_t succesfulReads = 0;
     for (uint16_t i = 0; i < sampleSize; ++i){
     	read = ReadValue();
     	if(read != 0){
@@ -107,9 +105,6 @@ int32_t HX711::AverageValue(uint16_t sampleSize){
     		++succesfulReads;
     	}
     }
-    //cut lowest and highest reads
-    sum = sum - (lowestValue + highestValue);
-    succesfulReads -= 2;
     if(succesfulReads > 0)
     	return sum / (succesfulReads);
     else
