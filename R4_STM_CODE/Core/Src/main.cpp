@@ -144,8 +144,8 @@ int main(void)
 
 	while(1){
 		buf = RocketWeight.ReadValue();
-		buf2 = RocketWeight.AverageValue(5);
-		buf3 = RocketWeight.getBitsToGramRatio();
+		//buf2 = RocketWeight.AverageValue(5);
+		buf3 = RocketWeight.getWeigthInGramsWithOffset();
 		sprintf(dataOut, "DDAT;%i;%i;%li:%li\n", currState, igniter.isConnected(), buf, buf2);
 		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
 		//xbee_transmit_char(communication, dataOut);
