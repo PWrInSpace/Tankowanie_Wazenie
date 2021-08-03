@@ -6,10 +6,10 @@ before compiling generate code from .ioc
 TODO:
 
 >dla mechników:
--  zmiany wymiarów (był pomysł zrobienia tego trochę 'na nowo' zobaczymy co to przyniesie)
+  - zmiany wymiarów (był pomysł zrobienia tego trochę 'na nowo' zobaczymy co to przyniesie)
 >Testy:
--zawory (w tym szybkozłączka) [jest Issue do tego]
+  - zawory (w tym szybkozłączka) [jest Issue do tego]
 >Kod do napisania:
-- add abort check - do potencjalnie nieskończonych pętli
+  - add abort check - do potencjalnie nieskończonych pętli
 >*Dokumentacja:
-- zrobić opis pcb (co? jest czym? na płytce pcb - patrz dysk - tam było do wersji Olgirda)
+  - zrobić opis pcb (co? jest czym? na płytce pcb - patrz dysk - tam było do wersji Olgirda)
