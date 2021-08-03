@@ -7,7 +7,9 @@ TODO:
 
 >dla mechników:
 -  zmiany wymiarów (był pomysł zrobienia tego trochę 'na nowo' zobaczymy co to przyniesie)
->Kod:
+>Testy:
+-zawory (w tym szybkozłączka) [jest Issue do tego]
+>Kod do napisania:
 - add abort check - do potencjalnie nieskończonych pętli
 >*Dokumentacja:
 - zrobić opis pcb (co? jest czym? na płytce pcb - patrz dysk - tam było do wersji Olgirda)
