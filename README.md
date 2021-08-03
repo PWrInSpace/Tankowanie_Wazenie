@@ -10,6 +10,7 @@ TODO:
 >Testy:
   - zawory (w tym szybkozłączka) [jest Issue do tego]
 >Kod do napisania:
+  - Dodanie pomiaru napięcia baterii
   - add abort check - do potencjalnie nieskończonych pętli
 >*Dokumentacja:
   - zrobić opis pcb (co? jest czym? na płytce pcb - patrz dysk - tam było do wersji Olgirda)
