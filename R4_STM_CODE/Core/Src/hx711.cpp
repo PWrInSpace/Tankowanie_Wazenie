@@ -36,7 +36,6 @@ void HX711::initialCalibration(int32_t testLoadInGrams){
 	HAL_Delay(10000);
 	int32_t weightWithLoad = AverageValue();
 	BitsToGramRatio = (weightWithLoad - initialWeight) / testLoadInGrams;
-}
 
 void HX711::setGain(uint8_t gain){
 	switch (gain) {
@@ -49,6 +48,7 @@ void HX711::setGain(uint8_t gain){
 		case 32:		// channel B, gain factor 32
 			GAIN = 2;
 			break;
+
 	}
 }
 
