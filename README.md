@@ -10,4 +10,4 @@ TODO:
 >Kod:
 - add abort check - do potencjalnie nieskończonych pętli
 >*Dokumentacja:
-- zrobić opis pcb (co? jest czym? na płytce - na dysku było coś takiego do poprzedniej wersji [choćby w celach marketingowych])
+- zrobić opis pcb (co? jest czym? na płytce pcb - patrz dysk - tam było do wersji Olgirda)
