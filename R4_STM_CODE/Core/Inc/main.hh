@@ -82,10 +82,10 @@ void Error_Handler(void);
 #define HX1_SDA_GPIO_Port GPIOB
 #define HX1_SCL_Pin GPIO_PIN_13
 #define HX1_SCL_GPIO_Port GPIOB
-#define QD_D2_Pin GPIO_PIN_14
-#define QD_D2_GPIO_Port GPIOB
-#define QD_D1_Pin GPIO_PIN_15
-#define QD_D1_GPIO_Port GPIOB
+#define QD_CLOSE_Pin GPIO_PIN_14
+#define QD_CLOSE_GPIO_Port GPIOB
+#define QD_OPEN_Pin GPIO_PIN_15
+#define QD_OPEN_GPIO_Port GPIOB
 #define QD_CLOSE_LIMIT_SW_Pin GPIO_PIN_8
 #define QD_CLOSE_LIMIT_SW_GPIO_Port GPIOA
 #define QD_OPEN_LIMIT_SW_Pin GPIO_PIN_9

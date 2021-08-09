@@ -139,10 +139,14 @@ int main(void)
 
 	Igniter igniter(FIRE_GPIO_Port, FIRE_Pin, IGNITER_CONNECTION_TEST_GPIO_Port, IGNITER_CONNECTION_TEST_Pin);
 	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin);
-	//HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin);
+	HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin);
+	Voltmeter VM(&hadc1, 1);
 	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
 					FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,	FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin);
-	Voltmeter VM(&hadc1, 1);
+	Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	FILL_CLOSE_GPIO_Port, DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2,
+					DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_OPEN_LIMIT_SW_Pin, DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);
+	Motor QDMotor(QD_OPEN_GPIO_Port, DEPR_OPEN_Pin,	QD_CLOSE_GPIO_Port, QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3); //bez krańcówek
+
 
 	RocketWeight.initialCalibration(200);
 	while(1){
@@ -153,7 +157,7 @@ int main(void)
 		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
 		//xbee_transmit_char(communication, dataOut);
 		HAL_Delay(50);
-		switch (currState) {
+		switch (currState){
 			case Init: //test state		//1:INIT
 				//place for random tests	//
 
