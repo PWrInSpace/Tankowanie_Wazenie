@@ -53,7 +53,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, PQD_D1_Pin|PQD_D2_Pin|IGN_FIRE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, FIRE_Pin|PQD_D1_Pin|PQD_D2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, HX1_SCL_Pin|QD_D2_Pin|QD_D1_Pin|DEPR_CLOSE_Pin
@@ -67,15 +67,17 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(BUILD_IN_LED_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = VOLTAGE_MEASURE_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-  HAL_GPIO_Init(VOLTAGE_MEASURE_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = CONNECTION_TEST_Pin;
+  GPIO_InitStruct.Pin = IGNITER_CONNECTION_TEST_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(CONNECTION_TEST_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(IGNITER_CONNECTION_TEST_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PAPin PAPin PAPin */
+  GPIO_InitStruct.Pin = FIRE_Pin|PQD_D1_Pin|PQD_D2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PAPin PAPin PAPin PAPin
                            PAPin PAPin PAPin */
@@ -83,13 +85,6 @@ void MX_GPIO_Init(void)
                           |DEPR_CLOSE_LIMIT_SW_Pin|DEPR_OPEN_LIMIT_SW_Pin|FILL_CLOSE_LIMIT_SW_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : PAPin PAPin PAPin */
-  GPIO_InitStruct.Pin = PQD_D1_Pin|PQD_D2_Pin|IGN_FIRE_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PBPin PBPin */

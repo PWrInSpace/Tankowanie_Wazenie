@@ -60,10 +60,12 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define BUILD_IN_LED_Pin GPIO_PIN_13
 #define BUILD_IN_LED_GPIO_Port GPIOC
-#define VOLTAGE_MEASURE_Pin GPIO_PIN_14
-#define VOLTAGE_MEASURE_GPIO_Port GPIOC
-#define CONNECTION_TEST_Pin GPIO_PIN_15
-#define CONNECTION_TEST_GPIO_Port GPIOC
+#define IGNITER_CONNECTION_TEST_Pin GPIO_PIN_15
+#define IGNITER_CONNECTION_TEST_GPIO_Port GPIOC
+#define FIRE_Pin GPIO_PIN_0
+#define FIRE_GPIO_Port GPIOA
+#define VOLTAGE_MEASURE_Pin GPIO_PIN_1
+#define VOLTAGE_MEASURE_GPIO_Port GPIOA
 #define HX2_SDA_Pin GPIO_PIN_4
 #define HX2_SDA_GPIO_Port GPIOA
 #define HX2_SCL_Pin GPIO_PIN_5
@@ -88,8 +90,6 @@ void Error_Handler(void);
 #define QD_CLOSE_LIMIT_SW_GPIO_Port GPIOA
 #define QD_OPEN_LIMIT_SW_Pin GPIO_PIN_9
 #define QD_OPEN_LIMIT_SW_GPIO_Port GPIOA
-#define IGN_FIRE_Pin GPIO_PIN_10
-#define IGN_FIRE_GPIO_Port GPIOA
 #define DEPR_CLOSE_LIMIT_SW_Pin GPIO_PIN_11
 #define DEPR_CLOSE_LIMIT_SW_GPIO_Port GPIOA
 #define DEPR_OPEN_LIMIT_SW_Pin GPIO_PIN_12

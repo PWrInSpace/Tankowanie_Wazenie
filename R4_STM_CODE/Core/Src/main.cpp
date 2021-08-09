@@ -19,6 +19,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include <main.hh>
+#include <Voltmeter.hh>
+#include "adc.h"
 #include "dma.h"
 #include "tim.h"
 #include "usart.h"
@@ -31,7 +33,7 @@
 #include "hx711.hh"
 #include "L298.hh"
 #include "Bluetooth.h"
-
+#include "Voltmeter.hh"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -111,6 +113,7 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM4_Init();
   MX_USART3_UART_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
 //  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); test timer
@@ -134,18 +137,18 @@ int main(void)
 
 	/* USER CODE BEGIN WHILE */
 
-	Igniter igniter(IGN_FIRE_GPIO_Port, IGN_FIRE_Pin, CONNECTION_TEST_GPIO_Port, CONNECTION_TEST_Pin);
+	Igniter igniter(FIRE_GPIO_Port, FIRE_Pin, IGNITER_CONNECTION_TEST_GPIO_Port, IGNITER_CONNECTION_TEST_Pin);
 	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin);
 	//HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin);
 	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
 					FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,	FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin);
+	Voltmeter VM(&hadc1, 1);
 
 	RocketWeight.initialCalibration(200);
-
 	while(1){
 		buf = RocketWeight.ReadValue();
 		//buf2 = RocketWeight.AverageValue(5);
-		buf3 = RocketWeight.getWeigthInGramsWithOffset();
+		buf3 = VM.GetBatteryVoltageInMilivolts();
 		sprintf(dataOut, "DDAT;%i;%i;%li:%li\n", currState, igniter.isConnected(), buf, buf2);
 		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
 		//xbee_transmit_char(communication, dataOut);
@@ -153,13 +156,14 @@ int main(void)
 		switch (currState) {
 			case Init: //test state		//1:INIT
 				//place for random tests	//
+
 				if (igniter.isConnected()){
 					HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 				}
 				// (end) place for random test //
 
 				//currState = Idle;
-				HAL_Delay(1000);
+				HAL_Delay(100);
 				break;
 			case Idle: {	//2:IDLE
 				HAL_Delay(500);
@@ -238,8 +242,8 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USB;
-  PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_PLL;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
+  PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV4;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
@@ -255,7 +259,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 		xbee_receive(); //odebranie całej wiadomości
 		if (xbee_rx.data_flag) { //jeżeli wiadomość była danymi to ta zmienna będzie miała wartość 1
 			/*
-			 TUTAJ WEDLE UZNANIA PRZECHWYTUJECIE DANE KTORE PRZYSZŁY
+			 TUTAJ WEDLE UZNANIA PRZECHWYTUJECIE DANE KTORE PRZYSZ�?Y
 			 macie do dyspozycji tablice 'xbee_rx.data_array' o wielkości 'DATA_ARRAY' - 30, w której są wartości
 			 jeżeli chcecie zatrzymać te dane musicie skopiować wartości tej tabilicy
 			 pobranie adresu jest złym pomysłem bo przy każdym odebraniu tablica zmienia swoją zawartosć
