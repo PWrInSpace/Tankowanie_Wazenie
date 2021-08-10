@@ -20,9 +20,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include <main.hh>
-#include "stm32f1xx_it.h"
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
+#include <stm32f1xx_it.hh>
+#include "Bluetooth.hh"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,7 +51,8 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+Commands command;
+Bluetooth bluetooth(&huart3,command);
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -238,7 +238,7 @@ void DMA1_Channel7_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
-
+	bluetooth.interrupt_TIM();
   /* USER CODE END USART2_IRQn 0 */
   HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
@@ -252,7 +252,7 @@ void USART2_IRQHandler(void)
 void USART3_IRQHandler(void)
 {
   /* USER CODE BEGIN USART3_IRQn 0 */
-
+	bluetooth.interrupt_USART();
   /* USER CODE END USART3_IRQn 0 */
   HAL_UART_IRQHandler(&huart3);
   /* USER CODE BEGIN USART3_IRQn 1 */

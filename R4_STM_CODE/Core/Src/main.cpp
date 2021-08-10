@@ -32,7 +32,7 @@
 #include "Igniter.hh"
 #include "hx711.hh"
 #include "L298.hh"
-#include "Bluetooth.h"
+#include "Bluetooth.hh"
 #include "Voltmeter.hh"
 /* USER CODE END Includes */
 
