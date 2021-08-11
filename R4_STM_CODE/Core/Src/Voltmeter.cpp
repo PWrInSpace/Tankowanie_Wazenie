@@ -13,5 +13,6 @@ int16_t Voltmeter::GetVoltageDividerRatio(){
 }
 
 int16_t Voltmeter::GetBatteryVoltageInMilivolts(){
-	return (HAL_ADC_GetValue(ADC) * VoltageDividerRatio * 806) / 1000; // 806/1000 = 3.3 * 1000 / 4096
+	//return (HAL_ADC_GetValue(ADC) * VoltageDividerRatio * 806) / 1000; // 806/1000 = 3.3 * 1000 / 4096
+	return HAL_ADC_GetValue(ADC)*3.21;
 }

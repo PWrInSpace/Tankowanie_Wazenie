@@ -127,7 +127,7 @@ int main(void)
 	xbee_init(&communication, 0x0013A20041C283E5, &huart2); //inicjalizacja modułu xbee
 
 	///ADDED FOR BLUETOOTH///
-	//__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
+	__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
 	// HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
 
 	//memset(buff ,0,sizeof(buff));
@@ -143,16 +143,18 @@ int main(void)
 	Voltmeter VM(&hadc1, 1);
 	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
 					FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,	FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin);
-	Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	FILL_CLOSE_GPIO_Port, DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2,
+	Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	DEPR_CLOSE_GPIO_Port, DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2,
 					DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_OPEN_LIMIT_SW_Pin, DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);
-	Motor QDMotor(QD_OPEN_GPIO_Port, DEPR_OPEN_Pin,	QD_CLOSE_GPIO_Port, QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3); //bez krańcówek
+	Motor QDMotor(QD_OPEN_GPIO_Port, QD_OPEN_Pin,	QD_CLOSE_GPIO_Port, QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3); //bez krańcówek
 
 
-	RocketWeight.initialCalibration(200);
+	//RocketWeight.initialCalibration(2000);
 	while(1){
-		buf = RocketWeight.ReadValue();
+		//buf = RocketWeight.ReadValue();
 		//buf2 = RocketWeight.AverageValue(5);
-		buf3 = VM.GetBatteryVoltageInMilivolts();
+		//buf3 = RocketWeight.getWeigthInGramsWithOffset(5);
+		FillMotor.open(7);
+		//buf3 = VM.GetBatteryVoltageInMilivolts();
 		sprintf(dataOut, "DDAT;%i;%i;%li:%li\n", currState, igniter.isConnected(), buf, buf2);
 		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
 		//xbee_transmit_char(communication, dataOut);

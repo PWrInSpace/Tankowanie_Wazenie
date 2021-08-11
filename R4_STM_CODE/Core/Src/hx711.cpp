@@ -33,7 +33,7 @@ void HX711::initialCalibration(int32_t testLoadInGrams){
 	int32_t initialWeight = AverageValue();
 	tare();
 	//put testWeight on load cell
-	HAL_Delay(10000);
+	HAL_Delay(2500);
 	int32_t weightWithLoad = AverageValue();
 	BitsToGramRatio = (weightWithLoad - initialWeight) / testLoadInGrams;
 }

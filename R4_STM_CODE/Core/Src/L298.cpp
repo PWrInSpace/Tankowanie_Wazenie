@@ -52,8 +52,8 @@ void Motor::close(uint8_t secs){
 	status = Status::IDK;
 	for(uint8_t steps =  0; steps < secs * 100; ++steps){
 		if(GPIO_PORT_LS_CLOSE != nullptr){ //if has limit switch
-			if(HAL_GPIO_ReadPin(GPIO_PORT_LS_OPEN, PIN_LS_OPEN) == GPIO_PIN_RESET){
-				status = Status::OPEN;
+			if(HAL_GPIO_ReadPin(GPIO_PORT_LS_CLOSE, PIN_LS_CLOSE) == GPIO_PIN_RESET){
+				status = Status::CLOSE;
 				break;
 			}
 		}
