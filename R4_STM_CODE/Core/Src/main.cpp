@@ -153,10 +153,13 @@ int main(void)
 		buf = RocketWeight.ReadValue();
 		//buf2 = RocketWeight.AverageValue(5);
 		buf3 = VM.GetBatteryVoltageInMilivolts();
-		sprintf(dataOut, "DDAT;%i;%i;%li:%li\n", currState, igniter.isConnected(), buf, buf2);
-		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
+
+		sprintf(dataOut, "DDAT;%i;%i;%i;%i;%i;%li;%li\n", currState, VM.GetBatteryVoltageInMilivolts(), igniter.isConnected(), FillMotor.getStatus(), DeprMotor.getStatus() , buf, buf2);
 		//xbee_transmit_char(communication, dataOut);
+
+		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
 		HAL_Delay(50);
+
 		switch (currState){
 			case Init: //test state		//1:INIT
 				//place for random tests	//
