@@ -143,9 +143,9 @@ int main(void)
 	Voltmeter VM(&hadc1, 1);
 	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
 					FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,	FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin);
-	Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	FILL_CLOSE_GPIO_Port, DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2,
+	Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	DEPR_CLOSE_GPIO_Port, DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2,
 					DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_OPEN_LIMIT_SW_Pin, DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);
-	Motor QDMotor(QD_OPEN_GPIO_Port, DEPR_OPEN_Pin,	QD_CLOSE_GPIO_Port, QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3); //bez krańcówek
+	Motor QDMotor(QD_OPEN_GPIO_Port, QD_OPEN_Pin,	QD_CLOSE_GPIO_Port, QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3); //bez krańcówek
 
 
 	RocketWeight.initialCalibration(200);
