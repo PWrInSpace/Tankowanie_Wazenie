@@ -31,6 +31,7 @@ public:
 			TIM_HandleTypeDef* _TIM_NR_EN, uint16_t _TIM_CHANNEL_EN,
 			GPIO_TypeDef* _GPIO_PORT_LS_OPEN = nullptr, uint16_t _PIN_LS_OPEN = 0,
 			GPIO_TypeDef* _GPIO_PORT_LS_CLOSE = nullptr, uint16_t _PIN_LS_CLOSE = 0);
+	Status getStatus();
 	void stop();
 	void open(uint8_t secs = 5);
 	void close(uint8_t secs = 5);
