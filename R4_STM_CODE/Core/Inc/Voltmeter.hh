@@ -11,6 +11,7 @@ public:
 	void SetVoltageDividerRatio(int16_t NewVoltageDividerRatio);
 	int16_t GetVoltageDividerRatio();
 	int16_t GetBatteryVoltageInMilivolts();
+	float GetBatteryVoltageInVolts();
 };
 
 #endif /* INC_VOLTMETER_HH_ */
