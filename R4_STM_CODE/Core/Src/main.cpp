@@ -29,6 +29,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "xbee.h"
+#include "Rocket.hh"
+#include <string>
 #include "Igniter.hh"
 #include "hx711.hh"
 #include "L298.hh"
@@ -54,19 +56,30 @@
 
 /* USER CODE BEGIN PV */
 enum state {
-	Init = 1,
-	Idle = 2,
-	ArmedHard = 3,
-	ArmedSoft = 4,
-	Ready = 5,
-	End = 6,
-	Abort = 7
+	Init = 0,
+	Idle = 1,
+	Fueling = 2,
+	Countdown = 3,
+	Flight = 4,
+	Abort = 5
 };
-state currState = Init;
-int32_t buf = -1, buf2 = -1, buf3 = -1;
+
+volatile state currState = Init;
+volatile int32_t buf = -1, buf2 = -1, buf3 = -1;
 char dataIn[30];
 char dataOut[30];
 Xbee communication;
+HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin);
+HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin);
+Voltmeter VM(&hadc1, 1);
+Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
+				FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,	FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin);
+Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	DEPR_CLOSE_GPIO_Port, DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2,
+				DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_OPEN_LIMIT_SW_Pin, DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);
+Motor QDMotor(QD_OPEN_GPIO_Port, QD_OPEN_Pin,	QD_CLOSE_GPIO_Port, QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3); //bez krańcówek
+Igniter igniter(FIRE_GPIO_Port, FIRE_Pin, IGNITER_CONNECTION_TEST_GPIO_Port, IGNITER_CONNECTION_TEST_Pin);
+Rocket R4(std::make_shared<Motor>(FillMotor), std::make_shared<Motor>(DeprMotor), std::make_shared<Motor>(QDMotor), std::make_shared<Igniter>(igniter));
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -137,15 +150,6 @@ int main(void)
 
 	/* USER CODE BEGIN WHILE */
 
-	Igniter igniter(FIRE_GPIO_Port, FIRE_Pin, IGNITER_CONNECTION_TEST_GPIO_Port, IGNITER_CONNECTION_TEST_Pin);
-	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin);
-	HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin);
-	Voltmeter VM(&hadc1, 1);
-	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
-					FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,	FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin);
-	Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	DEPR_CLOSE_GPIO_Port, DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2,
-					DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_OPEN_LIMIT_SW_Pin, DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);
-	Motor QDMotor(QD_OPEN_GPIO_Port, QD_OPEN_Pin,	QD_CLOSE_GPIO_Port, QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3); //bez krańcówek
 
 
 	RocketWeight.initialCalibration(200);
@@ -172,34 +176,24 @@ int main(void)
 				//currState = Idle;
 				HAL_Delay(100);
 				break;
-			case Idle: {	//2:IDLE
+			case Idle: {	//2
 				HAL_Delay(500);
 				break;
 			}
-			case ArmedHard: {	//3:ARMED(hard)
-				HAL_Delay(4500);
+			case Fueling: {	//3
+				HAL_Delay(250);
 				break;
 			}
-			case ArmedSoft: {	//4:ARMED(soft)
-				HAL_Delay(4500); 	 // !to test
+			case Countdown: {	//4
+				HAL_Delay(500);
 				break;
 			}
-			case Ready: {	//5:Ready
-				if (strncmp(dataIn, "DSTA", 4) == 0){	//signal == fire
-					igniter.FIRE();
-					sprintf(dataOut, "ASTB");
-					xbee_transmit_char(communication, dataOut);
-					currState = End;
-				}
-				HAL_Delay(2500);
+			case Flight: {	//5:Flight aka FIRED
+				HAL_Delay(5000);
 				break;
 			}
-			case End: {	//6:END aka FIRED
-				HAL_Delay(1000000);
-				break;
-			}
-			case Abort: {	//7:ABORT
-				HAL_Delay(4500);
+			case Abort: {	//6:ABORT
+				HAL_Delay(2000);
 				break;
 			}
 		}
@@ -271,11 +265,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 			 jeżeli chcecie zatrzymać te dane musicie skopiować wartości tej tabilicy
 			 pobranie adresu jest złym pomysłem bo przy każdym odebraniu tablica zmienia swoją zawartosć
 			 */
-			if (strncmp(xbee_rx.data_array, "STAT", 4) == 0) {
-				currState = (state) (((int) (xbee_rx.data_array[7])) - 48);
-			}
-			else if (xbee_rx.data_array[0] == 'D') {
-				strcpy(dataIn, xbee_rx.data_array);
+			if(strncmp(xbee_rx.data_array, "TNWN", 4) == 0){
+				std::string comand(xbee_rx.data_array);
+				comand = comand.substr(5, std::string::npos); //cut WNWN;
+				if (comand.substr(0, 4) == "STAT"){
+					currState = (state) (((int) (comand[7])) - 48);
+				}
+				else if (comand[0] == 'D') {
+					R4.comandHandler(comand);
+				}
 			}
 		}
 		//tutaj zmienić tylko huart
