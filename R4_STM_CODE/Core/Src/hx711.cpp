@@ -31,7 +31,7 @@ void HX711::initialCalibration(int32_t testLoadInGrams){
 		return;
 	//leave load cell empty
 	int32_t initialWeight = AverageValue();
-	tare();
+	OffsetInBits = -initialWeight;
 	//put testWeight on load cell
 	HAL_Delay(10000);
 	int32_t weightWithLoad = AverageValue();
