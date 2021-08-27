@@ -1,3 +1,4 @@
+
 /* USER CODE BEGIN Header */
 /**
  ******************************************************************************
@@ -29,7 +30,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "xbee.h"
-#include "Rocket.hh"
+//#include "Rocket.hh"
 #include <string>
 #include "Igniter.hh"
 #include "hx711.hh"
@@ -55,7 +56,16 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+enum state {
+	Init = 0,
+	Idle = 1,
+	Fueling = 2,
+	Countdown = 3,
+	Flight = 4,
+	Abort = 5
+};
 
+volatile state currState = Init;
 volatile int32_t buf = -1, buf2 = -1, buf3 = -1;
 char dataIn[30];
 char dataOut[30];
@@ -69,7 +79,7 @@ Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	DEPR_CLOSE_GPIO_Port, DEPR_C
 				DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_OPEN_LIMIT_SW_Pin, DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);
 Motor QDMotor(QD_OPEN_GPIO_Port, QD_OPEN_Pin,	QD_CLOSE_GPIO_Port, QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3); //bez krańcówek
 Igniter igniter(FIRE_GPIO_Port, FIRE_Pin, IGNITER_CONNECTION_TEST_GPIO_Port, IGNITER_CONNECTION_TEST_Pin);
-Rocket R4(std::make_shared<Motor>(FillMotor), std::make_shared<Motor>(DeprMotor), std::make_shared<Motor>(QDMotor), std::make_shared<Igniter>(igniter));
+//Rocket R4(std::make_shared<Motor>(FillMotor), std::make_shared<Motor>(DeprMotor), std::make_shared<Motor>(QDMotor), std::make_shared<Igniter>(igniter));
 
 /* USER CODE END PV */
 
@@ -146,16 +156,16 @@ int main(void)
 	RocketWeight.initialCalibration(200);
 	while(1){
 		buf = RocketWeight.ReadValue();
-		buf2 = RocketWeight.AverageValue(5);
+		//buf2 = RocketWeight.AverageValue(5);
 		buf3 = VM.GetBatteryVoltageInMilivolts();
 
-		sprintf(dataOut, "DDAT;%i;%i;%i;%i;%li;%li\n", VM.GetBatteryVoltageInMilivolts(), igniter.isConnected(), FillMotor.getStatus(), DeprMotor.getStatus() , buf, buf2);
+		sprintf(dataOut, "DDAT;%i;%i;%i;%i;%i;%li;%li\n", currState, VM.GetBatteryVoltageInMilivolts(), igniter.isConnected(), FillMotor.getStatus(), DeprMotor.getStatus() , buf, buf2);
 		//xbee_transmit_char(communication, dataOut);
 
 		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
 		HAL_Delay(50);
 
-		switch (R4.getCurrState()){
+		switch (currState){
 			case Init: //test state		//1:INIT
 				//place for random tests	//
 
@@ -259,7 +269,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 			if(strncmp(xbee_rx.data_array, "TNWN", 4) == 0){
 				std::string comand(xbee_rx.data_array);
 				comand = comand.substr(5, std::string::npos); //cut WNWN;
-				R4.comandHandler(comand);
+				if (comand.substr(0, 4) == "STAT"){
+					currState = (state) (((int) (comand[7])) - 48);
+				}
+				else if (comand[0] == 'D') {
+					//R4.comandHandler(comand);
+				}
 			}
 		}
 		//tutaj zmienić tylko huart
