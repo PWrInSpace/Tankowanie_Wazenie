@@ -8,7 +8,7 @@ HX711::HX711(GPIO_TypeDef* _Dt_gpio, uint16_t _Dt_pin,
 int32_t HX711::getWeigthInGramsWithOffset(uint16_t times){
 	int32_t average = AverageValue(times);
 	if(std::abs(BitsToGramRatio) < 0.0000001){
-		return (average + OffsetInBits) / BitsToGramRatio;
+		return ((double)(average + OffsetInBits)) / BitsToGramRatio;
 	}
 	else
 		return average;
