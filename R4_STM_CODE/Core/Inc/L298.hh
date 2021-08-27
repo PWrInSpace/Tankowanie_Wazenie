@@ -6,7 +6,7 @@
 #include "tim.h"
 #include "stdlib.h"
 
-enum Status {CLOSE = 0, OPEN = 1, IDK = 2};
+enum Status {OPEN, CLOSE, IDK};
 
 class Motor{
 private:
