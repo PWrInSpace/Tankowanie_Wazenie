@@ -55,16 +55,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-enum state {
-	Init = 0,
-	Idle = 1,
-	Fueling = 2,
-	Countdown = 3,
-	Flight = 4,
-	Abort = 5
-};
 
-volatile state currState = Init;
 volatile int32_t buf = -1, buf2 = -1, buf3 = -1;
 char dataIn[30];
 char dataOut[30];
@@ -155,16 +146,16 @@ int main(void)
 	RocketWeight.initialCalibration(200);
 	while(1){
 		buf = RocketWeight.ReadValue();
-		//buf2 = RocketWeight.AverageValue(5);
+		buf2 = RocketWeight.AverageValue(5);
 		buf3 = VM.GetBatteryVoltageInMilivolts();
 
-		sprintf(dataOut, "DDAT;%i;%i;%i;%i;%i;%li;%li\n", currState, VM.GetBatteryVoltageInMilivolts(), igniter.isConnected(), FillMotor.getStatus(), DeprMotor.getStatus() , buf, buf2);
+		sprintf(dataOut, "DDAT;%i;%i;%i;%i;%li;%li\n", VM.GetBatteryVoltageInMilivolts(), igniter.isConnected(), FillMotor.getStatus(), DeprMotor.getStatus() , buf, buf2);
 		//xbee_transmit_char(communication, dataOut);
 
 		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
 		HAL_Delay(50);
 
-		switch (currState){
+		switch (R4.getCurrState()){
 			case Init: //test state		//1:INIT
 				//place for random tests	//
 
@@ -268,12 +259,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 			if(strncmp(xbee_rx.data_array, "TNWN", 4) == 0){
 				std::string comand(xbee_rx.data_array);
 				comand = comand.substr(5, std::string::npos); //cut WNWN;
-				if (comand.substr(0, 4) == "STAT"){
-					currState = (state) (((int) (comand[7])) - 48);
-				}
-				else if (comand[0] == 'D') {
-					R4.comandHandler(comand);
-				}
+				R4.comandHandler(comand);
 			}
 		}
 		//tutaj zmienić tylko huart

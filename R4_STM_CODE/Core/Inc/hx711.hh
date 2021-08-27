@@ -18,11 +18,11 @@ public:
 	int32_t getOffsetInBits() const;
 	int32_t getBitsToGramRatio() const;
 	void setBitsToGramRatio(int32_t newCalibrationFactor);
-	void initialCalibration(int32_t testLoadInGrams);
+	void initialCalibration(int32_t testLoadInGrams, uint16_t calibrationTime = 10000);
 	void tare();
 	void setGain(uint8_t gain = 128);
 	int32_t ReadValue();
-	int32_t AverageValue(uint16_t sampleSize = 10);
+	int32_t AverageValue(uint16_t sampleSize = 20);
 };
 
 #endif
