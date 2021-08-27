@@ -53,7 +53,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, FIRE_Pin|PQD_D1_Pin|PQD_D2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, FIRE_Pin|HX2_SCL_Pin|PQD_D1_Pin|PQD_D2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, HX1_SCL_Pin|QD_CLOSE_Pin|QD_OPEN_Pin|DEPR_CLOSE_Pin
@@ -72,18 +72,18 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(IGNITER_CONNECTION_TEST_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PAPin PAPin PAPin */
-  GPIO_InitStruct.Pin = FIRE_Pin|PQD_D1_Pin|PQD_D2_Pin;
+  /*Configure GPIO pins : PAPin PAPin PAPin PAPin */
+  GPIO_InitStruct.Pin = FIRE_Pin|HX2_SCL_Pin|PQD_D1_Pin|PQD_D2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PAPin PAPin */
-  GPIO_InitStruct.Pin = HX2_SDA_Pin|HX2_SCL_Pin;
+  /*Configure GPIO pin : PtPin */
+  GPIO_InitStruct.Pin = HX2_SDA_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(HX2_SDA_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = HX1_SDA_Pin;
