@@ -22,9 +22,10 @@ void Rocket::comandHandler(std::string comand){
 	else if(comand.substr(0, 4) == "DSTA" && currState == Countdown)
 		igniter->FIRE();
 	else if(comand.substr(0, 3) == "DWC"){
-		if(comand.substr(3, 1) == "R")
+		if(comand.substr(3, 1) == "R"){
+			//RocketWeight->initialCalibration(comand.substr(5, std::string::npos));
+		else if(comand.substr(3, 1) == "0"){
 			;
-		else if(comand.substr(3, 1) == "0")
-			;
+		}
 	}
 }
