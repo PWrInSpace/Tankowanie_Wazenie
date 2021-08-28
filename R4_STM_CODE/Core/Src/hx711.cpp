@@ -2,7 +2,7 @@
 
 HX711::HX711(GPIO_TypeDef* _Dt_gpio, uint16_t _Dt_pin,
 			 GPIO_TypeDef* _Sck_gpio, uint16_t _Sck_pin):
-	Dt_gpio(_Dt_gpio), Dt_pin(_Dt_pin), Sck_gpio(_Sck_gpio), Sck_pin(_Sck_pin), BitsToGramRatio(1)
+	Dt_gpio(_Dt_gpio), Dt_pin(_Dt_pin), Sck_gpio(_Sck_gpio), Sck_pin(_Sck_pin), BitsToGramRatio(0)
 {}
 
 int32_t HX711::getWeigthInGramsWithOffset(uint16_t times){
@@ -10,7 +10,7 @@ int32_t HX711::getWeigthInGramsWithOffset(uint16_t times){
 	if(BitsToGramRatio != 0){
 		return (average + OffsetInBits) / BitsToGramRatio;
 	}
-	else
+	else //not calibration
 		return average;
 }
 
