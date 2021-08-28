@@ -1,10 +1,13 @@
 #include "Rocket.hh"
 
-Rocket::Rocket(std::shared_ptr<Motor> _FillMotor, std::shared_ptr<Motor> _DeprMotor, std::shared_ptr<Motor> _QDMotor, std::shared_ptr<Igniter> _igniter){
+Rocket::Rocket(std::shared_ptr<Motor> _FillMotor, std::shared_ptr<Motor> _DeprMotor, std::shared_ptr<Motor> _QDMotor,
+			   std::shared_ptr<Igniter> _igniter,	std::shared_ptr<HX711> _RocketWeight, std::shared_ptr<HX711> _TankWeight){
 	FillMotor =_FillMotor;
 	DeprMotor =_DeprMotor;
 	QDMotor =_QDMotor;
 	igniter = _igniter;
+	RocketWeight = _RocketWeight;
+	TankWeight = _TankWeight;
 	currState = Init;
 }
 	

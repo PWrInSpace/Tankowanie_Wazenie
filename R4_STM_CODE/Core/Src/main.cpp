@@ -34,6 +34,7 @@
 #include <string>
 #include "Igniter.hh"
 #include "hx711.hh"
+#include "Rocket.hh"
 #include "L298.hh"
 #include "Bluetooth.h"
 #include "Voltmeter.hh"
@@ -56,30 +57,13 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-enum state {
-	Init = 0,
-	Idle = 1,
-	Fueling = 2,
-	Countdown = 3,
-	Flight = 4,
-	Abort = 5
-};
 
 volatile state currState = Init;
 volatile int32_t buf = -1, buf2 = -1, buf3 = -1;
 char dataIn[30];
 char dataOut[30];
 Xbee communication;
-HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin);
-HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin);
-Voltmeter VM(&hadc1, 1);
-Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
-				FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,	FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin);
-Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	DEPR_CLOSE_GPIO_Port, DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2,
-				DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_OPEN_LIMIT_SW_Pin, DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);
-Motor QDMotor(QD_OPEN_GPIO_Port, QD_OPEN_Pin,	QD_CLOSE_GPIO_Port, QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3); //bez krańcówek
-Igniter igniter(FIRE_GPIO_Port, FIRE_Pin, IGNITER_CONNECTION_TEST_GPIO_Port, IGNITER_CONNECTION_TEST_Pin);
-//Rocket R4(std::make_shared<Motor>(FillMotor), std::make_shared<Motor>(DeprMotor), std::make_shared<Motor>(QDMotor), std::make_shared<Igniter>(igniter));
+Rocket* R4 = nullptr;
 
 /* USER CODE END PV */
 
@@ -150,14 +134,24 @@ int main(void)
 	/* USER CODE END 2 */
 
 	/* USER CODE BEGIN WHILE */
-
-
+	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
+				FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,	FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin);
+	Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	DEPR_CLOSE_GPIO_Port, DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2,
+				DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_OPEN_LIMIT_SW_Pin, DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);
+	Motor QDMotor(QD_OPEN_GPIO_Port, QD_OPEN_Pin,	QD_CLOSE_GPIO_Port, QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3); //bez krańcówek
+	Igniter igniter(FIRE_GPIO_Port, FIRE_Pin, IGNITER_CONNECTION_TEST_GPIO_Port, IGNITER_CONNECTION_TEST_Pin);
+	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin);
+	HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin);
+	Voltmeter VM(&hadc1, 1);
+	Rocket buf(std::make_shared<Motor>(FillMotor), std::make_shared<Motor>(DeprMotor), std::make_shared<Motor>(QDMotor),
+					std::make_shared<Igniter>(igniter),	std::make_shared<HX711>(RocketWeight), std::make_shared<HX711>(TankWeight));
+	R4 = &buf;
 
 	RocketWeight.initialCalibration(200);
 	while(1){
-		buf = RocketWeight.ReadValue();
+		//buf = RocketWeight.ReadValue();
 		//buf2 = RocketWeight.AverageValue(5);
-		buf3 = VM.GetBatteryVoltageInMilivolts();
+		buf3 = -2;
 
 		sprintf(dataOut, "DDAT;%i;%i;%i;%i;%i;%li;%li\n", currState, VM.GetBatteryVoltageInMilivolts(), igniter.isConnected(), FillMotor.getStatus(), DeprMotor.getStatus() , buf, buf2);
 		//xbee_transmit_char(communication, dataOut);
@@ -254,26 +248,24 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-	if (huart->Instance == USART2) {
+	if(huart->Instance == USART2) {
 		__HAL_UART_CLEAR_IDLEFLAG(&huart2);
 		HAL_UART_DMAStop(&huart2);
 
 		xbee_receive(); //odebranie całej wiadomości
-		if (xbee_rx.data_flag) { //jeżeli wiadomość była danymi to ta zmienna będzie miała wartość 1
+		if(xbee_rx.data_flag){ //jeżeli wiadomość była danymi to ta zmienna będzie miała wartość 1
 			/*
-			 TUTAJ WEDLE UZNANIA PRZECHWYTUJECIE DANE KTORE PRZYSZ�?Y
-			 macie do dyspozycji tablice 'xbee_rx.data_array' o wielkości 'DATA_ARRAY' - 30, w której są wartości
-			 jeżeli chcecie zatrzymać te dane musicie skopiować wartości tej tabilicy
-			 pobranie adresu jest złym pomysłem bo przy każdym odebraniu tablica zmienia swoją zawartosć
-			 */
+			TUTAJ WEDLE UZNANIA PRZECHWYTUJECIE DANE KTORE PRZYSZ�?Y
+			macie do dyspozycji tablice 'xbee_rx.data_array' o wielkości 'DATA_ARRAY' - 30, w której są wartości
+			jeżeli chcecie zatrzymać te dane musicie skopiować wartości tej tabilicy
+			pobranie adresu jest złym pomysłem bo przy każdym odebraniu tablica zmienia swoją zawartosć
+			*/
 			if(strncmp(xbee_rx.data_array, "TNWN", 4) == 0){
 				std::string comand(xbee_rx.data_array);
 				comand = comand.substr(5, std::string::npos); //cut WNWN;
-				if (comand.substr(0, 4) == "STAT"){
-					currState = (state) (((int) (comand[7])) - 48);
-				}
-				else if (comand[0] == 'D') {
-					//R4.comandHandler(comand);
+				if(comand[0] == 'D'){
+					if(R4 != nullptr)
+						R4->comandHandler(comand);
 				}
 			}
 		}
