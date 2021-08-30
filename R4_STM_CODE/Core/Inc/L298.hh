@@ -6,7 +6,7 @@
 #include "tim.h"
 #include "stdlib.h"
 
-enum Status {OPEN, CLOSE, IDK};
+enum Status {CLOSE = 0, OPEN = 1, IDK = 2};
 
 class Motor{
 private:
@@ -36,6 +36,7 @@ public:
 	void open(uint8_t secs = 5);
 	void close(uint8_t secs = 5);
 	void test_open_close();
+	void handleComand(char comand);
 };
 
 #endif /* L298_LIB */

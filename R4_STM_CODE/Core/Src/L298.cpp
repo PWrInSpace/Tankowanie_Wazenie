@@ -75,3 +75,10 @@ void Motor::test_open_close(){
 	close();
 	stop();
 }
+
+void Motor::handleComand(char comand){
+	if(comand == 'O')
+		open();
+	else if(comand == 'C')
+		close();
+}
