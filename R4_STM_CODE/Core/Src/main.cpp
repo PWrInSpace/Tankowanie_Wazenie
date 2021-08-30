@@ -150,7 +150,7 @@ int main(void)
 		//buf2 = RocketWeight.AverageValue(5);
 		buf3 = VM.GetBatteryVoltageInMilivolts();
 
-		sprintf(dataOut, "DDAT;%i;%s\n", VM.GetBatteryVoltageInMilivolts(), R4->getInfo());
+		sprintf(dataOut, "DDAT;%i;%s\n", VM.GetBatteryVoltageInMilivolts(), R4->getInfo().c_str());
 		//xbee_transmit_char(communication, dataOut);
 
 		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
