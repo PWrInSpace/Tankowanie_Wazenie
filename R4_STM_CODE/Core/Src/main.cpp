@@ -60,7 +60,6 @@ char dataIn[30];
 char dataOut[30];
 Xbee communication;
 std::shared_ptr<Rocket> R4;
-//Rocket R4(std::make_shared<Motor>(FillMotor), std::make_shared<Motor>(DeprMotor), std::make_shared<Motor>(QDMotor), std::make_shared<Igniter>(igniter));
 
 /* USER CODE END PV */
 
