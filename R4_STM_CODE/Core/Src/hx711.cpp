@@ -1,9 +1,11 @@
 #include <hx711.hh>
 
 HX711::HX711(GPIO_TypeDef* _Dt_gpio, uint16_t _Dt_pin,
-			 GPIO_TypeDef* _Sck_gpio, uint16_t _Sck_pin):
+			 GPIO_TypeDef* _Sck_gpio, uint16_t _Sck_pin, uint8_t gain):
 	Dt_gpio(_Dt_gpio), Dt_pin(_Dt_pin), Sck_gpio(_Sck_gpio), Sck_pin(_Sck_pin), BitsToGramRatio(0)
-{}
+{
+	setGain(gain);
+}
 
 int32_t HX711::getWeigthInGramsWithOffset(uint16_t times){
 	int32_t average = AverageValue(times);
@@ -22,6 +24,29 @@ int32_t HX711::getBitsToGramRatio() const{
 	return BitsToGramRatio;
 }
 
+void HX711::setBitsToGramRatio(int32_t newBitsToGramRatio){
+	BitsToGramRatio = newBitsToGramRatio;
+}
+
+void HX711::addToOffset(int32_t DifOffsetInBits){
+	OffsetInBits += DifOffsetInBits;
+}
+
+
+void HX711::setGain(uint8_t gain){
+	switch (gain) {
+		case 128:		// channel A, gain factor 128
+			GAIN = 1;
+			break;
+		case 64:		// channel A, gain factor 64
+			GAIN = 3;
+			break;
+		case 32:		// channel B, gain factor 32
+			GAIN = 2;
+			break;
+	}
+}
+
 void HX711::tare(){
 	OffsetInBits = -AverageValue();
 }
@@ -36,20 +61,6 @@ void HX711::initialCalibration(int32_t testLoadInGrams, uint16_t calibrationTime
 	HAL_Delay(calibrationTime);
 	int32_t weightWithLoad = AverageValue();
 	BitsToGramRatio = (weightWithLoad - initialWeight) / testLoadInGrams;
-}
-
-void HX711::setGain(uint8_t gain){
-	switch (gain) {
-		case 128:		// channel A, gain factor 128
-			GAIN = 1;
-			break;
-		case 64:		// channel A, gain factor 64
-			GAIN = 3;
-			break;
-		case 32:		// channel B, gain factor 32
-			GAIN = 2;
-			break;
-	}
 }
 
 int32_t HX711::ReadValue(){
