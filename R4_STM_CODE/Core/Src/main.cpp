@@ -260,8 +260,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 			if(strncmp(xbee_rx.data_array, "TNWN", 4) == 0){
 				std::string comand(xbee_rx.data_array);
 				comand = comand.substr(5, std::string::npos); //cut WNWN;
-				if (comand[0] == 'D') {
-					//R4.comandHandler(comand);
+				if (comand[0] == 'D' || comand[0] == 'S') {
+					R4->comandHandler(comand);
 				}
 			}
 		}

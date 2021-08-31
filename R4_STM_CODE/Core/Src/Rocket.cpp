@@ -17,7 +17,7 @@ uint16_t Rocket::getCurrState(){
 
 void Rocket::comandHandler(std::string comand){
 	if(comand.substr(0, 4) == "STAT") //
-		currState = (state)(((int) (comand[7])) - 48);
+		currState = (state)(comand[comand.find_first_of(';') + 1] - 48);
 	else if(comand.substr(0, 4) == "DSTA" && currState == Countdown)  //FIRE
 		igniter->FIRE();
 	else if(comand.substr(0, 3) == "DWC"){ //calibration
