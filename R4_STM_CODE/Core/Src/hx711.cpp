@@ -16,6 +16,11 @@ int32_t HX711::getWeigthInGramsWithOffset(uint16_t times){
 		return average;
 }
 
+float HX711::getWeigthInKilogramsWithOffset(uint16_t times){
+	 float tmp = ((float)getWeigthInGramsWithOffset(times)) / 1000.0;
+	 return tmp;
+}
+
 int32_t HX711::getOffsetInBits() const{
 	return OffsetInBits;
 }
@@ -58,9 +63,17 @@ void HX711::initialCalibration(int32_t testLoadInGrams, uint16_t calibrationTime
 	int32_t initialWeight = AverageValue();
 	OffsetInBits = -initialWeight;
 	//put testWeight on load cell
-	HAL_Delay(calibrationTime);
+	for(uint8_t i = 0; i < 200 ; ++i){
+		HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
+		HAL_Delay(calibrationTime / 200);
+	}
+	HAL_GPIO_WritePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin, GPIO_PIN_SET);
+	HAL_Delay(calibrationTime / 20);
 	int32_t weightWithLoad = AverageValue();
+
 	BitsToGramRatio = (weightWithLoad - initialWeight) / testLoadInGrams;
+
+	HAL_GPIO_WritePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin, GPIO_PIN_RESET);
 }
 
 int32_t HX711::ReadValue(){

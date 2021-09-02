@@ -1,6 +1,6 @@
 #MicroXplorer Configuration settings - do not modify
 Mcu.Family=STM32F1
-NVIC.USART3_IRQn=true\:0\:0\:false\:false\:true\:true\:true
+NVIC.USART3_IRQn=true\:1\:0\:true\:false\:true\:true\:true
 ProjectManager.MainLocation=Core/Src
 RCC.MCOFreq_Value=48000000
 PB13.GPIOParameters=GPIO_Speed,GPIO_Label
@@ -81,7 +81,7 @@ NVIC.UsageFault_IRQn=true\:0\:0\:false\:false\:true\:false\:false
 NVIC.DebugMonitor_IRQn=true\:0\:0\:false\:false\:true\:false\:false
 PA8.Locked=true
 PA4.Locked=true
-NVIC.SysTick_IRQn=true\:0\:0\:false\:false\:true\:false\:true
+NVIC.SysTick_IRQn=true\:0\:0\:true\:false\:true\:false\:true
 RCC.PLLMUL=RCC_PLL_MUL6
 PB12.GPIO_Label=HX1_SDA
 ProjectManager.FirmwarePackage=STM32Cube FW_F1 V1.8.3
@@ -171,7 +171,7 @@ RCC.APB1CLKDivider=RCC_HCLK_DIV2
 SH.S_TIM3_CH3.0=TIM3_CH3,PWM Generation3 CH3
 PA9.GPIO_PuPd=GPIO_PULLUP
 Dma.USART2_TX.1.PeriphDataAlignment=DMA_PDATAALIGN_BYTE
-NVIC.USART2_IRQn=true\:0\:0\:false\:false\:true\:true\:true
+NVIC.USART2_IRQn=true\:1\:0\:true\:false\:true\:true\:true
 PA12.GPIO_Label=DEPR_OPEN_LIMIT_SW
 RCC.FamilyName=M
 PA0-WKUP.GPIO_Label=FIRE

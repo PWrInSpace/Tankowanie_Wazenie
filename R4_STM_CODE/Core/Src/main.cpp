@@ -55,9 +55,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-volatile int32_t buf = -1, buf2 = -1, buf3 = -1;
-char dataIn[30];
-char dataOut[30];
+volatile int32_t buf1 = -1, buf2 = -1, buf3 = -1;
+char dataIn[100];
+char dataOut[100];
 Xbee communication;
 std::shared_ptr<Rocket> R4;
 
@@ -140,33 +140,34 @@ int main(void)
 	HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin);
 	Voltmeter VM(&hadc1, 1);
 
-	Rocket buf(std::make_shared<Motor>(FillMotor), std::make_shared<Motor>(DeprMotor), std::make_shared<Motor>(QDMotor),
+	Rocket tmp(std::make_shared<Motor>(FillMotor), std::make_shared<Motor>(DeprMotor), std::make_shared<Motor>(QDMotor),
 						std::make_shared<Igniter>(igniter),	std::make_shared<HX711>(RocketWeight), std::make_shared<HX711>(TankWeight));
-	R4 = std::make_shared<Rocket>(buf);
+	R4 = std::make_shared<Rocket>(tmp);
 
-	RocketWeight.initialCalibration(200);
+	R4->comandHandler("DWCT;000160");
 	while(1){
-		//buf = RocketWeight.ReadValue();
-		//buf2 = RocketWeight.AverageValue(5);
-		buf3 = VM.GetBatteryVoltageInMilivolts();
+		buf1 = TankWeight.ReadValue();
+		buf2 = TankWeight.AverageValue(5);
+		buf3 = TankWeight.getWeigthInGramsWithOffset();
 
-		sprintf(dataOut, "DDAT;%i;%s\n", VM.GetBatteryVoltageInMilivolts(), R4->getInfo().c_str());
-		//xbee_transmit_char(communication, dataOut);
+		sprintf(dataOut, "R4TN;%.1f;%s\n", VM.GetBatteryVoltageInVolts(), R4->getInfo().c_str());
+		xbee_transmit_char(communication, dataOut);
 
 		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
 		HAL_Delay(50);
+
+		if (1){
+			HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
+		}
 
 		switch (R4->currState){
 			case Init: //test state		//1:INIT
 				//place for random tests	//
 
-				if (igniter.isConnected()){
-					HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
-				}
 				// (end) place for random test //
 
-				//currState = Idle;
-				HAL_Delay(100);
+				R4->comandHandler("STAT;0;1");
+				HAL_Delay(1000);
 				break;
 			case Idle: {	//2
 				HAL_Delay(500);
@@ -177,7 +178,7 @@ int main(void)
 				break;
 			}
 			case Countdown: {	//4
-				HAL_Delay(500);
+				HAL_Delay(1000);
 				break;
 			}
 			case Flight: {	//5:Flight aka FIRED

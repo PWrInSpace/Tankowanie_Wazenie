@@ -16,8 +16,8 @@ uint16_t Rocket::getCurrState(){
 }
 
 void Rocket::comandHandler(std::string comand){
-	if(comand.substr(0, 4) == "STAT") //
-		currState = (state)(comand[comand.find_first_of(';') + 1] - 48);
+	if(comand.substr(0, 4) == "STAT") // state'y
+		currState = (state)(comand[7] - 48);
 	else if(comand.substr(0, 4) == "DSTA" && currState == Countdown)  //FIRE
 		igniter->FIRE();
 	else if(comand.substr(0, 3) == "DWC"){ //calibration
@@ -33,7 +33,7 @@ void Rocket::comandHandler(std::string comand){
 		else if(comand.substr(3, 1) == "T")
 			TankWeight->addToOffset(std::stoi(comand.substr(5, 8)));
 	}
-	else if(comand.substr(0, 3) == "DWR"){
+	else if(comand.substr(0, 3) == "DWR"){ //wagi
 		if(comand.substr(3, 1) == "R")
 			RocketWeight->setBitsToGramRatio(std::stoi(comand.substr(5, 8)));
 		else if(comand.substr(3, 1) == "T")
@@ -50,6 +50,7 @@ void Rocket::comandHandler(std::string comand){
 }
 
 std::string Rocket::getInfo(){ //not tested
+	char bufx[10];
 	std::string tmp(std::to_string(currState));
 	tmp.insert(tmp.length(), ";");
 	tmp.insert(tmp.length(), std::to_string(igniter->isConnected()));
@@ -60,8 +61,10 @@ std::string Rocket::getInfo(){ //not tested
 	tmp.insert(tmp.length(), ";");
 	tmp.insert(tmp.length(), std::to_string(QDMotor->getStatus()));
 	tmp.insert(tmp.length(), ";");
-	tmp.insert(tmp.length(), std::to_string(RocketWeight->getWeigthInGramsWithOffset()));
+	std::sprintf(bufx, "%.1f", RocketWeight->getWeigthInKilogramsWithOffset());
+	tmp.insert(tmp.length(), bufx);
 	tmp.insert(tmp.length(), ";");
-	tmp.insert(tmp.length(), std::to_string(TankWeight->getWeigthInGramsWithOffset()));
+	std::sprintf(bufx, "%.1f", TankWeight->getWeigthInKilogramsWithOffset());
+	tmp.insert(tmp.length(), bufx);
 	return tmp;
 }
