@@ -76,9 +76,9 @@ void Motor::test_open_close(){
 	stop();
 }
 
-void Motor::handleComand(char comand){
-	if(comand == 'O')
+void Motor::handleComand(std::string comand){
+	if(comand == "O")
 		open();
-	else if(comand == 'C')
+	else if(comand == "Z")
 		close();
 }

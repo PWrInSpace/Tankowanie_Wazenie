@@ -41,11 +41,11 @@ void Rocket::comandHandler(std::string comand){
 	}
 	else if(comand.substr(0, 2) == "DZ"){	//zawory
 		if(comand.substr(2, 1) == "T")
-			FillMotor->handleComand(std::stoi(comand.substr(3, 1)));
+			FillMotor->handleComand(comand.substr(3, 1));
 		else if(comand.substr(2, 1) == "O")
-			DeprMotor->handleComand(std::stoi(comand.substr(3, 1)));
+			DeprMotor->handleComand(comand.substr(3, 1));
 		else if(comand.substr(2, 1) == "Q")
-			QDMotor->handleComand(std::stoi(comand.substr(3, 1)));
+			QDMotor->handleComand(comand.substr(3, 1));
 	}
 }
 

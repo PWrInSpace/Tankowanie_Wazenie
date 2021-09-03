@@ -5,6 +5,7 @@
 #include "gpio.h"
 #include "tim.h"
 #include "stdlib.h"
+#include <string>
 
 enum Status {CLOSE = 0, OPEN = 1, IDK = 2};
 
@@ -33,10 +34,10 @@ public:
 			GPIO_TypeDef* _GPIO_PORT_LS_CLOSE = nullptr, uint16_t _PIN_LS_CLOSE = 0);
 	Status getStatus();
 	void stop();
-	void open(uint8_t secs = 5);
-	void close(uint8_t secs = 5);
+	void open(uint8_t secs = 3);
+	void close(uint8_t secs = 3);
 	void test_open_close();
-	void handleComand(char comand);
+	void handleComand(std::string comand);
 };
 
 #endif /* L298_LIB */

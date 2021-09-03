@@ -144,49 +144,51 @@ int main(void)
 						std::make_shared<Igniter>(igniter),	std::make_shared<HX711>(RocketWeight), std::make_shared<HX711>(TankWeight));
 	R4 = std::make_shared<Rocket>(tmp);
 
-	R4->comandHandler("DWCT;000160");
+	//R4->comandHandler("DWCT;003563");
 	while(1){
-		buf1 = TankWeight.ReadValue();
-		buf2 = TankWeight.AverageValue(5);
-		buf3 = TankWeight.getWeigthInGramsWithOffset();
+		HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 
 		sprintf(dataOut, "R4TN;%.1f;%s\n", VM.GetBatteryVoltageInVolts(), R4->getInfo().c_str());
 		xbee_transmit_char(communication, dataOut);
-
 		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
+
 		HAL_Delay(50);
 
-		if (1){
-			HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
-		}
+		//*{//delete it pls ;-;
+			R4->comandHandler("DZQZ");
+			HAL_Delay(1000);
+			R4->comandHandler("DZQO");
+			HAL_Delay(1000);
+		//}*/
+
 
 		switch (R4->currState){
-			case Init: //test state		//1:INIT
+			case Init: //test state		//0
 				//place for random tests	//
 
 				// (end) place for random test //
 
-				R4->comandHandler("STAT;0;1");
+				R4->currState = Idle;
 				HAL_Delay(1000);
 				break;
-			case Idle: {	//2
+			case Idle: {	//1
 				HAL_Delay(500);
 				break;
 			}
-			case Fueling: {	//3
+			case Fueling: {	//2
 				HAL_Delay(250);
 				break;
 			}
-			case Countdown: {	//4
+			case Countdown: {	//3
 				HAL_Delay(1000);
 				break;
 			}
 			case Flight: {	//5:Flight aka FIRED
-				HAL_Delay(5000);
+				HAL_Delay(15000);
 				break;
 			}
-			case Abort: {	//6:ABORT
-				HAL_Delay(2000);
+			case Abort: {	//4:ABORT
+				HAL_Delay(1000);
 				break;
 			}
 		}

@@ -22,6 +22,7 @@ class Rocket{
 	std::shared_ptr<HX711> TankWeight;
 public:
 	volatile state currState;
+
 	Rocket() = default;
 	Rocket(std::shared_ptr<Motor> _FillMotor, std::shared_ptr<Motor> _DeprMotor, std::shared_ptr<Motor> _QDMotor,
 		   std::shared_ptr<Igniter> _igniter, std::shared_ptr<HX711> _RocketWeight, std::shared_ptr<HX711> _TankWeight);
