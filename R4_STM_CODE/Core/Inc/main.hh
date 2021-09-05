@@ -70,10 +70,10 @@ void Error_Handler(void);
 #define HX2_SDA_GPIO_Port GPIOA
 #define HX2_SCL_Pin GPIO_PIN_5
 #define HX2_SCL_GPIO_Port GPIOA
-#define PQD_D1_Pin GPIO_PIN_6
-#define PQD_D1_GPIO_Port GPIOA
-#define PQD_D2_Pin GPIO_PIN_7
-#define PQD_D2_GPIO_Port GPIOA
+#define PQD_OPEN_Pin GPIO_PIN_6
+#define PQD_OPEN_GPIO_Port GPIOA
+#define PQD_CLOSE_Pin GPIO_PIN_7
+#define PQD_CLOSE_GPIO_Port GPIOA
 #define QD_EN_Pin GPIO_PIN_0
 #define QD_EN_GPIO_Port GPIOB
 #define PQD_EN_Pin GPIO_PIN_1

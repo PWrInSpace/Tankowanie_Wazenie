@@ -31,6 +31,7 @@
 #include "xbee.h"
 #include "Rocket.hh"
 #include <string>
+#include <string.h>
 #include "Igniter.hh"
 #include "hx711.hh"
 #include "L298.hh"
@@ -120,28 +121,31 @@ int main(void)
 	HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded, DATA_LENGTH);
 	xbee_init(&communication, 0x0013A20041C283E5, &huart2); //inicjalizacja modułu xbee
 
-	///ADDED FOR BLUETOOTH///
-	//__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
-	// HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
-
-	//memset(buff ,0,sizeof(buff));
-
-	 HAL_UART_Transmit(&huart3, (uint8_t*)"INIT\n", strlen("INIT\n"), 500);
-	/* USER CODE END 2 */
+	///ADDED FOR BLUETOOTH///{
+		//__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
+		// HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
+		//memset(buff ,0,sizeof(buff));
+		HAL_UART_Transmit(&huart3, (uint8_t*)"INIT\n", strlen("INIT\n"), 500);
+	//}
+/* USER CODE END 2 */
 
 	/* USER CODE BEGIN WHILE */
 	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
-				FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,	FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin);
+			FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,	FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin); //tankujący - dwie krancówki (1 i 2)
 	Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	DEPR_CLOSE_GPIO_Port, DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2,
-				DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_OPEN_LIMIT_SW_Pin, DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);
-	Motor QDMotor(QD_OPEN_GPIO_Port, QD_OPEN_Pin,	QD_CLOSE_GPIO_Port, QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3); //bez krańcówek
+			nullptr, 0, DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);	//odpowietrzajacy -  krancowka zamkniety (4)
+	Motor QDMotor(QD_OPEN_GPIO_Port, QD_OPEN_Pin,	QD_CLOSE_GPIO_Port, QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3,
+			nullptr, 0,  DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin); //szybkozłącze - krancowka zamkniety (3)
+	Motor PQDMotor(PQD_OPEN_GPIO_Port, PQD_OPEN_Pin,	PQD_CLOSE_GPIO_Port, PQD_CLOSE_Pin, &htim3, TIM_CHANNEL_4,
+			QD_OPEN_LIMIT_SW_GPIO_Port, QD_OPEN_LIMIT_SW_Pin, QD_CLOSE_LIMIT_SW_GPIO_Port, QD_CLOSE_LIMIT_SW_Pin); //dodatkowy(upustowy) - dwie krancowki (5 i 6)
 	Igniter igniter(FIRE_GPIO_Port, FIRE_Pin, IGNITER_CONNECTION_TEST_GPIO_Port, IGNITER_CONNECTION_TEST_Pin);
 	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin);
 	HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin);
 	Voltmeter VM(&hadc1, 1);
 
-	Rocket tmp(std::make_shared<Motor>(FillMotor), std::make_shared<Motor>(DeprMotor), std::make_shared<Motor>(QDMotor),
-						std::make_shared<Igniter>(igniter),	std::make_shared<HX711>(RocketWeight), std::make_shared<HX711>(TankWeight));
+	Rocket tmp(std::make_shared<Motor>(FillMotor), std::make_shared<Motor>(DeprMotor),
+				std::make_shared<Motor>(QDMotor), std::make_shared<Igniter>(igniter),
+				std::make_shared<HX711>(RocketWeight), std::make_shared<HX711>(TankWeight), std::make_shared<Motor>(PQDMotor));
 	R4 = std::make_shared<Rocket>(tmp);
 
 	//R4->comandHandler("DWCT;003563");
@@ -150,26 +154,18 @@ int main(void)
 
 		sprintf(dataOut, "R4TN;%.1f;%s\n", VM.GetBatteryVoltageInVolts(), R4->getInfo().c_str());
 		xbee_transmit_char(communication, dataOut);
-		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);
+
+		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);	//BT
 
 		HAL_Delay(50);
-
-		//*{//delete it pls ;-;
-			R4->comandHandler("DZQZ");
-			HAL_Delay(1000);
-			R4->comandHandler("DZQO");
-			HAL_Delay(1000);
-		//}*/
-
 
 		switch (R4->currState){
 			case Init: //test state		//0
 				//place for random tests	//
 
 				// (end) place for random test //
-
 				R4->currState = Idle;
-				HAL_Delay(1000);
+				HAL_Delay(500);
 				break;
 			case Idle: {	//1
 				HAL_Delay(500);

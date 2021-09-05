@@ -1,10 +1,12 @@
 #include "Rocket.hh"
 
-Rocket::Rocket(std::shared_ptr<Motor> _FillMotor, std::shared_ptr<Motor> _DeprMotor, std::shared_ptr<Motor> _QDMotor,
-			   std::shared_ptr<Igniter> _igniter,	std::shared_ptr<HX711> _RocketWeight, std::shared_ptr<HX711> _TankWeight){
+Rocket::Rocket(std::shared_ptr<Motor> _FillMotor, std::shared_ptr<Motor> _DeprMotor,
+				std::shared_ptr<Motor> _QDMotor, std::shared_ptr<Igniter> _igniter,
+				std::shared_ptr<HX711> _RocketWeight, std::shared_ptr<HX711> _TankWeight,  std::shared_ptr<Motor> _PQDMotor){
 	FillMotor =_FillMotor;
 	DeprMotor =_DeprMotor;
 	QDMotor =_QDMotor;
+	PQDMotor =_PQDMotor;
 	igniter = _igniter;
 	RocketWeight = _RocketWeight;
 	TankWeight = _TankWeight;
@@ -46,6 +48,8 @@ void Rocket::comandHandler(std::string comand){
 			DeprMotor->handleComand(comand.substr(3, 1));
 		else if(comand.substr(2, 1) == "Q")
 			QDMotor->handleComand(comand.substr(3, 1));
+		else if(comand.substr(2, 1) == "D")
+			PQDMotor->handleComand(comand.substr(3, 1));
 	}
 }
 
