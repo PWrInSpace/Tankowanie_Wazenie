@@ -267,6 +267,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 		//tutaj zmienić tylko huart
 		HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded, DATA_LENGTH);
 	}
+	else if(huart->Instance == USART3){
+		std::string command((char*)BTbuf);
+		if (command[0] == 'D' || command[0] == 'S'){
+			R4->comandHandler(command);
+		}
+		HAL_UART_Receive_IT(&huart3, BTbuf, 20);
+	}
 }
 /* USER CODE END 4 */
 
