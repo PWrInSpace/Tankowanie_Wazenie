@@ -1,4 +1,3 @@
-
 /* USER CODE BEGIN Header */
 /**
  ******************************************************************************
@@ -29,13 +28,13 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "xbee.h"
-#include "Rocket.hh"
+
 #include <string>
 #include <string.h>
 #include "Igniter.hh"
 #include "hx711.hh"
 #include "L298.hh"
-#include "Bluetooth.h"
+#include "Bluetooth.hh"
 #include "Voltmeter.hh"
 /* USER CODE END Includes */
 
@@ -61,7 +60,8 @@ char dataIn[100];
 char dataOut[100];
 uint8_t BTbuf[20];
 Xbee communication;
-std::shared_ptr<Rocket> R4;
+
+ std::shared_ptr<Rocket> R4;
 
 /* USER CODE END PV */
 
@@ -77,174 +77,183 @@ void SystemClock_Config(void);
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
-int main(void)
-{
-  /* USER CODE BEGIN 1 */
+ * @brief  The application entry point.
+ * @retval int
+ */
+int main(void) {
+	/* USER CODE BEGIN 1 */
 
-  /* USER CODE END 1 */
+	/* USER CODE END 1 */
 
-  /* MCU Configuration--------------------------------------------------------*/
+	/* MCU Configuration--------------------------------------------------------*/
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+	HAL_Init();
 
-  /* USER CODE BEGIN Init */
-  HAL_Delay(1000);
-  /* USER CODE END Init */
+	/* USER CODE BEGIN Init */
+	HAL_Delay(1000);
+	/* USER CODE END Init */
 
-  /* Configure the system clock */
-  SystemClock_Config();
+	/* Configure the system clock */
+	SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
+	/* USER CODE BEGIN SysInit */
 
-  /* USER CODE END SysInit */
+	/* USER CODE END SysInit */
 
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_DMA_Init();
-  MX_USART2_UART_Init();
-  MX_TIM3_Init();
-  MX_TIM4_Init();
-  MX_USART3_UART_Init();
-  MX_ADC1_Init();
-  /* USER CODE BEGIN 2 */
+	/* Initialize all configured peripherals */
+	MX_GPIO_Init();
+	MX_DMA_Init();
+	MX_USART2_UART_Init();
+	MX_TIM3_Init();
+	MX_TIM4_Init();
+	MX_USART3_UART_Init();
+	MX_ADC1_Init();
+	/* USER CODE BEGIN 2 */
 
 //  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); test timer
-  /* USER CODE END 2 */
+	/* USER CODE END 2 */
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+	/* Infinite loop */
+	/* USER CODE BEGIN WHILE */
 
 	__HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
 	HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded, DATA_LENGTH);
 	xbee_init(&communication, 0x0013A20041C283E5, &huart2); //inicjalizacja modułu xbee
 
 	///ADDED FOR BLUETOOTH///{
-		//__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
-		// HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
-		//memset(buff ,0,sizeof(buff));
-		HAL_UART_Transmit(&huart3, (uint8_t*)"INIT\n", strlen("INIT\n"), 500);
+	__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
+	HAL_UART_Receive_IT(&huart3, BTbuf, 15);
+	// HAL_GPIO_WritePin(Bluetooth_reset_GPIO_Port, Bluetooth_reset_Pin, SET);//ADDITIONAL PIN PC14 FOR RESET //
+	HAL_UART_Transmit(&huart3, (uint8_t*) "INIT\n", strlen("INIT\n"), 500);
 	//}
-/* USER CODE END 2 */
+	/* USER CODE END 2 */
 
 	/* USER CODE BEGIN WHILE */
-	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin,	FILL_CLOSE_GPIO_Port, FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
-			FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,	FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin); //tankujący - dwie krancówki (1 i 2)
-	Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin,	DEPR_CLOSE_GPIO_Port, DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2,
-			nullptr, 0, DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);	//odpowietrzajacy -  krancowka zamkniety (4)
-	Motor QDMotor(QD_OPEN_GPIO_Port, QD_OPEN_Pin,	QD_CLOSE_GPIO_Port, QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3,
-			nullptr, 0,  DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin); //szybkozłącze - krancowka zamkniety (3)
-	Motor PQDMotor(PQD_OPEN_GPIO_Port, PQD_OPEN_Pin,	PQD_CLOSE_GPIO_Port, PQD_CLOSE_Pin, &htim3, TIM_CHANNEL_4,
-			QD_OPEN_LIMIT_SW_GPIO_Port, QD_OPEN_LIMIT_SW_Pin, QD_CLOSE_LIMIT_SW_GPIO_Port, QD_CLOSE_LIMIT_SW_Pin); //dodatkowy(upustowy) - dwie krancowki (5 i 6)
-	Igniter igniter(FIRE_GPIO_Port, FIRE_Pin, IGNITER_CONNECTION_TEST_GPIO_Port, IGNITER_CONNECTION_TEST_Pin);
-	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin);
-	HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin);
+	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port,
+			FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
+			FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,
+			FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin); //tankujący - dwie krancówki (1 i 2)
+	Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin, DEPR_CLOSE_GPIO_Port,
+			DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2, nullptr, 0,
+			DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);//odpowietrzajacy -  krancowka zamkniety (4)
+	Motor QDMotor(QD_OPEN_GPIO_Port, QD_OPEN_Pin, QD_CLOSE_GPIO_Port,
+			QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3, nullptr, 0,
+			DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin); //szybkozłącze - krancowka zamkniety (3)
+	Motor PQDMotor(PQD_OPEN_GPIO_Port, PQD_OPEN_Pin, PQD_CLOSE_GPIO_Port,
+			PQD_CLOSE_Pin, &htim3, TIM_CHANNEL_4,
+			QD_OPEN_LIMIT_SW_GPIO_Port, QD_OPEN_LIMIT_SW_Pin,
+			QD_CLOSE_LIMIT_SW_GPIO_Port, QD_CLOSE_LIMIT_SW_Pin); //dodatkowy(upustowy) - dwie krancowki (5 i 6)
+	Igniter igniter(FIRE_GPIO_Port, FIRE_Pin, IGNITER_CONNECTION_TEST_GPIO_Port,
+			IGNITER_CONNECTION_TEST_Pin);
+	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port,
+			HX1_SCL_Pin);
+	HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port,
+			HX2_SCL_Pin);
 	Voltmeter VM(&hadc1, 1);
 
-	Rocket tmp(std::make_shared<Motor>(FillMotor), std::make_shared<Motor>(DeprMotor),
-				std::make_shared<Motor>(QDMotor), std::make_shared<Igniter>(igniter),
-				std::make_shared<HX711>(RocketWeight), std::make_shared<HX711>(TankWeight), std::make_shared<Motor>(PQDMotor));
+	Rocket tmp(std::make_shared<Motor>(FillMotor),
+			std::make_shared<Motor>(DeprMotor),
+			std::make_shared<Motor>(QDMotor),
+			std::make_shared<Igniter>(igniter),
+			std::make_shared<HX711>(RocketWeight),
+			std::make_shared<HX711>(TankWeight),
+			std::make_shared<Motor>(PQDMotor));
 	R4 = std::make_shared<Rocket>(tmp);
 
 	//R4->comandHandler("DWCT;003563");
-	while(1){
+	while (1) {
 		HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 
-		sprintf(dataOut, "R4TN;%.1f;%s\n", VM.GetBatteryVoltageInVolts(), R4->getInfo().c_str());
+		sprintf(dataOut, "R4TN;%.1f;%s\n", VM.GetBatteryVoltageInVolts(),
+				R4->getInfo().c_str());
 		xbee_transmit_char(communication, dataOut);
 
-		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, strlen(dataOut), 500);	//BT
+		HAL_UART_Transmit(&huart3, (uint8_t*) dataOut, strlen(dataOut), 500);//BT
 
 		HAL_Delay(50);
 
-		switch (R4->currState){
-			case Init: //test state		//0
-				//place for random tests	//
+		switch (R4->currState) {
+		case Init: //test state		//0
+			//place for random tests	//
 
-				// (end) place for random test //
-				R4->currState = Idle;
-				HAL_Delay(500);
-				break;
-			case Idle: {	//1
-				HAL_Delay(500);
-				break;
-			}
-			case Fueling: {	//2
-				HAL_Delay(250);
-				break;
-			}
-			case Countdown: {	//3
-				HAL_Delay(1000);
-				break;
-			}
-			case Flight: {	//5:Flight aka FIRED
-				HAL_Delay(15000);
-				break;
-			}
-			case Abort: {	//4:ABORT
-				HAL_Delay(1000);
-				break;
-			}
+			// (end) place for random test //
+			R4->currState = Idle;
+			HAL_Delay(500);
+			break;
+		case Idle: {	//1
+			HAL_Delay(500);
+			break;
+		}
+		case Fueling: {	//2
+			HAL_Delay(250);
+			break;
+		}
+		case Countdown: {	//3
+			HAL_Delay(1000);
+			break;
+		}
+		case Flight: {	//5:Flight aka FIRED
+			HAL_Delay(15000);
+			break;
+		}
+		case Abort: {	//4:ABORT
+			HAL_Delay(1000);
+			break;
+		}
 		}
 	}
 
-    /* USER CODE END WHILE */
+	/* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
+	/* USER CODE BEGIN 3 */
 
-  /* USER CODE END 3 */
+	/* USER CODE END 3 */
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
-void SystemClock_Config(void)
-{
-  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+ * @brief System Clock Configuration
+ * @retval None
+ */
+void SystemClock_Config(void) {
+	RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
+	RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
+	RCC_PeriphCLKInitTypeDef PeriphClkInit = { 0 };
 
-  /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL6;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+	/** Initializes the RCC Oscillators according to the specified parameters
+	 * in the RCC_OscInitTypeDef structure.
+	 */
+	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+	RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+	RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+	RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL6;
+	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
+		Error_Handler();
+	}
+	/** Initializes the CPU, AHB and APB buses clocks
+	 */
+	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
+			| RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
-  PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV4;
-  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
-  {
-    Error_Handler();
-  }
+	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK) {
+		Error_Handler();
+	}
+	PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
+	PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV4;
+	if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK) {
+		Error_Handler();
+	}
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if (huart->Instance == USART2) {
 		__HAL_UART_CLEAR_IDLEFLAG(&huart2);
 		HAL_UART_DMAStop(&huart2);
@@ -257,7 +266,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 			 jeżeli chcecie zatrzymać te dane musicie skopiować wartości tej tabilicy
 			 pobranie adresu jest złym pomysłem bo przy każdym odebraniu tablica zmienia swoją zawartosć
 			 */
-			if(strncmp(xbee_rx.data_array, "TNWN", 4) == 0){
+			if (strncmp(xbee_rx.data_array, "TNWN", 4) == 0) {
 				std::string comand(xbee_rx.data_array);
 				comand = comand.substr(5, std::string::npos); //cut WNWN;
 				if (comand[0] == 'D' || comand[0] == 'S') {
@@ -266,30 +275,34 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 			}
 		}
 		//tutaj zmienić tylko huart
-		HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded, DATA_LENGTH);
-	}
-	else if(huart->Instance == USART3){
-		std::string command((char*)BTbuf);
-		if (command[0] == 'D' || command[0] == 'S'){
+		HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded,
+				DATA_LENGTH);
+	} else if (huart->Instance == USART3) {
+		std::string command((char*) BTbuf);
+		if (command[0] == 'D' || command[0] == 'S') {
 			R4->comandHandler(command);
 		}
-		HAL_UART_Receive_IT(&huart3, BTbuf, 20);
+		HAL_UART_Transmit(&huart3, (uint8_t*) "RECEIVED\n",
+				strlen("RECEIVED\n"), 500);
+		memset(BTbuf, 0, sizeof(BTbuf));
+		HAL_UART_Receive_IT(&huart3, BTbuf, 15);
+
+
 	}
 }
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
-void Error_Handler(void)
-{
-  /* USER CODE BEGIN Error_Handler_Debug */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
+void Error_Handler(void) {
+	/* USER CODE BEGIN Error_Handler_Debug */
 	/* User can add his own implementation to report the HAL error return state */
 	__disable_irq();
 	while (1) {
 	}
-  /* USER CODE END Error_Handler_Debug */
+	/* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT
