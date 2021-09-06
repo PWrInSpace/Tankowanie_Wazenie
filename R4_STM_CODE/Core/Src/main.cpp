@@ -59,6 +59,7 @@
 volatile int32_t buf1 = -1, buf2 = -1, buf3 = -1;
 char dataIn[100];
 char dataOut[100];
+uint8_t BTbuf[20];
 Xbee communication;
 std::shared_ptr<Rocket> R4;
 
