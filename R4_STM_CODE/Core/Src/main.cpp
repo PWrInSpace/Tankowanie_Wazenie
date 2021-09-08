@@ -135,11 +135,11 @@ int main(void) {
 			FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,
 			FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin); //tankujący - dwie krancówki (1 i 2)
 	Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin, DEPR_CLOSE_GPIO_Port,
-			DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2, nullptr, 0,
-			DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);//odpowietrzajacy -  krancowka zamkniety (4)
+			DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2,
+			DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin,
+			DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);//odpowietrzajacy - dwie krancówki (3 i 4)
 	Motor QDMotor(QD_OPEN_GPIO_Port, QD_OPEN_Pin, QD_CLOSE_GPIO_Port,
-			QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3, nullptr, 0,
-			DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin); //szybkozłącze - krancowka zamkniety (3)
+			QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3);
 	Motor PQDMotor(PQD_OPEN_GPIO_Port, PQD_OPEN_Pin, PQD_CLOSE_GPIO_Port,
 			PQD_CLOSE_Pin, &htim3, TIM_CHANNEL_4,
 			QD_OPEN_LIMIT_SW_GPIO_Port, QD_OPEN_LIMIT_SW_Pin,
@@ -282,12 +282,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		if (command[0] == 'D' || command[0] == 'S') {
 			R4->comandHandler(command);
 		}
-		HAL_UART_Transmit(&huart3, (uint8_t*) "RECEIVED\n",
-				strlen("RECEIVED\n"), 500);
+		HAL_UART_Transmit(&huart3, (uint8_t*) "RECEIVED\n", strlen("RECEIVED\n"), 500);
 		memset(BTbuf, 0, sizeof(BTbuf));
 		HAL_UART_Receive_IT(&huart3, BTbuf, 15);
-
-
 	}
 }
 /* USER CODE END 4 */

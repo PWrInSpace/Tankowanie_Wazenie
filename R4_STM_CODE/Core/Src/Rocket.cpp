@@ -54,7 +54,7 @@ void Rocket::comandHandler(std::string comand){
 }
 
 std::string Rocket::getInfo(){ //not tested
-	char bufx[10];
+	char bufx[15];
 	std::string tmp(std::to_string(currState));
 	tmp.insert(tmp.length(), ";");
 	tmp.insert(tmp.length(), std::to_string(igniter->isConnected()));
@@ -64,6 +64,8 @@ std::string Rocket::getInfo(){ //not tested
 	tmp.insert(tmp.length(), std::to_string(DeprMotor->getStatus()));
 	tmp.insert(tmp.length(), ";");
 	tmp.insert(tmp.length(), std::to_string(QDMotor->getStatus()));
+	tmp.insert(tmp.length(), ";");
+	tmp.insert(tmp.length(), std::to_string(PQDMotor->getStatus()));
 	tmp.insert(tmp.length(), ";");
 	std::sprintf(bufx, "%.1f", RocketWeight->getWeigthInKilogramsWithOffset());
 	tmp.insert(tmp.length(), bufx);
