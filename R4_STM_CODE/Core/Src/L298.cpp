@@ -27,7 +27,7 @@ void Motor::stop(){
 	HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_RESET);
 }
 
-void Motor::open(uint8_t milisecs){
+void Motor::open(uint32_t milisecs){
 	HAL_GPIO_WritePin(GPIO_PORT_IN1, PIN_IN1, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_RESET);
 	__HAL_TIM_SET_COMPARE(TIM_NR_EN, TIM_CHANNEL_EN, 999);
@@ -46,7 +46,7 @@ void Motor::open(uint8_t milisecs){
 	stop();
 }
 
-void Motor::close(uint8_t milisecs){
+void Motor::close(uint32_t milisecs){
 	HAL_GPIO_WritePin(GPIO_PORT_IN1, PIN_IN1, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_SET);
 	__HAL_TIM_SET_COMPARE(TIM_NR_EN, TIM_CHANNEL_EN, 999);
