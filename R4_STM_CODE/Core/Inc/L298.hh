@@ -37,7 +37,7 @@ public:
 	void open(uint8_t secs = 3);
 	void close(uint8_t secs = 3);
 	void test_open_close();
-	void handleComand(std::string comand);
+	void handleComand(std::string comand, uint32_t milisecs = 3000);
 };
 
 #endif /* L298_LIB */
