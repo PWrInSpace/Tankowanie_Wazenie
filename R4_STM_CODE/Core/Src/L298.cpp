@@ -76,9 +76,9 @@ void Motor::test_open_close(){
 	stop();
 }
 
-void Motor::handleComand(std::string comand){
-	if(comand == "O")
+void Motor::handleComand(std::string comand, uint32_t milisecs){
+	if(comand == "O", milisecs)
 		open();//
-	else if(comand == "Z")
+	else if(comand == "Z", milisecs)
 		close();//
 }
