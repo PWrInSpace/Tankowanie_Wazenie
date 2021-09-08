@@ -38,8 +38,8 @@ void Motor::open(uint8_t secs){
 				status = Status::OPEN;
 				break;
 			}
+			HAL_Delay(10);
 		}
-		HAL_Delay(10);
 	}
 	else
 		HAL_Delay(secs * 1000);
@@ -57,8 +57,8 @@ void Motor::close(uint8_t secs){
 				status = Status::CLOSE;
 				break;
 			}
+			HAL_Delay(10);
 		}
-		HAL_Delay(10);
 	}
 	else
 		HAL_Delay(secs * 1000);
