@@ -33,12 +33,12 @@ void Motor::open(uint8_t secs){
 	__HAL_TIM_SET_COMPARE(TIM_NR_EN, TIM_CHANNEL_EN, 999);
 	status = Status::IDK;
 	if(GPIO_PORT_LS_OPEN != nullptr){ //if has limit switch
-		for(uint8_t steps =  0; steps < secs * 100 ; ++steps ){
+		for(uint32_t steps =  0; steps < secs * 100 ; ++steps ){
 			if(HAL_GPIO_ReadPin(GPIO_PORT_LS_OPEN, PIN_LS_OPEN) == GPIO_PIN_RESET){
 				status = Status::OPEN;
 				break;
 			}
-			HAL_Delay(10);
+		HAL_Delay(10);
 		}
 	}
 	else
@@ -52,7 +52,7 @@ void Motor::close(uint8_t secs){
 	__HAL_TIM_SET_COMPARE(TIM_NR_EN, TIM_CHANNEL_EN, 999);
 	status = Status::IDK;
 	if(GPIO_PORT_LS_CLOSE != nullptr){ //if has limit switch
-		for(uint8_t steps =  0; steps < secs * 100; ++steps){
+		for(uint32_t steps =  0; steps < secs * 100; ++steps){
 			if(HAL_GPIO_ReadPin(GPIO_PORT_LS_CLOSE, PIN_LS_CLOSE) == GPIO_PIN_RESET){
 				status = Status::CLOSE;
 				break;
