@@ -34,8 +34,8 @@ public:
 			GPIO_TypeDef* _GPIO_PORT_LS_CLOSE = nullptr, uint16_t _PIN_LS_CLOSE = 0);
 	Status getStatus();
 	void stop();
-	void open(uint8_t secs = 3);
-	void close(uint8_t secs = 3);
+	void open(uint32_t milisecs);
+	void close(uint32_t milisecs);
 	void test_open_close();
 	void handleComand(std::string comand, uint32_t milisecs = 3000);
 };
