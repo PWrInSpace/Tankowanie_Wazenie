@@ -136,7 +136,7 @@ int main(void) {
 			FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin); //tankujący - dwie krancówki (1 i 2)
 	Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin, DEPR_CLOSE_GPIO_Port,
 			DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2,
-			DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin,
+			DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_OPEN_LIMIT_SW_Pin,
 			DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);//odpowietrzajacy - dwie krancówki (3 i 4)
 	Motor QDMotor(QD_OPEN_GPIO_Port, QD_OPEN_Pin, QD_CLOSE_GPIO_Port,
 			QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3);
