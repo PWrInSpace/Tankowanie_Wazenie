@@ -174,33 +174,33 @@ int main(void) {
 		HAL_Delay(50);
 
 		switch (R4->currState) {
-		case Init: //test state		//0
-			//place for random tests	//
+			case Init: //test state		//0
+				//place for random tests	//
 
-			// (end) place for random test //
-			R4->currState = Idle;
-			HAL_Delay(500);
-			break;
-		case Idle: {	//1
-			HAL_Delay(500);
-			break;
-		}
-		case Fueling: {	//2
-			HAL_Delay(250);
-			break;
-		}
-		case Countdown: {	//3
-			HAL_Delay(1000);
-			break;
-		}
-		case Flight: {	//5:Flight aka FIRED
-			HAL_Delay(15000);
-			break;
-		}
-		case Abort: {	//4:ABORT
-			HAL_Delay(1000);
-			break;
-		}
+				// (end) place for random test //
+				R4->currState = Idle;
+				HAL_Delay(500);
+				break;
+			case Idle: {	//1
+				HAL_Delay(500);
+				break;
+			}
+			case Fueling: {	//2
+				HAL_Delay(250);
+				break;
+			}
+			case Countdown: {	//3
+				HAL_Delay(1000);
+				break;
+			}
+			case Flight: {	//5:Flight aka FIRED
+				HAL_Delay(15000);
+				break;
+			}
+			case Abort: {	//4:ABORT
+				HAL_Delay(1000);
+				break;
+			}
 		}
 	}
 
