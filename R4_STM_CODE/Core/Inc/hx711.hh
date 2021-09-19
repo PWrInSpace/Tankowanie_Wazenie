@@ -23,8 +23,11 @@ public:
 	void addToOffset(int32_t DifOffsetInBits);
 	void tare();
 	void initialCalibration(int32_t testLoadInGrams, uint16_t calibrationTimeInMilis = 6666);
+	int8_t waitingForReadyState(uint16_t timeInMilis = 1000);
 	int32_t ReadValue();
 	int32_t AverageValue(uint16_t sampleSize = 20);
+
+
 };
 
 void BlinkNTimesDuringXMilis(uint16_t blinkTimes = 200, uint16_t timeInMilis = 10000);

@@ -59,17 +59,13 @@ void HX711::tare(){
 void HX711::initialCalibration(int32_t testLoadInGrams, uint16_t calibrationTimeInMilis){
 	if (testLoadInGrams == 0)
 		return;
-
-	int32_t initialWeight = AverageValue(); 	//starts with load cells empty
+	//starts with load cells empty
+	int32_t initialWeight = AverageValue();
 	OffsetInBits = -initialWeight;
-
-	for(uint8_t i = 0; i < 200 ; ++i){ 	//time to put testWeight on load cell
-		HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
-		HAL_Delay(calibrationTimeInMilis / 200);
-	}
-	HAL_GPIO_WritePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin, GPIO_PIN_SET);
-
+	//time to put testLoad on load cell
+	BlinkNTimesDuringXMilis(200, calibrationTimeInMilis);
 	int32_t weightWithLoad = AverageValue();
+
 	BitsToGramRatio = (weightWithLoad - initialWeight) / testLoadInGrams;
 }
 
@@ -77,35 +73,24 @@ int32_t HX711::ReadValue(){
 	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
 	int32_t buffer = 0;
 
-	for(uint16_t i = 0; i < 10000; ++i){
-		if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 0 )
-			break;
-		else if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 1 && i > 9990)
-			return 0;
-		else
-			continue;
-	}
-
+	if (!waitingForReadyState(1000))
+		return 0;
 	for (uint8_t i = 0; i < 24; ++i){
 		HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
 		buffer = buffer << 1 ;
 		buffer+=HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
 		HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
 	}
-	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
+	for(uint8_t i = 0; i < GAIN; ++i){
+		HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
+	}
+	waitingForReadyState(1000);
 
-    for(uint16_t i = 0; i < 10000; ++i){
-		if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 1)
-			break;
-		else
-			continue;
-    }
     if (buffer & 0x800000){
     	buffer |= 0xFF000000;
     }
 	return buffer;
-
 }
 
 int32_t HX711::AverageValue(uint16_t sampleSize){
@@ -123,6 +108,18 @@ int32_t HX711::AverageValue(uint16_t sampleSize){
     	return sum / (succesfulReads);
     else
     	return -1;
+}
+
+
+int8_t HX711::waitingForReadyState(uint16_t timeInMilis){
+	for(uint16_t i = 0; i < timeInMilis; ++i){
+		HAL_Delay(1);
+		if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 0 ) //ready
+			return 1;
+		else
+			continue;
+	}
+	return 0;
 }
 
 void BlinkNTimesDuringXMilis(uint16_t blinkTimes, uint16_t timeInMilis){
