@@ -20,8 +20,13 @@ uint16_t Rocket::getCurrState(){
 void Rocket::comandHandler(std::string comand){
 	if(comand.substr(0, 4) == "STAT"){ // state'y
 		currState = (state)(comand[7] - 48);
-		if(currState == Abort)
+		if(currState == Idle){
 			FillMotor->close();
+		}
+		else if(currState == Abort){
+			FillMotor->close();
+			DeprMotor->open();
+		}
 	}
 	else if(comand.substr(0, 4) == "DSTA" && currState == Countdown)  //FIRE
 		igniter->FIRE();
