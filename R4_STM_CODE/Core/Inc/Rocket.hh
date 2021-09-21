@@ -29,7 +29,7 @@ public:
 			std::shared_ptr<Motor> _QDMotor, std::shared_ptr<Igniter> _igniter,
 			std::shared_ptr<HX711> _RocketWeight, std::shared_ptr<HX711> _TankWeight,
 			std::shared_ptr<Motor> _PQDMotor = nullptr);
-	uint16_t getCurrState();
-	std::string getInfo();
-	void comandHandler(std::string comand);
+	uint16_t getCurrState() const;
+	std::string getInfo() const;
+	void comandHandler(const std::string & comand);
 };

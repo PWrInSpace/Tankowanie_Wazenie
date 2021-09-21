@@ -13,11 +13,11 @@ Rocket::Rocket(std::shared_ptr<Motor> _FillMotor, std::shared_ptr<Motor> _DeprMo
 	currState = Init;
 }
 	
-uint16_t Rocket::getCurrState(){
+uint16_t Rocket::getCurrState() const{
 	return currState;
 }
 
-void Rocket::comandHandler(std::string comand){
+void Rocket::comandHandler(const std::string & comand){
 	if(comand.substr(0, 4) == "STAT"){ // state'y
 		currState = (state)(comand[7] - 48);
 		if(currState == Idle){
@@ -61,7 +61,7 @@ void Rocket::comandHandler(std::string comand){
 	}
 }
 
-std::string Rocket::getInfo(){ //not tested
+std::string Rocket::getInfo() const{
 	char bufx[15];
 	std::string tmp(std::to_string(currState));
 	tmp.insert(tmp.length(), ";");
