@@ -119,7 +119,7 @@ int main(void) {
 
 	__HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
 	HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded, DATA_LENGTH);
-	xbee_init(&communication, 0x0013A20041C283E5, &huart2); //inicjalizacja modułu xbee
+	xbee_init(&communication, 0x0013A20041C283D6, &huart2); //inicjalizacja modułu xbee
 
 	///ADDED FOR BLUETOOTH///{
 	__HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
