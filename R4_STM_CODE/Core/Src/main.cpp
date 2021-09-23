@@ -161,7 +161,10 @@ int main(void) {
 			std::make_shared<Motor>(PQDMotor));
 	R4 = std::make_shared<Rocket>(tmp);
 
-	//R4->comandHandler("DWCT;003563");
+	//R4->comandHandler("STAT;0;1");
+
+	//R4->comandHandler("DWCT;003563"); 	//calibration
+
 	while (1) {
 		HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 
@@ -170,7 +173,6 @@ int main(void) {
 		xbee_transmit_char(communication, dataOut);
 
 		HAL_UART_Transmit(&huart3, (uint8_t*) dataOut, strlen(dataOut), 500);//BT
-
 		HAL_Delay(50);
 
 		switch (R4->currState) {
@@ -198,6 +200,10 @@ int main(void) {
 				break;
 			}
 			case Abort: {	//4:ABORT
+				HAL_Delay(1000);
+				break;
+			}
+			default:{
 				HAL_Delay(1000);
 				break;
 			}

@@ -17,47 +17,54 @@ uint16_t Rocket::getCurrState() const{
 	return currState;
 }
 
-void Rocket::comandHandler(const std::string & comand){
+void Rocket::comandHandler(const std::string & Input){
+	std::string_view comand(Input);
+	int64_t tempNumber = -1;
+	std::from_chars(comand.data() + 5, comand.data() + comand.size(), tempNumber);
+
 	if(comand.substr(0, 4) == "STAT"){ // state'y
-		currState = (state)(comand[7] - 48);
-		if(currState == Idle){
-			FillMotor->close();
-		}
-		else if(currState == Abort){
-			FillMotor->close();
-			DeprMotor->open();
+		uint8_t newState = (comand[7] - '0'); //char -> int
+		if(newState < _NumOfStates){
+			currState = (state)newState;
+			if(currState == Idle){
+				FillMotor->close();
+			}
+			else if(currState == Abort){
+				FillMotor->close();
+				DeprMotor->open();
+			}
 		}
 	}
 	else if(comand.substr(0, 4) == "DSTA" && currState == Countdown)  //FIRE
 		igniter->FIRE();
 	else if(comand.substr(0, 3) == "DWC"){ //calibration
 		if(comand.substr(3, 1) == "R")
-			RocketWeight->initialCalibration(std::stoi(comand.substr(5, 6)));
+			RocketWeight->initialCalibration(tempNumber);
 		else if(comand.substr(3, 1) == "T"){
-			TankWeight->initialCalibration(std::stoi(comand.substr(5, 6)));
+			TankWeight->initialCalibration(tempNumber);
 		}
 	}
 	else if(comand.substr(0, 3) == "DWO"){	//wagi
 		if(comand.substr(3, 1) == "R")
-			RocketWeight->addToOffset(std::stoi(comand.substr(5, 8)));
+			RocketWeight->addToOffset(tempNumber);
 		else if(comand.substr(3, 1) == "T")
-			TankWeight->addToOffset(std::stoi(comand.substr(5, 8)));
+			TankWeight->addToOffset(tempNumber);
 	}
 	else if(comand.substr(0, 3) == "DWR"){ //wagi
 		if(comand.substr(3, 1) == "R")
-			RocketWeight->setBitsToGramRatio(std::stoi(comand.substr(5, 8)));
+			RocketWeight->setBitsToGramRatio(tempNumber);
 		else if(comand.substr(3, 1) == "T")
-			TankWeight->setBitsToGramRatio(std::stoi(comand.substr(5, 8)));
+			TankWeight->setBitsToGramRatio(tempNumber);
 	}
 	else if(comand.substr(0, 2) == "DZ"){	//zawory
 		if(comand.substr(2, 1) == "T")
-			FillMotor->handleComand(comand.substr(3, 1));
+			FillMotor->handleComand(comand[3]);
 		else if(comand.substr(2, 1) == "O")
-			DeprMotor->handleComand(comand.substr(3, 1));
+			DeprMotor->handleComand(comand[3]);
 		else if(comand.substr(2, 1) == "Q")
-			QDMotor->handleComand(comand.substr(3, 1));
+			QDMotor->handleComand(comand[3]);
 		else if(comand.substr(2, 1) == "D")
-			PQDMotor->handleComand(comand.substr(3, 1));
+			PQDMotor->handleComand(comand[3]);
 	}
 }
 

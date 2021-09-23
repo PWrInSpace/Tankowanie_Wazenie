@@ -14,7 +14,7 @@ Motor::Motor(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1,
 	status(Status::IDK)
 {
 	HAL_TIM_PWM_Start(TIM_NR_EN, TIM_CHANNEL_EN);
-	close();
+	stop();
 }
 
 Status Motor::getStatus(){
@@ -76,9 +76,9 @@ void Motor::test_open_close(){
 	stop();
 }
 
-void Motor::handleComand(std::string command, uint32_t milisecs){
-	if(command == "O")
+void Motor::handleComand(char command, uint32_t milisecs){
+	if(command == 'O')
 		open(milisecs);
-	else if(command == "Z")
+	else if(command == 'Z')
 		close(milisecs);
 }

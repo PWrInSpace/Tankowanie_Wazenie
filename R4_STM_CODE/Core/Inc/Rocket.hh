@@ -3,6 +3,7 @@
 #include "hx711.hh"
 #include "string"
 #include "memory"
+#include "charconv"
 
 enum state {
 	Init = 0,
@@ -10,7 +11,8 @@ enum state {
 	Fueling = 2,
 	Countdown = 3,
 	Flight = 4,
-	Abort = 5
+	Abort = 5,
+	_NumOfStates = 6
 };
 
 class Rocket{

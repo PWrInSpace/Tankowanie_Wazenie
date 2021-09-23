@@ -37,7 +37,7 @@ public:
 	void open(uint32_t milisecs = 3000);
 	void close(uint32_t milisecs = 3000);
 	void test_open_close();
-	void handleComand(std::string comand, uint32_t milisecs = 3000);
+	void handleComand(char comand, uint32_t milisecs = 3000);
 };
 
 #endif /* L298_LIB */
