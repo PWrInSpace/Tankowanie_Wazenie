@@ -161,8 +161,10 @@ int main(void) {
 			std::make_shared<Motor>(PQDMotor));
 	R4 = std::make_shared<Rocket>(tmp);
 
-	//R4->comandHandler("STAT;0;1");
+	//sprintf(dataOut, "R4TN;CONNECTED\n");
+	//xbee_transmit_char(communication, dataOut);
 
+	//R4->comandHandler("STAT;0;1");
 	//R4->comandHandler("DWCT;003563"); 	//calibration
 
 	while (1) {

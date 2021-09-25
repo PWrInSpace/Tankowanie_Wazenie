@@ -23,7 +23,7 @@ void Rocket::comandHandler(const std::string & Input){
 	std::from_chars(comand.data() + 5, comand.data() + comand.size(), tempNumber);
 
 	if(comand.substr(0, 4) == "STAT"){ // state'y
-		uint8_t newState = (comand[7] - '0'); //char -> int
+		uint8_t newState = comand[7] - '0'; //char -> int
 		if(newState < _NumOfStates){
 			currState = (state)newState;
 			if(currState == Idle){
@@ -71,21 +71,22 @@ void Rocket::comandHandler(const std::string & Input){
 std::string Rocket::getInfo() const{
 	char bufx[15];
 	std::string tmp(std::to_string(currState));
-	tmp.insert(tmp.length(), ";");
-	tmp.insert(tmp.length(), std::to_string(igniter->isConnected()));
-	tmp.insert(tmp.length(), ";");
-	tmp.insert(tmp.length(), std::to_string(FillMotor->getStatus()));
-	tmp.insert(tmp.length(), ";");
-	tmp.insert(tmp.length(), std::to_string(DeprMotor->getStatus()));
-	tmp.insert(tmp.length(), ";");
-	tmp.insert(tmp.length(), std::to_string(QDMotor->getStatus()));
-	tmp.insert(tmp.length(), ";");
-	tmp.insert(tmp.length(), std::to_string(PQDMotor->getStatus()));
-	tmp.insert(tmp.length(), ";");
+	tmp.resize(50);
+	tmp.append(";");
+	tmp.append(std::to_string(igniter->isConnected()));
+	tmp.append(";");
+	tmp.append(std::to_string(FillMotor->getStatus()));
+	tmp.append(";");
+	tmp.append(std::to_string(DeprMotor->getStatus()));
+	tmp.append(";");
+	tmp.append(std::to_string(QDMotor->getStatus()));
+	tmp.append(";");
+	tmp.append(std::to_string(PQDMotor->getStatus()));
+	tmp.append(";");
 	std::sprintf(bufx, "%.1f", RocketWeight->getWeigthInKilogramsWithOffset());
-	tmp.insert(tmp.length(), bufx);
-	tmp.insert(tmp.length(), ";");
+	tmp.append(bufx);
+	tmp.append(";");
 	std::sprintf(bufx, "%.1f", TankWeight->getWeigthInKilogramsWithOffset());
-	tmp.insert(tmp.length(), bufx);
+	tmp.append(bufx);
 	return tmp;
 }

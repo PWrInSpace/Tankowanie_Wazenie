@@ -73,7 +73,7 @@ int32_t HX711::ReadValue(){
 	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
 	int32_t buffer = 0;
 
-	if (!waitingForReadyState(1000))
+	if (!waitingForReadyState())
 		return 0;
 	for (uint8_t i = 0; i < 24; ++i){
 		HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
@@ -85,7 +85,7 @@ int32_t HX711::ReadValue(){
 		HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
 	}
-	waitingForReadyState(1000);
+	waitingForReadyState();
 
     if (buffer & 0x800000){
     	buffer |= 0xFF000000;
