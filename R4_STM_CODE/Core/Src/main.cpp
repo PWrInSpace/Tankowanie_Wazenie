@@ -177,12 +177,12 @@ int main(void) {
 		HAL_UART_Transmit(&huart3, (uint8_t*) dataOut, strlen(dataOut), 500);//BT
 		HAL_Delay(50);
 
-		switch (R4->currState) {
+		switch (R4->getCurrState()) {
 			case Init: //test state		//0
 				//place for random tests	//
 
 				// (end) place for random test //
-				R4->currState = Idle;
+				R4->setCurrState(Idle);
 				HAL_Delay(500);
 				break;
 			case Idle: {	//1
@@ -206,7 +206,7 @@ int main(void) {
 				break;
 			}
 			default:{
-				HAL_Delay(1000);
+				R4->setCurrState(Idle);
 				break;
 			}
 		}
@@ -282,11 +282,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 				}
 			}
 		}
-		//tutaj zmienić tylko huart
 		HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded,
 				DATA_LENGTH);
 	} else if (huart->Instance == USART3) {
-		std::string command((char*) BTbuf);
+		std::string command((char*) BTbuf);	//TODO: change to string_view?
 		if (command[0] == 'D' || command[0] == 'S') {
 			R4->comandHandler(command);
 		}

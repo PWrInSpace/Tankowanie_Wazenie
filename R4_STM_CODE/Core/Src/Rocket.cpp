@@ -13,7 +13,22 @@ Rocket::Rocket(std::shared_ptr<Motor> _FillMotor, std::shared_ptr<Motor> _DeprMo
 	currState = Init;
 }
 	
-uint16_t Rocket::getCurrState() const{
+void Rocket::setCurrState(uint8_t newState){
+	if(newState < _NumOfStates)
+		currState = (state)newState;
+	else
+		currState = Idle;
+
+	if(currState == Idle){
+		FillMotor->close();
+	}
+	else if(currState == Abort){
+		FillMotor->close();
+		DeprMotor->open();
+	}
+}
+
+uint8_t Rocket::getCurrState() const{
 	return currState;
 }
 
@@ -23,17 +38,7 @@ void Rocket::comandHandler(const std::string & Input){
 	std::from_chars(comand.data() + 5, comand.data() + comand.size(), tempNumber);
 
 	if(comand.substr(0, 4) == "STAT"){ // state'y
-		uint8_t newState = comand[7] - '0'; //char -> int
-		if(newState < _NumOfStates){
-			currState = (state)newState;
-			if(currState == Idle){
-				FillMotor->close();
-			}
-			else if(currState == Abort){
-				FillMotor->close();
-				DeprMotor->open();
-			}
-		}
+		setCurrState(comand[7] - '0');
 	}
 	else if(comand.substr(0, 4) == "DSTA" && currState == Countdown)  //FIRE
 		igniter->FIRE();
@@ -70,19 +75,13 @@ void Rocket::comandHandler(const std::string & Input){
 
 std::string Rocket::getInfo() const{
 	char bufx[15];
-	std::string tmp(std::to_string(currState));
-	tmp.resize(50);
-	tmp.append(";");
-	tmp.append(std::to_string(igniter->isConnected()));
-	tmp.append(";");
-	tmp.append(std::to_string(FillMotor->getStatus()));
-	tmp.append(";");
-	tmp.append(std::to_string(DeprMotor->getStatus()));
-	tmp.append(";");
-	tmp.append(std::to_string(QDMotor->getStatus()));
-	tmp.append(";");
-	tmp.append(std::to_string(PQDMotor->getStatus()));
-	tmp.append(";");
+	std::string tmp(std::to_string(currState) + ";");
+	//tmp.resize(50);
+	tmp.append(std::to_string(igniter->isConnected()) + ";");
+	tmp.append(std::to_string(FillMotor->getStatus()) + ";");
+	tmp.append(std::to_string(DeprMotor->getStatus()) + ";");
+	tmp.append(std::to_string(QDMotor->getStatus()) + ";");
+	tmp.append(std::to_string(PQDMotor->getStatus()) + ";");
 	std::sprintf(bufx, "%.1f", RocketWeight->getWeigthInKilogramsWithOffset());
 	tmp.append(bufx);
 	tmp.append(";");
