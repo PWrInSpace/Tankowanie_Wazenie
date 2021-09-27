@@ -32,7 +32,8 @@ uint8_t Rocket::getCurrState() const{
 	return currState;
 }
 
-void Rocket::comandHandler(const std::string & Input){
+template <typename cString>
+void Rocket::comandHandler(const cString & Input){
 	std::string_view comand(Input);
 	int64_t tempNumber = -1;
 	std::from_chars(comand.data() + 5, comand.data() + comand.size(), tempNumber);
@@ -89,3 +90,6 @@ std::string Rocket::getInfo() const{
 	tmp.append(bufx);
 	return tmp;
 }
+
+template void Rocket::comandHandler(const std::string &);
+template void Rocket::comandHandler(const std::string_view &);

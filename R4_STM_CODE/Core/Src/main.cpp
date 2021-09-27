@@ -163,10 +163,8 @@ int main(void) {
 
 	//sprintf(dataOut, "R4TN;CONNECTED\n");
 	//xbee_transmit_char(communication, dataOut);
-
-	//R4->comandHandler("STAT;0;1");
-	//R4->comandHandler("DWCT;003563"); 	//calibration
-
+	R4->comandHandler(std::string("STAT;0;1"));
+	R4->comandHandler(std::string("DWCT;003563")); //calibration
 	while (1) {
 		HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 
@@ -275,7 +273,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 			 pobranie adresu jest złym pomysłem bo przy każdym odebraniu tablica zmienia swoją zawartosć
 			 */
 			if (strncmp(xbee_rx.data_array, "TNWN", 4) == 0) {
-				std::string comand(xbee_rx.data_array);
+				std::string_view comand(xbee_rx.data_array);
 				comand = comand.substr(5, std::string::npos); //cut WNWN;
 				if (comand[0] == 'D' || comand[0] == 'S') {
 					R4->comandHandler(comand);
@@ -285,7 +283,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded,
 				DATA_LENGTH);
 	} else if (huart->Instance == USART3) {
-		std::string command((char*) BTbuf);	//TODO: change to string_view?
+		std::string_view command((char*) BTbuf);	//TODO: change to string_view?
 		if (command[0] == 'D' || command[0] == 'S') {
 			R4->comandHandler(command);
 		}

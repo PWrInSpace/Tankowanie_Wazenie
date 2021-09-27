@@ -33,5 +33,8 @@ public:
 	void setCurrState(uint8_t newState);
 	uint8_t getCurrState() const;
 	std::string getInfo() const;
-	void comandHandler(const std::string & comand);
+	template <typename cString>
+	void comandHandler(const cString & comand);
 };
+
+
