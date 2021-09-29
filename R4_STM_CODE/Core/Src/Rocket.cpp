@@ -63,6 +63,7 @@ void Rocket::comandHandler(const cString & Input){
 			TankWeight->setBitsToGramRatio(tempNumber);
 	}
 	else if(comand.substr(0, 2) == "DZ"){	//zawory
+		//wydziel
 		if(comand.substr(2, 1) == "T")
 			FillMotor->handleComand(comand[3]);
 		else if(comand.substr(2, 1) == "O")

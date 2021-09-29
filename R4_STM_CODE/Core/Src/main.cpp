@@ -164,6 +164,7 @@ int main(void) {
 	//sprintf(dataOut, "R4TN;CONNECTED\n");
 	//xbee_transmit_char(communication, dataOut);
 	//R4->comandHandler(std::string("STAT;0;1"));
+	//R4->comandHandler(std::string("DWCR;003563")); //calibration
 	//R4->comandHandler(std::string("DWCT;003563")); //calibration
 	while (1) {
 		HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);

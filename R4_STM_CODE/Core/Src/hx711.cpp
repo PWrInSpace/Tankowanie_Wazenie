@@ -25,11 +25,11 @@ int32_t HX711::getOffsetInBits() const{
 	return OffsetInBits;
 }
 
-int32_t HX711::getBitsToGramRatio() const{
+float HX711::getBitsToGramRatio() const{
 	return BitsToGramRatio;
 }
 
-void HX711::setBitsToGramRatio(int32_t newBitsToGramRatio){
+void HX711::setBitsToGramRatio(float newBitsToGramRatio){
 	BitsToGramRatio = newBitsToGramRatio;
 }
 
@@ -66,7 +66,7 @@ void HX711::initialCalibration(int32_t testLoadInGrams, uint16_t calibrationTime
 	BlinkNTimesDuringXMilis(200, calibrationTimeInMilis);
 	int32_t weightWithLoad = AverageValue();
 
-	BitsToGramRatio = (weightWithLoad - initialWeight) / testLoadInGrams;
+	BitsToGramRatio = (weightWithLoad - initialWeight) / (float)testLoadInGrams;
 }
 
 int32_t HX711::ReadValue(){
