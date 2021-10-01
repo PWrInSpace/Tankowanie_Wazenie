@@ -43,34 +43,20 @@ void Rocket::comandHandler(const cString & Input){
 	}
 	else if(comand.substr(0, 4) == "DSTA" && currState == Countdown)  //FIRE
 		igniter->FIRE();
-	else if(comand.substr(0, 3) == "DWC"){ //calibration
-		if(comand.substr(3, 1) == "R")
-			RocketWeight->initialCalibration(tempNumber);
-		else if(comand.substr(3, 1) == "T"){
-			TankWeight->initialCalibration(tempNumber);
-		}
-	}
-	else if(comand.substr(0, 3) == "DWO"){	//wagi
-		if(comand.substr(3, 1) == "R")
-			RocketWeight->addToOffset(tempNumber);
-		else if(comand.substr(3, 1) == "T")
-			TankWeight->addToOffset(tempNumber);
-	}
-	else if(comand.substr(0, 3) == "DWR"){ //wagi
-		if(comand.substr(3, 1) == "R")
-			RocketWeight->setBitsToGramRatio(tempNumber);
-		else if(comand.substr(3, 1) == "T")
-			TankWeight->setBitsToGramRatio(tempNumber);
+	else if(comand.substr(0, 2) == "DW"){	//wagi
+		if(comand[2] == 'R')
+			RocketWeight->handleComand(comand[3], tempNumber);
+		else if(comand[2] == 'T')
+			TankWeight->handleComand(comand[3], tempNumber);
 	}
 	else if(comand.substr(0, 2) == "DZ"){	//zawory
-		//wydziel
-		if(comand.substr(2, 1) == "T")
+		if(comand[2] == 'T')
 			FillMotor->handleComand(comand[3]);
-		else if(comand.substr(2, 1) == "O")
+		else if(comand[2] == 'O')
 			DeprMotor->handleComand(comand[3]);
-		else if(comand.substr(2, 1) == "Q")
+		else if(comand[2] == 'Q')
 			QDMotor->handleComand(comand[3]);
-		else if(comand.substr(2, 1) == "D")
+		else if(comand[2] == 'D')
 			PQDMotor->handleComand(comand[3]);
 	}
 }

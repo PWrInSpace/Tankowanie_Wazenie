@@ -146,10 +146,10 @@ int main(void) {
 			PQD_CLOSE_Pin, &htim3, TIM_CHANNEL_4);
 	Igniter igniter(FIRE_GPIO_Port, FIRE_Pin, IGNITER_CONNECTION_TEST_GPIO_Port,
 			IGNITER_CONNECTION_TEST_Pin);
-	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port,
-			HX1_SCL_Pin);
-	HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port,
-			HX2_SCL_Pin);
+	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin,
+			-12934, 26.9301147); //hardcoded
+	HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin,
+			-1209946 , 18.5304527); //hardcoded
 	Voltmeter VM(&hadc1, 1);
 
 	Rocket tmp(std::make_shared<Motor>(FillMotor),
@@ -283,8 +283,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		}
 		HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded,
 				DATA_LENGTH);
-	} else if (huart->Instance == USART3) {
-		std::string_view command((char*) BTbuf);	//TODO: change to string_view?
+	}
+	else if (huart->Instance == USART3) {
+		std::string_view command((char*) BTbuf);	//TODO: test (changed to string_view)
 		if (command[0] == 'D' || command[0] == 'S') {
 			R4->comandHandler(command);
 		}

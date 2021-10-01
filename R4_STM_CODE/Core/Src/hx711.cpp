@@ -1,15 +1,17 @@
 #include <hx711.hh>
 
 HX711::HX711(GPIO_TypeDef* _Dt_gpio, uint16_t _Dt_pin,
-			 GPIO_TypeDef* _Sck_gpio, uint16_t _Sck_pin, uint8_t gain):
-	Dt_gpio(_Dt_gpio), Dt_pin(_Dt_pin), Sck_gpio(_Sck_gpio), Sck_pin(_Sck_pin), BitsToGramRatio(0)
+			 GPIO_TypeDef* _Sck_gpio, uint16_t _Sck_pin,
+			 int32_t InitialOffsetInBits, float InitialBitsToGramRatio, uint8_t gain):
+	Dt_gpio(_Dt_gpio), Dt_pin(_Dt_pin), Sck_gpio(_Sck_gpio), Sck_pin(_Sck_pin),
+	OffsetInBits(InitialOffsetInBits), BitsToGramRatio(InitialBitsToGramRatio)
 {
 	setGain(gain);
 }
 
 int32_t HX711::getWeigthInGramsWithOffset(uint16_t times){
 	int32_t average = AverageValue(times);
-	if(BitsToGramRatio != 0){
+	if(std::abs(BitsToGramRatio) > 0.001){
 		return (average + OffsetInBits) / BitsToGramRatio;
 	}
 	else //without calibration
@@ -122,6 +124,17 @@ int8_t HX711::waitingForReadyState(uint16_t timeInMilis){
 	return 0;
 }
 
+void HX711::handleComand(char command, int32_t inputNumber){
+	if(command == 'C')
+		initialCalibration(inputNumber);
+	else if(command == 'T')
+		tare();
+	else if(command == 'R')
+		setBitsToGramRatio(inputNumber);
+	else if(command == 'O')
+		addToOffset(inputNumber);
+	}
+
 void BlinkNTimesDuringXMilis(uint16_t blinkTimes, uint16_t timeInMilis){
 	for(uint8_t i = 0; i < blinkTimes ; ++i){
 		HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
@@ -129,3 +142,4 @@ void BlinkNTimesDuringXMilis(uint16_t blinkTimes, uint16_t timeInMilis){
 	}
 	HAL_GPIO_WritePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin, GPIO_PIN_SET);
 }
+
