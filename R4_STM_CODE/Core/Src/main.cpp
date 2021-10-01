@@ -161,7 +161,11 @@ int main(void) {
 			std::make_shared<Motor>(PQDMotor));
 	R4 = std::make_shared<Rocket>(tmp);
 
-	//R4->comandHandler("DWCT;003563");
+	//sprintf(dataOut, "R4TN;CONNECTED\n");
+	//xbee_transmit_char(communication, dataOut);
+	//R4->comandHandler(std::string("STAT;0;1"));
+	//R4->comandHandler(std::string("DWCR;003563")); //calibration
+	//R4->comandHandler(std::string("DWCT;003563")); //calibration
 	while (1) {
 		HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 
@@ -170,37 +174,40 @@ int main(void) {
 		xbee_transmit_char(communication, dataOut);
 
 		HAL_UART_Transmit(&huart3, (uint8_t*) dataOut, strlen(dataOut), 500);//BT
-
 		HAL_Delay(50);
 
-		switch (R4->currState) {
-		case Init: //test state		//0
-			//place for random tests	//
+		switch (R4->getCurrState()) {
+			case Init: //test state		//0
+				//place for random tests	//
 
-			// (end) place for random test //
-			R4->currState = Idle;
-			HAL_Delay(500);
-			break;
-		case Idle: {	//1
-			HAL_Delay(500);
-			break;
-		}
-		case Fueling: {	//2
-			HAL_Delay(250);
-			break;
-		}
-		case Countdown: {	//3
-			HAL_Delay(1000);
-			break;
-		}
-		case Flight: {	//5:Flight aka FIRED
-			HAL_Delay(15000);
-			break;
-		}
-		case Abort: {	//4:ABORT
-			HAL_Delay(1000);
-			break;
-		}
+				// (end) place for random test //
+				R4->setCurrState(Idle);
+				HAL_Delay(500);
+				break;
+			case Idle: {	//1
+				HAL_Delay(500);
+				break;
+			}
+			case Fueling: {	//2
+				HAL_Delay(250);
+				break;
+			}
+			case Countdown: {	//3
+				HAL_Delay(1000);
+				break;
+			}
+			case Flight: {	//5:Flight aka FIRED
+				HAL_Delay(15000);
+				break;
+			}
+			case Abort: {	//4:ABORT
+				HAL_Delay(1000);
+				break;
+			}
+			default:{
+				R4->setCurrState(Idle);
+				break;
+			}
 		}
 	}
 
@@ -267,18 +274,17 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 			 pobranie adresu jest złym pomysłem bo przy każdym odebraniu tablica zmienia swoją zawartosć
 			 */
 			if (strncmp(xbee_rx.data_array, "TNWN", 4) == 0) {
-				std::string comand(xbee_rx.data_array);
+				std::string_view comand(xbee_rx.data_array);
 				comand = comand.substr(5, std::string::npos); //cut WNWN;
 				if (comand[0] == 'D' || comand[0] == 'S') {
 					R4->comandHandler(comand);
 				}
 			}
 		}
-		//tutaj zmienić tylko huart
 		HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded,
 				DATA_LENGTH);
 	} else if (huart->Instance == USART3) {
-		std::string command((char*) BTbuf);
+		std::string_view command((char*) BTbuf);	//TODO: change to string_view?
 		if (command[0] == 'D' || command[0] == 'S') {
 			R4->comandHandler(command);
 		}

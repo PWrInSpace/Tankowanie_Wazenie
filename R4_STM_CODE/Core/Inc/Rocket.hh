@@ -3,6 +3,7 @@
 #include "hx711.hh"
 #include "string"
 #include "memory"
+#include "charconv"
 
 enum state {
 	Init = 0,
@@ -10,7 +11,8 @@ enum state {
 	Fueling = 2,
 	Countdown = 3,
 	Flight = 4,
-	Abort = 5
+	Abort = 5,
+	_NumOfStates = 6
 };
 
 class Rocket{
@@ -21,15 +23,18 @@ class Rocket{
 	std::shared_ptr<Igniter> igniter;
 	std::shared_ptr<HX711> RocketWeight;
 	std::shared_ptr<HX711> TankWeight;
-public:
 	volatile state currState;
-
+public:
 	Rocket() = default;
 	Rocket(std::shared_ptr<Motor> _FillMotor, std::shared_ptr<Motor> _DeprMotor,
 			std::shared_ptr<Motor> _QDMotor, std::shared_ptr<Igniter> _igniter,
 			std::shared_ptr<HX711> _RocketWeight, std::shared_ptr<HX711> _TankWeight,
 			std::shared_ptr<Motor> _PQDMotor = nullptr);
-	uint16_t getCurrState();
-	std::string getInfo();
-	void comandHandler(std::string comand);
+	void setCurrState(uint8_t newState);
+	uint8_t getCurrState() const;
+	std::string getInfo() const;
+	template <typename cString>
+	void comandHandler(const cString & comand);
 };
+
+

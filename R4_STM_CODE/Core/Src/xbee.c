@@ -1,5 +1,7 @@
 #include "xbee.h"
 
+
+
 //Wpisanie opcji api do tablicy
 //Tutaj bez dynamicznych bo nie ma kiedy zwolnić tablicy
 void xbee_options_init(uint8_t *options){
@@ -124,13 +126,6 @@ void xbee_transmit(Xbee sensor, float data){
 	xbee_send(&sensor);
 }
 
-void xbee_transmit_char(Xbee sensor, char *data){
-	xbee_char_load(data, &sensor);
-	xbee_length(&sensor);
-	xbee_checksum_count(&sensor);
-	xbee_send(&sensor);
-}
-
 //wczytanie podanych danych do struktury
 void xbee_char_load(char *data, Xbee *sensor){
 	sensor->data_length = strlen(data); //strlen niby powinien zadziałać bez
@@ -142,7 +137,12 @@ void xbee_char_load(char *data, Xbee *sensor){
 }
 
 
-
+void xbee_transmit_char(Xbee sensor, char *data){
+	xbee_char_load(data, &sensor);
+	xbee_length(&sensor);
+	xbee_checksum_count(&sensor);
+	xbee_send(&sensor);
+}
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -197,6 +197,10 @@ void xbee_receive(){
 	//długość całej tablicy
 	int mess_length = xbee_rx.length + 3; //3 bo dodajemy 4 elementy ale musimy odjąć jeden bo tablice sa numerowane od 0
 
+	if(mess_length > DATA_ARRAY){
+		//TO DO: error handling, add error struct 
+		return;
+	}
 
 	//sprawdzenie checksum
 	for(int i=3; i<mess_length; i++){

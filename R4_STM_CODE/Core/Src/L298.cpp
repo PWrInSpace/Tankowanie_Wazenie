@@ -3,7 +3,7 @@
 //make struct 'Motor', fill it, return pointer to it    (names for args start with '_' sign)
 Motor::Motor(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1,
 			 GPIO_TypeDef* _GPIO_PORT_IN2, uint16_t _PIN_IN2,
-			 TIM_HandleTypeDef* _TIM_NR_EN, uint16_t _TIM_CHANNEL_EN, 		//TIMER not PORT e.g.(&htim3)
+			 TIM_HandleTypeDef* _TIM_NR_EN, uint16_t _TIM_CHANNEL_EN, 		//TIMER not PORT (&htim3 = OK ; FILL_EN_PORT = NOT OK)
 			 GPIO_TypeDef* _GPIO_PORT_LS_OPEN, uint16_t _PIN_LS_OPEN,
 			 GPIO_TypeDef* _GPIO_PORT_LS_CLOSE, uint16_t _PIN_LS_CLOSE)
   :	GPIO_PORT_IN1(_GPIO_PORT_IN1), PIN_IN1(_PIN_IN1),
@@ -31,7 +31,7 @@ void Motor::open(uint32_t milisecs){
 	HAL_GPIO_WritePin(GPIO_PORT_IN1, PIN_IN1, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_RESET);
 	__HAL_TIM_SET_COMPARE(TIM_NR_EN, TIM_CHANNEL_EN, 999);
-	status = Status::IDK;
+	status = Status::ATTEMPTtoOPEN;
 	if(GPIO_PORT_LS_OPEN != nullptr){ //if has limit switch
 		for(uint32_t steps =  0; steps < milisecs/10 ; ++steps ){
 			if(HAL_GPIO_ReadPin(GPIO_PORT_LS_OPEN, PIN_LS_OPEN) == GPIO_PIN_RESET){
@@ -50,7 +50,7 @@ void Motor::close(uint32_t milisecs){
 	HAL_GPIO_WritePin(GPIO_PORT_IN1, PIN_IN1, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_SET);
 	__HAL_TIM_SET_COMPARE(TIM_NR_EN, TIM_CHANNEL_EN, 999);
-	status = Status::IDK;
+	status = Status::ATTEMPTtoCLOSE;
 	if(GPIO_PORT_LS_CLOSE != nullptr){ //if has limit switch
 		for(uint32_t steps =  0; steps < milisecs/10; ++steps){
 			if(HAL_GPIO_ReadPin(GPIO_PORT_LS_CLOSE, PIN_LS_CLOSE) == GPIO_PIN_RESET){
@@ -76,9 +76,9 @@ void Motor::test_open_close(){
 	stop();
 }
 
-void Motor::handleComand(std::string comand, uint32_t milisecs){
-	if(comand == "O")
-		open(milisecs);//
-	else if(comand == "Z")
-		close(milisecs);//
+void Motor::handleComand(char command, uint32_t milisecs){
+	if(command == 'O')
+		open(milisecs);
+	else if(command == 'Z')
+		close(milisecs);
 }

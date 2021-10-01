@@ -7,7 +7,7 @@
 #include "stdlib.h"
 #include <string>
 
-enum Status {CLOSE = 0, OPEN = 1, IDK = 2};
+enum Status {CLOSE = 0, OPEN = 1, IDK = 2, ATTEMPTtoCLOSE = 3 , ATTEMPTtoOPEN = 4};
 
 class Motor{
 private:
@@ -37,7 +37,7 @@ public:
 	void open(uint32_t milisecs = 3000);
 	void close(uint32_t milisecs = 3000);
 	void test_open_close();
-	void handleComand(std::string comand, uint32_t milisecs = 3000);
+	void handleComand(char comand, uint32_t milisecs = 3000);
 };
 
 #endif /* L298_LIB */
