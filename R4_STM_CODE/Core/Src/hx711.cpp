@@ -123,7 +123,7 @@ int8_t HX711::waitingForReadyState(uint16_t timeInMilis){
 }
 
 void BlinkNTimesDuringXMilis(uint16_t blinkTimes, uint16_t timeInMilis){
-	for(uint8_t i = 0; i < blinkTimes ; ++i){
+	for(uint16_t i = 0; i < blinkTimes ; ++i){
 		HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 		HAL_Delay(timeInMilis / blinkTimes);
 	}
