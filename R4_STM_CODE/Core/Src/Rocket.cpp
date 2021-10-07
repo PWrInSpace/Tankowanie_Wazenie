@@ -35,11 +35,10 @@ uint8_t Rocket::getCurrState() const{
 template <typename cString>
 void Rocket::comandHandler(const cString & Input){
 	std::string_view comand(Input);
-	int64_t tempNumber = -1;
-	std::from_chars(comand.data() + 5, comand.data() + comand.size(), tempNumber);
-
+	float tempNumber = std::stof(comand.data() + 5);
+	//std::from_chars(comand.data() + 5, comand.data() + comand.size(), tempNumber); //need to find compiler settings for this
 	if(comand.substr(0, 4) == "STAT"){ // state'y
-		setCurrState(comand[7] - '0');
+		setCurrState((uint8_t)(comand[7] - '0'));
 	}
 	else if(comand.substr(0, 4) == "DSTA" && currState == Countdown)  //FIRE
 		igniter->FIRE();
@@ -70,10 +69,10 @@ std::string Rocket::getInfo() const{
 	tmp.append(std::to_string(DeprMotor->getStatus()) + ";");
 	tmp.append(std::to_string(QDMotor->getStatus()) + ";");
 	tmp.append(std::to_string(PQDMotor->getStatus()) + ";");
-	std::sprintf(bufx, "%.1f", RocketWeight->getWeigthInKilogramsWithOffset());
+	std::sprintf(bufx, "%.2f", RocketWeight->getWeigthInKilogramsWithOffset());
 	tmp.append(bufx);
 	tmp.append(";");
-	std::sprintf(bufx, "%.1f", TankWeight->getWeigthInKilogramsWithOffset());
+	std::sprintf(bufx, "%.2f", TankWeight->getWeigthInKilogramsWithOffset());
 	tmp.append(bufx);
 	return tmp;
 }

@@ -13,9 +13,9 @@ int16_t Voltmeter::GetVoltageDividerRatio(){
 }
 
 int16_t Voltmeter::GetBatteryVoltageInMilivolts(){
-	return HAL_ADC_GetValue(ADC) * 3.21; // Hard Coded
+	return (int16_t)(HAL_ADC_GetValue(ADC) * 3.21); // Hard Coded
 }
 
 float Voltmeter::GetBatteryVoltageInVolts(){
-	return HAL_ADC_GetValue(ADC) * 3.21 / 1000; // Hard Coded
+	return (float)HAL_ADC_GetValue(ADC) * 3.21f / 1000.0f; // Hard Coded
 }

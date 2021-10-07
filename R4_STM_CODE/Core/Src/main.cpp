@@ -19,18 +19,19 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include <main.hh>
-#include "adc.h"
-#include "dma.h"
-#include "tim.h"
-#include "usart.h"
-#include "gpio.h"
+#include <adc.h>
+#include <dma.h>
+#include <tim.h>
+#include <usart.h>
+#include <gpio.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "xbee.h"
-
+//STL:
 #include <string>
-#include <string.h>
+#include <charconv>
+//Projektowe:
+#include "xbee.h"
 #include "Igniter.hh"
 #include "hx711.hh"
 #include "L298.hh"
@@ -147,9 +148,9 @@ int main(void) {
 	Igniter igniter(FIRE_GPIO_Port, FIRE_Pin, IGNITER_CONNECTION_TEST_GPIO_Port,
 			IGNITER_CONNECTION_TEST_Pin);
 	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin,
-			-12934, 26.9301147); //hardcoded
+			-12934, 26.9301147f); //hardcoded
 	HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin,
-			-1209946 , 18.5304527); //hardcoded
+			-1209946 , 18.5304527f); //hardcoded
 	Voltmeter VM(&hadc1, 1);
 
 	Rocket tmp(std::make_shared<Motor>(FillMotor),
@@ -161,46 +162,39 @@ int main(void) {
 			std::make_shared<Motor>(PQDMotor));
 	R4 = std::make_shared<Rocket>(tmp);
 
-	//sprintf(dataOut, "R4TN;CONNECTED\n");
-	//xbee_transmit_char(communication, dataOut);
-	//R4->comandHandler(std::string("STAT;0;1"));
-	//R4->comandHandler(std::string("DWCR;003563")); //calibration
-	//R4->comandHandler(std::string("DWCT;003563")); //calibration
+	//R4->comandHandler(std::string("DWRC;196"));
+
 	while (1) {
 		HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 
-		sprintf(dataOut, "R4TN;%.1f;%s\n", VM.GetBatteryVoltageInVolts(),
-				R4->getInfo().c_str());
+		sprintf(dataOut, "R4TN;%.1f;%s\n", VM.GetBatteryVoltageInVolts(), R4->getInfo().c_str());
 		xbee_transmit_char(communication, dataOut);
 
-		HAL_UART_Transmit(&huart3, (uint8_t*) dataOut, strlen(dataOut), 500);//BT
+		HAL_UART_Transmit(&huart3, (uint8_t*) dataOut, (uint16_t)strlen(dataOut), 500);//BT
 		HAL_Delay(50);
 
 		switch (R4->getCurrState()) {
-			case Init: //test state		//0
-				//place for random tests	//
-
-				// (end) place for random test //
+			case Init: 		//0
 				R4->setCurrState(Idle);
 				HAL_Delay(500);
 				break;
-			case Idle: {	//1
+			case Idle:{		//1
 				HAL_Delay(500);
 				break;
 			}
-			case Fueling: {	//2
+			case Fueling:{	//2
 				HAL_Delay(250);
 				break;
 			}
-			case Countdown: {	//3
+			case Countdown:{ //3
 				HAL_Delay(1000);
 				break;
 			}
-			case Flight: {	//5:Flight aka FIRED
+			case Flight:{	//5:Flight aka FIRED
 				HAL_Delay(15000);
 				break;
 			}
-			case Abort: {	//4:ABORT
+			case Abort:{	//4:ABORT
 				HAL_Delay(1000);
 				break;
 			}
@@ -275,7 +269,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 			 */
 			if (strncmp(xbee_rx.data_array, "TNWN", 4) == 0) {
 				std::string_view comand(xbee_rx.data_array);
-				comand = comand.substr(5, std::string::npos); //cut WNWN;
+				comand = comand.substr(5, std::string::npos); //cut TNWN;
 				if (comand[0] == 'D' || comand[0] == 'S') {
 					R4->comandHandler(comand);
 				}
