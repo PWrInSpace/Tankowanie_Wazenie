@@ -7,7 +7,7 @@
 #include "stdlib.h"
 #include <string>
 
-enum Status {CLOSE = 0, OPEN = 1, IDK = 2, ATTEMPTtoCLOSE = 3 , ATTEMPTtoOPEN = 4};
+enum Status {MotorStateClose = 0, MotorStateOpen = 1, MotorStateIDK = 2, MotorStateAttemptToClose = 3 , MotorStateAttemptToOpen = 4};
 
 class Motor{
 private:

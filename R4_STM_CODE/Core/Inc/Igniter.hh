@@ -19,7 +19,7 @@ public:
 
 	/* Methods */
 	bool isConnected() const;
-	void FIRE(uint8_t milisecs = 50);
+	void FIRE(uint16_t milisecs = 50);
 };
 
 #endif /* INC_IGNITER_HH_ */

@@ -11,7 +11,7 @@ HX711::HX711(GPIO_TypeDef* _Dt_gpio, uint16_t _Dt_pin,
 
 int32_t HX711::getWeigthInGramsWithOffset(uint16_t times){
 	int32_t average = AverageValue(times);
-	if(std::abs(BitsToGramRatio) > 0.001){
+	if(std::abs(BitsToGramRatio) > 0.001){ //!= 0
 		return (int32_t)((float)(average + OffsetInBits) / BitsToGramRatio);
 	}
 	else //without calibration
@@ -19,8 +19,7 @@ int32_t HX711::getWeigthInGramsWithOffset(uint16_t times){
 }
 
 float HX711::getWeigthInKilogramsWithOffset(uint16_t times){
-	 float tmp = ((float)getWeigthInGramsWithOffset(times)) / 1000.0f;
-	 return tmp;
+	return (float)getWeigthInGramsWithOffset(times) / 1000.0f;
 }
 
 int32_t HX711::getOffsetInBits() const{

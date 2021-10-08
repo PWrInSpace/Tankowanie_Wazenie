@@ -6,13 +6,13 @@
 #include "charconv"
 
 enum state {
-	Init = 0,
-	Idle = 1,
-	Fueling = 2,
-	Countdown = 3,
-	Flight = 4,
-	Abort = 5,
-	_NumOfStates = 6
+	RocketStateInit = 0,
+	RocketStateIdle = 1,
+	RocketStateFueling = 2,
+	RocketStateCountdown = 3,
+	RocketStateFlight = 4,
+	RocketStateAbort = 5,
+	RocketStateNumOfStates = 6
 };
 
 class Rocket{

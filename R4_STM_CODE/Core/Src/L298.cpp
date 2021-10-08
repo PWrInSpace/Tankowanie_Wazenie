@@ -11,7 +11,7 @@ Motor::Motor(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1,
 	TIM_NR_EN(_TIM_NR_EN), TIM_CHANNEL_EN(_TIM_CHANNEL_EN),
 	GPIO_PORT_LS_OPEN(_GPIO_PORT_LS_OPEN), PIN_LS_OPEN(_PIN_LS_OPEN),
 	GPIO_PORT_LS_CLOSE(_GPIO_PORT_LS_CLOSE), PIN_LS_CLOSE(_PIN_LS_CLOSE),
-	status(Status::IDK)
+	status(Status::MotorStateIDK)
 {
 	HAL_TIM_PWM_Start(TIM_NR_EN, TIM_CHANNEL_EN);
 	stop();
@@ -31,11 +31,11 @@ void Motor::open(uint32_t milisecs){
 	HAL_GPIO_WritePin(GPIO_PORT_IN1, PIN_IN1, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_RESET);
 	__HAL_TIM_SET_COMPARE(TIM_NR_EN, TIM_CHANNEL_EN, 999);
-	status = Status::ATTEMPTtoOPEN;
+	status = Status::MotorStateAttemptToOpen;
 	if(GPIO_PORT_LS_OPEN != nullptr){ //if has limit switch
 		for(uint32_t steps =  0; steps < milisecs/10 ; ++steps ){
 			if(HAL_GPIO_ReadPin(GPIO_PORT_LS_OPEN, PIN_LS_OPEN) == GPIO_PIN_RESET){
-				status = Status::OPEN;
+				status = Status::MotorStateOpen;
 				break;
 			}
 		HAL_Delay(10);
@@ -50,11 +50,11 @@ void Motor::close(uint32_t milisecs){
 	HAL_GPIO_WritePin(GPIO_PORT_IN1, PIN_IN1, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIO_PORT_IN2, PIN_IN2, GPIO_PIN_SET);
 	__HAL_TIM_SET_COMPARE(TIM_NR_EN, TIM_CHANNEL_EN, 999);
-	status = Status::ATTEMPTtoCLOSE;
+	status = Status::MotorStateAttemptToClose;
 	if(GPIO_PORT_LS_CLOSE != nullptr){ //if has limit switch
 		for(uint32_t steps =  0; steps < milisecs/10; ++steps){
 			if(HAL_GPIO_ReadPin(GPIO_PORT_LS_CLOSE, PIN_LS_CLOSE) == GPIO_PIN_RESET){
-				status = Status::CLOSE;
+				status = Status::MotorStateClose;
 				break;
 			}
 			HAL_Delay(10);

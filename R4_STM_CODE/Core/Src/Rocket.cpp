@@ -10,19 +10,19 @@ Rocket::Rocket(std::shared_ptr<Motor> _FillMotor, std::shared_ptr<Motor> _DeprMo
 	igniter = _igniter;
 	RocketWeight = _RocketWeight;
 	TankWeight = _TankWeight;
-	currState = Init;
+	currState = RocketStateInit;
 }
 	
 void Rocket::setCurrState(uint8_t newState){
-	if(newState < _NumOfStates)
+	if(newState < RocketStateNumOfStates)
 		currState = (state)newState;
 	else
-		currState = Idle;
+		currState = RocketStateIdle;
 
-	if(currState == Idle){
+	if(currState == RocketStateIdle){
 		FillMotor->close();
 	}
-	else if(currState == Abort){
+	else if(currState == RocketStateAbort){
 		FillMotor->close();
 		DeprMotor->open();
 	}
@@ -35,12 +35,14 @@ uint8_t Rocket::getCurrState() const{
 template <typename cString>
 void Rocket::comandHandler(const cString & Input){
 	std::string_view comand(Input);
-	float tempNumber = std::stof(comand.data() + 5);
+	float tempNumber = 0;
+	if(std::isdigit(comand[5]))
+		tempNumber = std::stof(comand.data() + 5);
 	//std::from_chars(comand.data() + 5, comand.data() + comand.size(), tempNumber); //need to find compiler settings for this
 	if(comand.substr(0, 4) == "STAT"){ // state'y
 		setCurrState((uint8_t)(comand[7] - '0'));
 	}
-	else if(comand.substr(0, 4) == "DSTA" && currState == Countdown)  //FIRE
+	else if(comand.substr(0, 4) == "DSTA" && currState == RocketStateCountdown)  //FIRE
 		igniter->FIRE();
 	else if(comand.substr(0, 2) == "DW"){	//wagi
 		if(comand[2] == 'R')
