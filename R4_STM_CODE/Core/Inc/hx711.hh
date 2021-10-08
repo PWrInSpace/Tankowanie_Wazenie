@@ -28,7 +28,7 @@ public:
 	int8_t waitingForReadyState(uint16_t TimeInMilis = 100);
 	int32_t ReadValue();
 	int32_t AverageValue(uint16_t SampleSize = 20);
-	void handleComand(char Command, float Num);
+	void WeightCommandHandler(char Command, float Num);
 };
 
 void BlinkNTimesDuringXMilis(uint16_t BlinkTimes = 200, uint16_t TimeInMilis = 10000);

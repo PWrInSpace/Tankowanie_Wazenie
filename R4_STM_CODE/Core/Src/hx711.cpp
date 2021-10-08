@@ -123,7 +123,7 @@ int8_t HX711::waitingForReadyState(uint16_t TimeInMilis){
 	return 0;
 }
 
-void HX711::handleComand(char Command, float InputNumber){
+void HX711::WeightCommandHandler(char Command, float InputNumber){
 	if(Command == 'C')
 		initialCalibration(InputNumber);
 	else if(Command == 'T')

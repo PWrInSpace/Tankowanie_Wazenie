@@ -1,6 +1,6 @@
 #include <Voltmeter.hh>
 
-Voltmeter::Voltmeter(ADC_HandleTypeDef* _ADC, int16_t _VoltageDividerRatio): ADC(_ADC), VoltageDividerRatio(_VoltageDividerRatio){
+Voltmeter::Voltmeter(ADC_HandleTypeDef* ADC_, int16_t VoltageDividerRatio_): ADC(ADC_), VoltageDividerRatio(VoltageDividerRatio_){
 	HAL_ADC_Start(ADC);
 }
 

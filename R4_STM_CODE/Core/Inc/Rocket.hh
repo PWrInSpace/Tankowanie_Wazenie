@@ -5,7 +5,7 @@
 #include "memory"
 #include "charconv"
 
-enum state {
+enum State {
 	RocketStateInit = 0,
 	RocketStateIdle = 1,
 	RocketStateFueling = 2,
@@ -20,21 +20,21 @@ class Rocket{
 	std::shared_ptr<Motor> DeprMotor;
 	std::shared_ptr<Motor> QDMotor;
 	std::shared_ptr<Motor> PQDMotor;
-	std::shared_ptr<Igniter> igniter;
+	std::shared_ptr<Igniter> Ignit;
 	std::shared_ptr<HX711> RocketWeight;
 	std::shared_ptr<HX711> TankWeight;
-	volatile state currState;
+	volatile State RocketState;
 public:
 	Rocket() = default;
-	Rocket(std::shared_ptr<Motor> _FillMotor, std::shared_ptr<Motor> _DeprMotor,
-			std::shared_ptr<Motor> _QDMotor, std::shared_ptr<Igniter> _igniter,
-			std::shared_ptr<HX711> _RocketWeight, std::shared_ptr<HX711> _TankWeight,
-			std::shared_ptr<Motor> _PQDMotor = nullptr);
-	void setCurrState(uint8_t newState);
-	uint8_t getCurrState() const;
-	std::string getInfo() const;
+	Rocket(std::shared_ptr<Motor> FillMotor_, std::shared_ptr<Motor> DeprMotor_,
+			std::shared_ptr<Motor> QDMotor_, std::shared_ptr<Igniter> Ignit_,
+			std::shared_ptr<HX711> RocketWeight_, std::shared_ptr<HX711> TankWeight_,
+			std::shared_ptr<Motor> PQDMotor_ = nullptr);
+	void SetRocketState(uint8_t NewState);
+	uint8_t GetRocketState() const;
+	std::string GetInfo() const;
 	template <typename cString>
-	void comandHandler(const cString & comand);
+	void RocketCommandHandler(const cString & Command);
 };
 
 

@@ -7,7 +7,7 @@ class Voltmeter{
 	ADC_HandleTypeDef *ADC;
 	int16_t VoltageDividerRatio;
 public:
-	Voltmeter(ADC_HandleTypeDef* _ADC, int16_t _VoltageDividerRatio);
+	Voltmeter(ADC_HandleTypeDef* ADC_, int16_t VoltageDividerRatio_);
 	void SetVoltageDividerRatio(int16_t NewVoltageDividerRatio);
 	int16_t GetVoltageDividerRatio();
 	int16_t GetBatteryVoltageInMilivolts();
