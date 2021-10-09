@@ -172,7 +172,7 @@ int main(void) {
 
 		sprintf(dataOut, "R4TN;%.1f;%s\n", Voltmeter.GetBatteryVoltageInVolts(), R4->getInfo().c_str());
 		xbee_transmit_char(communication, dataOut);
-
+    
 		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, (uint16_t)strlen(dataOut), 500);//BT
 		HAL_Delay(50);
 
@@ -273,6 +273,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 			if (strncmp(xbee_rx.data_array, "TNWN", 4) == 0) {
 				std::string_view comand(xbee_rx.data_array);
 				comand = comand.substr(5, std::string::npos); //cut TNWN;
+
 				if (comand[0] == 'D' || comand[0] == 'S') {
 					R4->comandHandler(comand);
 				}

@@ -13,6 +13,7 @@ enum State {
 	RocketStateFlight = 4,
 	RocketStateAbort = 5,
 	RocketStateNumOfStates = 6
+
 };
 
 class Rocket{
@@ -35,6 +36,7 @@ public:
 	std::string GetInfo() const;
 	template <typename cString>
 	void RocketCommandHandler(const cString & Command);
+
 };
 
 

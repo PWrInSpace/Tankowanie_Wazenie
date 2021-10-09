@@ -33,6 +33,7 @@ public:
 	void Open(uint32_t Milisecs = 3000);
 	void Close(uint32_t Milisecs = 3000);
 	void MotorCommandHandler(char Command, uint32_t Milisecs = 3000);
+
 };
 
 #endif /* L298_LIB */

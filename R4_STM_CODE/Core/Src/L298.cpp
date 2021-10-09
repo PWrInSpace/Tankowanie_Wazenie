@@ -11,6 +11,7 @@ Motor::Motor(GPIO_TypeDef* Input1GPIOPort_, uint16_t Input1Pin_,
 	LimitSwitchOpenGPIOPort(LimitSwitchOpenGPIOPort_), LimitSwitchOpenPin(LimitSwitchOpenPin_),
 	LimitSwitchCloseGPIOPort(LimitSwitchCloseGPIOPort_), LimitSwitchClosePin(LimitSwitchClosePin_),
 	State(MotorState::MotorStateIDK)
+
 {
 	HAL_TIM_PWM_Start(PWMTimerNumber_, PWMTimerChannel_);
 	Stop();

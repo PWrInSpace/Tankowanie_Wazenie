@@ -141,4 +141,3 @@ void BlinkNTimesDuringXMilis(uint16_t BlinkTimes, uint16_t TimeInMilis){
 	}
 	HAL_GPIO_WritePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin, GPIO_PIN_SET);
 }
-
