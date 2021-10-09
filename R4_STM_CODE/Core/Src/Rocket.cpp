@@ -1,96 +1,79 @@
 #include "Rocket.hh"
 
-Rocket::Rocket(std::shared_ptr<Motor> _FillMotor, std::shared_ptr<Motor> _DeprMotor,
-				std::shared_ptr<Motor> _QDMotor, std::shared_ptr<Igniter> _igniter,
-				std::shared_ptr<HX711> _RocketWeight, std::shared_ptr<HX711> _TankWeight,  std::shared_ptr<Motor> _PQDMotor){
-	FillMotor =_FillMotor;
-	DeprMotor =_DeprMotor;
-	QDMotor =_QDMotor;
-	PQDMotor =_PQDMotor;
-	igniter = _igniter;
-	RocketWeight = _RocketWeight;
-	TankWeight = _TankWeight;
-	currState = Init;
+Rocket::Rocket(std::shared_ptr<Motor> FillMotor_, std::shared_ptr<Motor> DeprMotor_,
+				std::shared_ptr<Motor> QDMotor_, std::shared_ptr<Igniter> Ignit_,
+				std::shared_ptr<HX711> RocketWeight_, std::shared_ptr<HX711> TankWeight_,  std::shared_ptr<Motor> PQDMotor_)
+:	FillMotor(FillMotor_), DeprMotor(DeprMotor_), QDMotor(QDMotor_), PQDMotor(PQDMotor_),
+	Ignit(Ignit_), RocketWeight(RocketWeight_), TankWeight(TankWeight_)
+{
+		RocketState = RocketStateInit;
 }
 	
-void Rocket::setCurrState(uint8_t newState){
-	if(newState < _NumOfStates)
-		currState = (state)newState;
+void Rocket::SetRocketState(uint8_t NewState){
+	if(NewState < RocketStateNumOfStates)
+		RocketState = (State)NewState;
 	else
-		currState = Idle;
+		RocketState = RocketStateIdle;
 
-	if(currState == Idle){
-		FillMotor->close();
+	if(RocketState == RocketStateIdle){
+		FillMotor->Close();
 	}
-	else if(currState == Abort){
-		FillMotor->close();
-		DeprMotor->open();
+	else if(RocketState == RocketStateAbort){
+		FillMotor->Close();
+		DeprMotor->Open();
 	}
 }
 
-uint8_t Rocket::getCurrState() const{
-	return currState;
+uint8_t Rocket::GetRocketState() const{
+	return RocketState;
 }
 
 template <typename cString>
-void Rocket::comandHandler(const cString & Input){
+void Rocket::RocketCommandHandler(const cString & Input){
 	std::string_view comand(Input);
-	int64_t tempNumber = -1;
-	std::from_chars(comand.data() + 5, comand.data() + comand.size(), tempNumber);
-
+	float tempNumber = 0;
+	if(std::isdigit(comand[5]))
+		tempNumber = std::stof(comand.data() + 5);
+	//std::from_chars(comand.data() + 5, comand.data() + comand.size(), tempNumber); //need to find compiler settings for this
 	if(comand.substr(0, 4) == "STAT"){ // state'y
-		setCurrState(comand[7] - '0');
+		SetRocketState((uint8_t)(comand[7] - '0'));
 	}
-	else if(comand.substr(0, 4) == "DSTA" && currState == Countdown)  //FIRE
-		igniter->FIRE();
-	else if(comand.substr(0, 3) == "DWC"){ //calibration
-		if(comand.substr(3, 1) == "R")
-			RocketWeight->initialCalibration(tempNumber);
-		else if(comand.substr(3, 1) == "T"){
-			TankWeight->initialCalibration(tempNumber);
-		}
-	}
-	else if(comand.substr(0, 3) == "DWO"){	//wagi
-		if(comand.substr(3, 1) == "R")
-			RocketWeight->addToOffset(tempNumber);
-		else if(comand.substr(3, 1) == "T")
-			TankWeight->addToOffset(tempNumber);
-	}
-	else if(comand.substr(0, 3) == "DWR"){ //wagi
-		if(comand.substr(3, 1) == "R")
-			RocketWeight->setBitsToGramRatio(tempNumber);
-		else if(comand.substr(3, 1) == "T")
-			TankWeight->setBitsToGramRatio(tempNumber);
+	else if(comand.substr(0, 4) == "DSTA" && RocketState == RocketStateCountdown)  //FIRE
+		Ignit->FIRE();
+	else if(comand.substr(0, 2) == "DW"){	//wagi
+		if(comand[2] == 'R')
+			RocketWeight->WeightCommandHandler(comand[3], tempNumber);
+		else if(comand[2] == 'T')
+			TankWeight->WeightCommandHandler(comand[3], tempNumber);
 	}
 	else if(comand.substr(0, 2) == "DZ"){	//zawory
-		//wydziel
-		if(comand.substr(2, 1) == "T")
-			FillMotor->handleComand(comand[3]);
-		else if(comand.substr(2, 1) == "O")
-			DeprMotor->handleComand(comand[3]);
-		else if(comand.substr(2, 1) == "Q")
-			QDMotor->handleComand(comand[3]);
-		else if(comand.substr(2, 1) == "D")
-			PQDMotor->handleComand(comand[3]);
+		if(comand[2] == 'T')
+			FillMotor->MotorCommandHandler(comand[3]);
+		else if(comand[2] == 'O')
+			DeprMotor->MotorCommandHandler(comand[3]);
+		else if(comand[2] == 'Q')
+			QDMotor->MotorCommandHandler(comand[3]);
+		else if(comand[2] == 'D')
+			PQDMotor->MotorCommandHandler(comand[3]);
 	}
 }
 
-std::string Rocket::getInfo() const{
+std::string Rocket::GetInfo() const{
 	char bufx[15];
-	std::string tmp(std::to_string(currState) + ";");
+	std::string tmp(std::to_string(RocketState) + ";");
 	//tmp.resize(50);
-	tmp.append(std::to_string(igniter->isConnected()) + ";");
-	tmp.append(std::to_string(FillMotor->getStatus()) + ";");
-	tmp.append(std::to_string(DeprMotor->getStatus()) + ";");
-	tmp.append(std::to_string(QDMotor->getStatus()) + ";");
-	tmp.append(std::to_string(PQDMotor->getStatus()) + ";");
-	std::sprintf(bufx, "%.1f", RocketWeight->getWeigthInKilogramsWithOffset());
+	tmp.append(std::to_string(Ignit->isConnected()) + ";");
+	tmp.append(std::to_string(FillMotor->GetState()) + ";");
+	tmp.append(std::to_string(DeprMotor->GetState()) + ";");
+	tmp.append(std::to_string(QDMotor->GetState()) + ";");
+	tmp.append(std::to_string(PQDMotor->GetState()) + ";");
+	std::sprintf(bufx, "%.2f", RocketWeight->getWeigthInKilogramsWithOffset());
 	tmp.append(bufx);
 	tmp.append(";");
-	std::sprintf(bufx, "%.1f", TankWeight->getWeigthInKilogramsWithOffset());
+	std::sprintf(bufx, "%.2f", TankWeight->getWeigthInKilogramsWithOffset());
 	tmp.append(bufx);
 	return tmp;
 }
 
-template void Rocket::comandHandler(const std::string &);
-template void Rocket::comandHandler(const std::string_view &);
+template void Rocket::RocketCommandHandler(const std::string &);
+template void Rocket::RocketCommandHandler(const std::string_view &);

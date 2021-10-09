@@ -19,18 +19,19 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include <main.hh>
-#include "adc.h"
-#include "dma.h"
-#include "tim.h"
-#include "usart.h"
-#include "gpio.h"
+#include <adc.h>
+#include <dma.h>
+#include <tim.h>
+#include <usart.h>
+#include <gpio.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "xbee.h"
-
+//STL:
 #include <string>
-#include <string.h>
+#include <charconv>
+//Projektowe:
+#include "xbee.h"
 #include "Igniter.hh"
 #include "hx711.hh"
 #include "L298.hh"
@@ -130,82 +131,78 @@ int main(void) {
 	/* USER CODE END 2 */
 
 	/* USER CODE BEGIN WHILE */
-	Motor FillMotor(FILL_OPEN_GPIO_Port, FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port,
+
+	//wyodrebnic do init function
+	std::shared_ptr<Motor> FillMotor = std::make_shared<Motor>(
+			FILL_OPEN_GPIO_Port, FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port,
 			FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
 			FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,
 			FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin); //tankujący - dwie krancówki (1 i 2)
-	Motor DeprMotor(DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin, DEPR_CLOSE_GPIO_Port,
+	std::shared_ptr<Motor> DepressurizationMotor = std::make_shared<Motor>(
+			DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin, DEPR_CLOSE_GPIO_Port,
 			DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2,
 			DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_OPEN_LIMIT_SW_Pin,
 			DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);//odpowietrzajacy - dwie krancówki (3 i 4));
-	Motor QDMotor(QD_OPEN_GPIO_Port, QD_OPEN_Pin, QD_CLOSE_GPIO_Port,
+	std::shared_ptr<Motor> QDMotor = std::make_shared<Motor>(
+			QD_OPEN_GPIO_Port, QD_OPEN_Pin, QD_CLOSE_GPIO_Port,
 			QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3,
 			QD_OPEN_LIMIT_SW_GPIO_Port, QD_OPEN_LIMIT_SW_Pin,
 			QD_CLOSE_LIMIT_SW_GPIO_Port, QD_CLOSE_LIMIT_SW_Pin); //upustowy) - dwie krancowki (5 i 6));
-	Motor PQDMotor(PQD_OPEN_GPIO_Port, PQD_OPEN_Pin, PQD_CLOSE_GPIO_Port,
+	std::shared_ptr<Motor> PlusQDMotor = std::make_shared<Motor>(
+			PQD_OPEN_GPIO_Port, PQD_OPEN_Pin, PQD_CLOSE_GPIO_Port,
 			PQD_CLOSE_Pin, &htim3, TIM_CHANNEL_4);
 	Igniter igniter(FIRE_GPIO_Port, FIRE_Pin, IGNITER_CONNECTION_TEST_GPIO_Port,
 			IGNITER_CONNECTION_TEST_Pin);
-	HX711 RocketWeight(HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port,
-			HX1_SCL_Pin);
-	HX711 TankWeight(HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port,
-			HX2_SCL_Pin);
-	Voltmeter VM(&hadc1, 1);
+	std::shared_ptr<HX711> RocketWeight = std::make_shared<HX711>(
+			HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin,
+			-21663, 27.215); //hardcoded
+	std::shared_ptr<HX711> TankWeight = std::make_shared<HX711>(
+			HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin,
+			-2414370, 37.11); //hardcoded
+	Voltmeter Voltmeter(&hadc1, 1);
 
-	Rocket tmp(std::make_shared<Motor>(FillMotor),
-			std::make_shared<Motor>(DeprMotor),
-			std::make_shared<Motor>(QDMotor),
-			std::make_shared<Igniter>(igniter),
-			std::make_shared<HX711>(RocketWeight),
-			std::make_shared<HX711>(TankWeight),
-			std::make_shared<Motor>(PQDMotor));
-	R4 = std::make_shared<Rocket>(tmp);
+	R4 = std::make_shared<Rocket>(FillMotor, DepressurizationMotor, QDMotor, std::make_shared<Igniter>(igniter),
+									RocketWeight, TankWeight, PlusQDMotor);
 
-	//sprintf(dataOut, "R4TN;CONNECTED\n");
-	//xbee_transmit_char(communication, dataOut);
-	//R4->comandHandler(std::string("STAT;0;1"));
-	//R4->comandHandler(std::string("DWCR;003563")); //calibration
-	//R4->comandHandler(std::string("DWCT;003563")); //calibration
+	R4->comandHandler(std::string("DWRT"));
+	//R4->comandHandler(std::string("DWRC;9000"));
+
 	while (1) {
 		HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 
-		sprintf(dataOut, "R4TN;%.1f;%s\n", VM.GetBatteryVoltageInVolts(),
-				R4->getInfo().c_str());
+		sprintf(dataOut, "R4TN;%.1f;%s\n", Voltmeter.GetBatteryVoltageInVolts(), R4->getInfo().c_str());
 		xbee_transmit_char(communication, dataOut);
-
-		HAL_UART_Transmit(&huart3, (uint8_t*) dataOut, strlen(dataOut), 500);//BT
+    
+		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, (uint16_t)strlen(dataOut), 500);//BT
 		HAL_Delay(50);
 
 		switch (R4->getCurrState()) {
-			case Init: //test state		//0
-				//place for random tests	//
-
-				// (end) place for random test //
-				R4->setCurrState(Idle);
+			case RocketStateInit: 		//0
+				R4->setCurrState(RocketStateIdle);
 				HAL_Delay(500);
 				break;
-			case Idle: {	//1
+			case RocketStateIdle:{		//1
 				HAL_Delay(500);
 				break;
 			}
-			case Fueling: {	//2
+			case RocketStateFueling:{	//2
 				HAL_Delay(250);
 				break;
 			}
-			case Countdown: {	//3
+			case RocketStateCountdown:{ //3
 				HAL_Delay(1000);
 				break;
 			}
-			case Flight: {	//5:Flight aka FIRED
+			case RocketStateFlight:{	//5:Flight aka FIRED
 				HAL_Delay(15000);
 				break;
 			}
-			case Abort: {	//4:ABORT
+			case RocketStateAbort:{	//4:ABORT
 				HAL_Delay(1000);
 				break;
 			}
 			default:{
-				R4->setCurrState(Idle);
+				R4->setCurrState(RocketStateIdle);
 				break;
 			}
 		}
@@ -275,7 +272,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 			 */
 			if (strncmp(xbee_rx.data_array, "TNWN", 4) == 0) {
 				std::string_view comand(xbee_rx.data_array);
-				comand = comand.substr(5, std::string::npos); //cut WNWN;
+				comand = comand.substr(5, std::string::npos); //cut TNWN;
+
 				if (comand[0] == 'D' || comand[0] == 'S') {
 					R4->comandHandler(comand);
 				}
@@ -283,8 +281,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		}
 		HAL_UART_Receive_DMA(&huart2, (uint8_t*) xbee_rx.mess_loaded,
 				DATA_LENGTH);
-	} else if (huart->Instance == USART3) {
-		std::string_view command((char*) BTbuf);	//TODO: change to string_view?
+	}
+	else if (huart->Instance == USART3) {
+		std::string_view command((char*) BTbuf);	//TODO: test (changed to string_view)
 		if (command[0] == 'D' || command[0] == 'S') {
 			R4->comandHandler(command);
 		}

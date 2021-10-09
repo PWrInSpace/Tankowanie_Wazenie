@@ -7,37 +7,33 @@
 #include "stdlib.h"
 #include <string>
 
-enum Status {CLOSE = 0, OPEN = 1, IDK = 2, ATTEMPTtoCLOSE = 3 , ATTEMPTtoOPEN = 4};
+enum MotorState {MotorStateClose = 0, MotorStateOpen = 1, MotorStateIDK = 2, MotorStateAttemptToClose = 3 , MotorStateAttemptToOpen = 4};
 
 class Motor{
 private:
-	GPIO_TypeDef* GPIO_PORT_IN1;
-	uint16_t PIN_IN1;
-	//Input 2
-	GPIO_TypeDef* GPIO_PORT_IN2;
-	uint16_t PIN_IN2;
-	//Enable
-	TIM_HandleTypeDef* TIM_NR_EN;
-	uint16_t TIM_CHANNEL_EN;
-	//Limit Switch 1
-	GPIO_TypeDef* GPIO_PORT_LS_OPEN;
-	uint16_t PIN_LS_OPEN;
-	//Limit Switch 2
-	GPIO_TypeDef* GPIO_PORT_LS_CLOSE;
-	uint16_t PIN_LS_CLOSE;
-	Status status;
+	GPIO_TypeDef* Input1GPIOPort;
+	uint16_t Input1Pin;
+	GPIO_TypeDef* Input2GPIOPort;
+	uint16_t Input2Pin;
+	TIM_HandleTypeDef* PWMTimerNumber;
+	uint16_t PWMTimerChannel;
+	GPIO_TypeDef* LimitSwitchOpenGPIOPort;
+	uint16_t LimitSwitchOpenPin;
+	GPIO_TypeDef* LimitSwitchCloseGPIOPort;
+	uint16_t LimitSwitchClosePin;
+	MotorState State;
 public:
-	Motor(GPIO_TypeDef* _GPIO_PORT_IN1, uint16_t _PIN_IN1,
-			GPIO_TypeDef* _GPIO_PORT_IN2, uint16_t _PIN_IN2,
-			TIM_HandleTypeDef* _TIM_NR_EN, uint16_t _TIM_CHANNEL_EN,
-			GPIO_TypeDef* _GPIO_PORT_LS_OPEN = nullptr, uint16_t _PIN_LS_OPEN = 0,
-			GPIO_TypeDef* _GPIO_PORT_LS_CLOSE = nullptr, uint16_t _PIN_LS_CLOSE = 0);
-	Status getStatus();
-	void stop();
-	void open(uint32_t milisecs = 3000);
-	void close(uint32_t milisecs = 3000);
-	void test_open_close();
-	void handleComand(char comand, uint32_t milisecs = 3000);
+	Motor(GPIO_TypeDef* Input1GPIOPort, uint16_t Input1Pin,
+			GPIO_TypeDef* Input2GPIOPort, uint16_t Input2Pin,
+			TIM_HandleTypeDef* PWMTimerNumber, uint16_t PWMTimerChannel, 	//TIMER not GPIOPort (&htim3 = OK ; FILL_EN_PORT = NOT OK)
+			GPIO_TypeDef* LimitSwitchOpenGPIOPort = nullptr, uint16_t LimitSwitchOpenPin = 0,
+			GPIO_TypeDef* LimitSwitchCloseGPIOPort = nullptr, uint16_t LimitSwitchClosePin = 0);
+	MotorState GetState();
+	void Stop();
+	void Open(uint32_t Milisecs = 3000);
+	void Close(uint32_t Milisecs = 3000);
+	void MotorCommandHandler(char Command, uint32_t Milisecs = 3000);
+
 };
 
 #endif /* L298_LIB */
