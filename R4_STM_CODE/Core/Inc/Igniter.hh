@@ -12,13 +12,14 @@ class Igniter{
 	// Test Connection
 	GPIO_TypeDef* GPIO_PORT_TEST_CON;
 	uint16_t PIN_TEST_CON;
+	bool tried;
 public:
 	/* Constructor */
 	Igniter(GPIO_TypeDef* GPIO_PORT_IGNITER_, uint16_t PIN_IGNITER_,
 			GPIO_TypeDef* GPIO_PORT_TEST_CON_, uint16_t PIN_TEST_CON_);
 
 	/* Methods */
-	bool isConnected() const;
+	uint8_t GetStatus() const;
 	void FIRE(uint16_t milisecs = 50);
 };
 

@@ -1,37 +1,43 @@
 #ifndef HX711__LIB
 #define HX711__LIB
+
 #include <main.hh>
 #include <cmath>
+#include "weight.hh"
 
-class HX711{
-	GPIO_TypeDef *Dt_gpio;
-	uint16_t Dt_pin;
-	GPIO_TypeDef *Sck_gpio;
-	uint16_t Sck_pin;
+enum WeightGain {Gain128 = 1, Gain64 = 3};
+
+class Hx711: public Weight{
+	GPIO_TypeDef *DataGPIO;
+	uint16_t DataPin;
+	GPIO_TypeDef *SerialClockGPIO;
+	uint16_t SerialClockPin;
 	volatile int32_t OffsetInBits;
 	volatile float BitsToGramRatio;
-	volatile uint8_t Gain;
+	volatile WeightGain Gain;
 
-public:
-	HX711(GPIO_TypeDef *Dt_gpio, uint16_t Dt_pin,
-		  GPIO_TypeDef *Sck_gpio, uint16_t Sck_pin,
-		  int32_t InitialOffsetInBits = 0, float InitialBitsToGramRatio = 0 , uint8_t gain = 64);
-	int32_t getWeigthInGramsWithOffset(uint16_t Times = 20);
-	float getWeigthInKilogramsWithOffset(uint16_t Times = 20);
-	int32_t getOffsetInBits() const;
-	float getBitsToGramRatio() const;
-	void setGain(uint8_t Gain = 128);
-	void setBitsToGramRatio(float NewBitsToGramRatio);
-	void addToOffset(float DifOffsetInBits);
-	void tare();
-	void initialCalibration(float TestLoadInGrams, uint16_t ValibrationTimeInMilis = 6666);
-	int8_t waitingForReadyState(uint16_t TimeInMilis = 100);
+	int8_t WaitingForReadyState(uint16_t TimeInMilis = 100);
 	int32_t ReadValue();
 	int32_t AverageValue(uint16_t SampleSize = 20);
-	void WeightCommandHandler(char Command, float Num);
+public:
+	volatile int32_t LastRawAverageRead;
+
+	Hx711(GPIO_TypeDef *Dt_gpio, uint16_t Dt_pin,
+		  GPIO_TypeDef *Sck_gpio, uint16_t Sck_pin,
+		  int32_t InitialOffsetInBits = 0, float InitialBitsToGramRatio = 0 , WeightGain Gain_ = WeightGain::Gain64);
+	int32_t GetWeigthInGramsWithOffset(uint16_t Times = 20);
+	float GetWeigthInKilogramsWithOffset(uint16_t Times = 20);
+	int32_t GetOffsetInBits() const;
+	float GetBitsToGramRatio() const;
+	void SetGain(WeightGain Gain_);
+	void SetBitsToGramRatio(float NewBitsToGramRatio);
+	void AddToOffset(float DifferenceOffsetInBits);
+	void Tare() override;
+	void InitialCalibration(float TestLoadInGrams, uint16_t CalibrationTimeInMilis = 6666) override;
+	void DoubleCalibration(float TestLoadInGrams, float SecondTestLoadInGrams, uint16_t CalibrationTimeInMilis = 6666);
+	void WeightCommandHandler(char Command, float Number) override;
+	void TEMPWeightCommandHandler(char Command, float InputNumber, float SecondInputNumber);
 };
 
 void BlinkNTimesDuringXMilis(uint16_t BlinkTimes = 200, uint16_t TimeInMilis = 10000);
-
-
 #endif

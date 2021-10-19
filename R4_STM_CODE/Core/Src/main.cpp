@@ -1,3 +1,4 @@
+
 /* USER CODE BEGIN Header */
 /**
  ******************************************************************************
@@ -137,48 +138,50 @@ int main(void) {
 			FILL_OPEN_GPIO_Port, FILL_OPEN_Pin, FILL_CLOSE_GPIO_Port,
 			FILL_CLOSE_Pin, &htim4, TIM_CHANNEL_3,
 			FILL_OPEN_LIMIT_SW_GPIO_Port, FILL_OPEN_LIMIT_SW_Pin,
-			FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin); //tankujący - dwie krancówki (1 i 2)
+			FILL_CLOSE_LIMIT_SW_GPIO_Port, FILL_CLOSE_LIMIT_SW_Pin);
 	std::shared_ptr<Motor> DepressurizationMotor = std::make_shared<Motor>(
-			DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin, DEPR_CLOSE_GPIO_Port,
-			DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2,
+			PQD_OPEN_GPIO_Port, PQD_OPEN_Pin, PQD_CLOSE_GPIO_Port,
+			PQD_CLOSE_Pin, &htim3, TIM_CHANNEL_4,
 			DEPR_OPEN_LIMIT_SW_GPIO_Port, DEPR_OPEN_LIMIT_SW_Pin,
-			DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);//odpowietrzajacy - dwie krancówki (3 i 4));
+			DEPR_CLOSE_LIMIT_SW_GPIO_Port, DEPR_CLOSE_LIMIT_SW_Pin);
 	std::shared_ptr<Motor> QDMotor = std::make_shared<Motor>(
 			QD_OPEN_GPIO_Port, QD_OPEN_Pin, QD_CLOSE_GPIO_Port,
 			QD_CLOSE_Pin, &htim3, TIM_CHANNEL_3,
 			QD_OPEN_LIMIT_SW_GPIO_Port, QD_OPEN_LIMIT_SW_Pin,
-			QD_CLOSE_LIMIT_SW_GPIO_Port, QD_CLOSE_LIMIT_SW_Pin); //upustowy) - dwie krancowki (5 i 6));
+			QD_CLOSE_LIMIT_SW_GPIO_Port, QD_CLOSE_LIMIT_SW_Pin);
 	std::shared_ptr<Motor> PlusQDMotor = std::make_shared<Motor>(
-			PQD_OPEN_GPIO_Port, PQD_OPEN_Pin, PQD_CLOSE_GPIO_Port,
-			PQD_CLOSE_Pin, &htim3, TIM_CHANNEL_4);
-	Igniter igniter(FIRE_GPIO_Port, FIRE_Pin, IGNITER_CONNECTION_TEST_GPIO_Port,
-			IGNITER_CONNECTION_TEST_Pin);
-	std::shared_ptr<HX711> RocketWeight = std::make_shared<HX711>(
+			DEPR_OPEN_GPIO_Port, DEPR_OPEN_Pin, DEPR_CLOSE_GPIO_Port,
+			DEPR_CLOSE_Pin, &htim3, TIM_CHANNEL_2);
+	std::shared_ptr<Igniter> Ignit = std::make_shared<Igniter>(
+			FIRE_GPIO_Port, FIRE_Pin,
+			IGNITER_CONNECTION_TEST_GPIO_Port, IGNITER_CONNECTION_TEST_Pin);
+	std::shared_ptr<Hx711> RocketWeight = std::make_shared<Hx711>(
 			HX1_SDA_GPIO_Port, HX1_SDA_Pin, HX1_SCL_GPIO_Port, HX1_SCL_Pin,
 			-21663, 27.215); //hardcoded
-	std::shared_ptr<HX711> TankWeight = std::make_shared<HX711>(
+	std::shared_ptr<Hx711> TankWeight = std::make_shared<Hx711>(
 			HX2_SDA_GPIO_Port, HX2_SDA_Pin, HX2_SCL_GPIO_Port, HX2_SCL_Pin,
-			-2414370, 37.11); //hardcoded
+			-1206400, 18.52); //hardcoded
 	Voltmeter Voltmeter(&hadc1, 1);
 
-	R4 = std::make_shared<Rocket>(FillMotor, DepressurizationMotor, QDMotor, std::make_shared<Igniter>(igniter),
+	R4 = std::make_shared<Rocket>(FillMotor, DepressurizationMotor, QDMotor, Ignit,
 									RocketWeight, TankWeight, PlusQDMotor);
 
-	R4->comandHandler(std::string("DWRT"));
-	//R4->comandHandler(std::string("DWRC;9000"));
+	//R4->RocketCommandHandler(std::string("DWTT"));
+	//R4->RocketCommandHandler(std::string("DWTC;9000"));
 
-	while (1) {
+	while (1){
 		HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 
-		sprintf(dataOut, "R4TN;%.1f;%s\n", Voltmeter.GetBatteryVoltageInVolts(), R4->getInfo().c_str());
+		std::sprintf(dataOut, "R4TN;%.1f;%s\n", Voltmeter.GetBatteryVoltageInVolts(), R4->GetInfo().c_str());
+		//TODO put into rocket class
 		xbee_transmit_char(communication, dataOut);
-    
+
 		HAL_UART_Transmit(&huart3, (uint8_t*)dataOut, (uint16_t)strlen(dataOut), 500);//BT
 		HAL_Delay(50);
 
-		switch (R4->getCurrState()) {
+		switch (R4->GetRocketState()) {
 			case RocketStateInit: 		//0
-				R4->setCurrState(RocketStateIdle);
+				R4->SetRocketState(RocketStateIdle);
 				HAL_Delay(500);
 				break;
 			case RocketStateIdle:{		//1
@@ -202,7 +205,7 @@ int main(void) {
 				break;
 			}
 			default:{
-				R4->setCurrState(RocketStateIdle);
+				R4->SetRocketState(RocketStateIdle);
 				break;
 			}
 		}
@@ -271,11 +274,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 			 pobranie adresu jest złym pomysłem bo przy każdym odebraniu tablica zmienia swoją zawartosć
 			 */
 			if (strncmp(xbee_rx.data_array, "TNWN", 4) == 0) {
-				std::string_view comand(xbee_rx.data_array);
-				comand = comand.substr(5, std::string::npos); //cut TNWN;
-
-				if (comand[0] == 'D' || comand[0] == 'S') {
-					R4->comandHandler(comand);
+				std::string_view command(xbee_rx.data_array);
+				command = command.substr(5, std::string::npos); //cut TNWN;
+				if (command[0] == 'D' || command[0] == 'S') {
+					R4->RocketCommandHandler(command);
 				}
 			}
 		}
@@ -284,8 +286,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	}
 	else if (huart->Instance == USART3) {
 		std::string_view command((char*) BTbuf);	//TODO: test (changed to string_view)
-		if (command[0] == 'D' || command[0] == 'S') {
-			R4->comandHandler(command);
+		if (command[0] == 'D' || command[0] == 'S' || command[0] == 'A'){
+			R4->RocketCommandHandler(command);
 		}
 		HAL_UART_Transmit(&huart3, (uint8_t*) "RECEIVED\n", strlen("RECEIVED\n"), 500);
 		memset(BTbuf, 0, sizeof(BTbuf));

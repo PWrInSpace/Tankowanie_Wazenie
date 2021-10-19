@@ -1,15 +1,14 @@
 #ifndef L298_LIB
 #define L298_LIB
 
+#include "Valve.hh"
 #include "stdbool.h"
 #include "gpio.h"
 #include "tim.h"
 #include "stdlib.h"
 #include <string>
 
-enum MotorState {MotorStateClose = 0, MotorStateOpen = 1, MotorStateIDK = 2, MotorStateAttemptToClose = 3 , MotorStateAttemptToOpen = 4};
-
-class Motor{
+class Motor: public ValveInterface{
 private:
 	GPIO_TypeDef* Input1GPIOPort;
 	uint16_t Input1Pin;
@@ -21,19 +20,16 @@ private:
 	uint16_t LimitSwitchOpenPin;
 	GPIO_TypeDef* LimitSwitchCloseGPIOPort;
 	uint16_t LimitSwitchClosePin;
-	MotorState State;
 public:
 	Motor(GPIO_TypeDef* Input1GPIOPort, uint16_t Input1Pin,
 			GPIO_TypeDef* Input2GPIOPort, uint16_t Input2Pin,
 			TIM_HandleTypeDef* PWMTimerNumber, uint16_t PWMTimerChannel, 	//TIMER not GPIOPort (&htim3 = OK ; FILL_EN_PORT = NOT OK)
 			GPIO_TypeDef* LimitSwitchOpenGPIOPort = nullptr, uint16_t LimitSwitchOpenPin = 0,
 			GPIO_TypeDef* LimitSwitchCloseGPIOPort = nullptr, uint16_t LimitSwitchClosePin = 0);
-	MotorState GetState();
-	void Stop();
-	void Open(uint32_t Milisecs = 3000);
-	void Close(uint32_t Milisecs = 3000);
-	void MotorCommandHandler(char Command, uint32_t Milisecs = 3000);
-
+	void Stop() override;
+	void Open(uint32_t Milisecs = 3000) override;
+	void Close(uint32_t Milisecs = 3000) override;
+	void ValveCommandHandler(char
 };
 
 #endif /* L298_LIB */
