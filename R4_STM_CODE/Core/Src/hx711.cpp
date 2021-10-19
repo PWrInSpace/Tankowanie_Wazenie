@@ -1,121 +1,130 @@
-#include <hx711.hh>
+#include "Hx711.hh"
 
-HX711::HX711(GPIO_TypeDef* _Dt_gpio, uint16_t _Dt_pin,
-			 GPIO_TypeDef* _Sck_gpio, uint16_t _Sck_pin,
-			 int32_t InitialOffsetInBits, float InitialBitsToGramRatio, uint8_t Gain):
-	Dt_gpio(_Dt_gpio), Dt_pin(_Dt_pin), Sck_gpio(_Sck_gpio), Sck_pin(_Sck_pin),
-	OffsetInBits(InitialOffsetInBits), BitsToGramRatio(InitialBitsToGramRatio)
-{
-	setGain(Gain);
-}
+Hx711::Hx711(GPIO_TypeDef* DataGPIO_, uint16_t DataPin_,
+			 GPIO_TypeDef* SerialClockGPIO_, uint16_t SerialClockPin_,
+			 int32_t InitialOffsetInBits, float InitialBitsToGramRatio, WeightGain Gain_):
+	DataGPIO(DataGPIO_), DataPin(DataPin_), SerialClockGPIO(SerialClockGPIO_), SerialClockPin(SerialClockPin_),
+	OffsetInBits(InitialOffsetInBits), BitsToGramRatio(InitialBitsToGramRatio), Gain(Gain_) { }
 
-int32_t HX711::getWeigthInGramsWithOffset(uint16_t times){
-	int32_t average = AverageValue(times);
+int32_t Hx711::GetWeigthInGramsWithOffset(uint16_t Times){
+	LastRawAverageRead = AverageValue(Times);
 	if(std::abs(BitsToGramRatio) > 0.001){ //!= 0
-		return (int32_t)((float)(average + OffsetInBits) / BitsToGramRatio);
+		return (int32_t)((float)(LastRawAverageRead + OffsetInBits) / BitsToGramRatio);
 	}
 	else //without calibration
-		return average;
+		return LastRawAverageRead;
 }
 
-float HX711::getWeigthInKilogramsWithOffset(uint16_t times){
-	return (float)getWeigthInGramsWithOffset(times) / 1000.0f;
+float Hx711::GetWeigthInKilogramsWithOffset(uint16_t Times){
+	return (float)GetWeigthInGramsWithOffset(Times) / 1000.0f;
 }
 
-int32_t HX711::getOffsetInBits() const{
+int32_t Hx711::GetOffsetInBits() const{
 	return OffsetInBits;
 }
 
-float HX711::getBitsToGramRatio() const{
+float Hx711::GetBitsToGramRatio() const{
 	return BitsToGramRatio;
 }
 
-void HX711::setBitsToGramRatio(float newBitsToGramRatio){
-	BitsToGramRatio = newBitsToGramRatio;
+void Hx711::SetBitsToGramRatio(float NewBitsToGramRatio){
+	BitsToGramRatio = NewBitsToGramRatio;
 }
 
-void HX711::addToOffset(float DifOffsetInBits){
-	OffsetInBits += (int32_t)DifOffsetInBits;
+void Hx711::AddToOffset(float DifferenceOffsetInBits){
+	OffsetInBits += (int32_t)DifferenceOffsetInBits;
 }
 
-
-void HX711::setGain(uint8_t Gain){
-	switch (Gain) {
-		case 128:		// channel A, Gain factor 128
-			Gain = 1;
-			break;
-		case 64:		// channel A, Gain factor 64
-			Gain = 3;
-			break;
-		case 32:		// channel B, Gain factor 32
-			Gain = 2;
-			break;
-	}
+void Hx711::SetGain(WeightGain Gain_){
+	Gain = Gain_;
 }
 
-void HX711::tare(){
+void Hx711::Tare(){
 	OffsetInBits = -AverageValue();
 }
 
-void HX711::initialCalibration(float testLoadInGrams, uint16_t calibrationTimeInMilis){
-	if (testLoadInGrams < 0)
+void Hx711::InitialCalibration(float TestLoadInGrams, uint16_t CalibrationTimeInMilis){
+	if (TestLoadInGrams < 0)
 		return;
 	//starts with load cells empty
-	int32_t initialWeight = AverageValue();
-	OffsetInBits = -initialWeight;
+	int32_t InitialWeight = AverageValue();
+	OffsetInBits = -InitialWeight;
 	//time to put testLoad on load cell
-	BlinkNTimesDuringXMilis(200, calibrationTimeInMilis);
-	int32_t weightWithLoad = AverageValue();
+	BlinkNTimesDuringXMilis(200, CalibrationTimeInMilis);
+	int32_t WeightWithLoad = AverageValue();
 
-	BitsToGramRatio = (float)(weightWithLoad - initialWeight) / testLoadInGrams;
+	BitsToGramRatio = (float)(WeightWithLoad - InitialWeight) / TestLoadInGrams;
 }
 
-int32_t HX711::ReadValue(){
-	HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
-	int32_t buffer = 0;
+void Hx711::DoubleCalibration(float FirstTestLoadInGrams, float SecondTestLoadInGrams, uint16_t CalibrationTimeInMilis){
+	if (FirstTestLoadInGrams < 0)
+		return;
+	if (SecondTestLoadInGrams < 0.01){
+		InitialCalibration(FirstTestLoadInGrams, CalibrationTimeInMilis);
+		return;
+	}
+	//starts with load cells empty
+	int32_t InitialWeight = AverageValue();
+	OffsetInBits = -InitialWeight;
+	//time to put testLoad on load cell
+	BlinkNTimesDuringXMilis(200, CalibrationTimeInMilis);
+	int32_t WeightWithFirstLoad = AverageValue();
+	//time to put secondLoad on load cell
+	BlinkNTimesDuringXMilis(40, CalibrationTimeInMilis);
+	int32_t WeightWithSecondLoad = AverageValue();
 
-	if (!waitingForReadyState())
+	float FirstBitsToGramRatio = (float)(WeightWithFirstLoad - InitialWeight) / FirstTestLoadInGrams;
+	float SecondBitsToGramRatio = (float)(WeightWithSecondLoad - InitialWeight) / SecondTestLoadInGrams;
+	BitsToGramRatio = (FirstBitsToGramRatio + SecondBitsToGramRatio) / 2.0f;
+}
+
+
+int32_t Hx711::ReadValue(){
+	HAL_GPIO_WritePin(SerialClockGPIO, SerialClockPin, GPIO_PIN_RESET);
+	int32_t Buffer = 0;
+
+	if (!WaitingForReadyState())
 		return 0;
 	for (uint8_t i = 0; i < 24; ++i){
-		HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
-		buffer = buffer << 1 ;
-		buffer+=HAL_GPIO_ReadPin(Dt_gpio, Dt_pin);
-		HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(SerialClockGPIO, SerialClockPin, GPIO_PIN_SET);
+		Buffer = Buffer << 1 ;
+		Buffer+=HAL_GPIO_ReadPin(DataGPIO, DataPin);
+		HAL_GPIO_WritePin(SerialClockGPIO, SerialClockPin, GPIO_PIN_RESET);
 	}
 	for(uint8_t i = 0; i < Gain; ++i){
-		HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(Sck_gpio, Sck_pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(SerialClockGPIO, SerialClockPin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(SerialClockGPIO, SerialClockPin, GPIO_PIN_RESET);
 	}
-	waitingForReadyState();
+	WaitingForReadyState();
 
-    if (buffer & 0x800000){
-    	buffer |= 0xFF000000;
+    if (Buffer & 0x800000){
+    	Buffer |= 0xFF000000;
     }
-	return buffer;
+	return Buffer;
 }
 
-int32_t HX711::AverageValue(uint16_t SampleSize){
-	int64_t sum = 0;
-	int32_t read = 0;
-	int16_t succesfulReads = 0;
+int32_t Hx711::AverageValue(uint16_t SampleSize){
+	int64_t Sum = 0;
+	int32_t Read = 0;
+	int16_t SuccesfulReads = 0;
     for (uint16_t i = 0; i < SampleSize; ++i){
-    	read = ReadValue();
-    	if(read != 0){
-    	    sum += read;
-    		++succesfulReads;
+    	Read = ReadValue();
+    	if(Read != 0){
+    	    Sum += Read;
+    		++SuccesfulReads;
     	}
     }
-    if(succesfulReads > 0)
-    	return (int32_t)(sum / succesfulReads);
+    if(SuccesfulReads > 0)
+    	return (int32_t)(Sum / SuccesfulReads);
     else
     	return -1;
 }
 
 
-int8_t HX711::waitingForReadyState(uint16_t TimeInMilis){
+int8_t Hx711::WaitingForReadyState(uint16_t TimeInMilis){
 	for(uint16_t i = 0; i < TimeInMilis; ++i){
 		HAL_Delay(1);
-		if(HAL_GPIO_ReadPin(Dt_gpio, Dt_pin) == 0 ) //ready
+		if(HAL_GPIO_ReadPin(DataGPIO, DataPin) == 0 ) //ready
 			return 1;
 		else
 			continue;
@@ -123,16 +132,27 @@ int8_t HX711::waitingForReadyState(uint16_t TimeInMilis){
 	return 0;
 }
 
-void HX711::WeightCommandHandler(char Command, float InputNumber){
+void Hx711::WeightCommandHandler(char Command, float InputNumber){
 	if(Command == 'C')
-		initialCalibration(InputNumber);
+		InitialCalibration(InputNumber);
 	else if(Command == 'T')
-		tare();
+		Tare();
 	else if(Command == 'R')
-		setBitsToGramRatio(InputNumber);
+		SetBitsToGramRatio(InputNumber);
 	else if(Command == 'O')
-		addToOffset(InputNumber);
-	}
+		AddToOffset(InputNumber);
+}
+
+void Hx711::TEMPWeightCommandHandler(char Command, float InputNumber, float SecondInputNumber){
+	if(Command == 'C')
+		DoubleCalibration(InputNumber, SecondInputNumber);
+	else if(Command == 'T')
+		Tare();
+	else if(Command == 'R')
+		SetBitsToGramRatio(InputNumber);
+	else if(Command == 'O')
+		AddToOffset(InputNumber);
+}
 
 void BlinkNTimesDuringXMilis(uint16_t BlinkTimes, uint16_t TimeInMilis){
 	for(uint16_t i = 0; i < BlinkTimes ; ++i){
