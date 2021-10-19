@@ -40,5 +40,4 @@ public:
 };
 
 void BlinkNTimesDuringXMilis(uint16_t BlinkTimes = 200, uint16_t TimeInMilis = 10000);
-
 #endif

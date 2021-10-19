@@ -29,7 +29,7 @@ public:
 	void Stop() override;
 	void Open(uint32_t Milisecs = 3000) override;
 	void Close(uint32_t Milisecs = 3000) override;
-	void ValveCommandHandler(char Command, uint32_t Milisecs = 3000) override;
+	void ValveCommandHandler(char
 };
 
 #endif /* L298_LIB */

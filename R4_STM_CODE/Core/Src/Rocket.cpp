@@ -35,7 +35,6 @@ void Rocket::RocketCommandHandler(const cString & Input){
 	float tempNumber = 0;
 	if(std::isdigit(comand[5]))
 		tempNumber = std::stof(comand.data() + 5);
-
 	auto result = std::find(comand.begin(), comand.end(), ';');
 	result++;
 	if(std::isdigit(*result)){

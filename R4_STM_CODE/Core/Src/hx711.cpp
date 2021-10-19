@@ -1,3 +1,4 @@
+
 #include "Hx711.hh"
 
 Hx711::Hx711(GPIO_TypeDef* DataGPIO_, uint16_t DataPin_,
@@ -53,6 +54,7 @@ void Hx711::InitialCalibration(float TestLoadInGrams, uint16_t CalibrationTimeIn
 	BlinkNTimesDuringXMilis(200, CalibrationTimeInMilis);
 	int32_t WeightWithLoad = AverageValue();
 
+
 	BitsToGramRatio = (float)(WeightWithLoad - InitialWeight) / TestLoadInGrams;
 }
 
@@ -100,6 +102,7 @@ int32_t Hx711::ReadValue(){
     if (Buffer & 0x800000){
     	Buffer |= 0xFF000000;
     }
+
 	return Buffer;
 }
 
@@ -119,7 +122,6 @@ int32_t Hx711::AverageValue(uint16_t SampleSize){
     else
     	return -1;
 }
-
 
 int8_t Hx711::WaitingForReadyState(uint16_t TimeInMilis){
 	for(uint16_t i = 0; i < TimeInMilis; ++i){
@@ -161,4 +163,3 @@ void BlinkNTimesDuringXMilis(uint16_t BlinkTimes, uint16_t TimeInMilis){
 	}
 	HAL_GPIO_WritePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin, GPIO_PIN_SET);
 }
-
