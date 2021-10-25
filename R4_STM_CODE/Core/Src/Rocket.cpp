@@ -65,6 +65,15 @@ void Rocket::RocketCommandHandler(const cString & Input){
 		else if(comand[2] == 'D')
 			PQDMotor->ValveCommandHandler(comand[3]);
 	}
+	else if(comand.substr(0, 2) == "DS"){	//special
+		if(comand.substr(2, 2) == "ZD"){	//zawory, dwa
+			QDMotor->Open(0);
+			PQDMotor->Open(0);
+			HAL_Delay(tempNumber);
+			QDMotor->Close(0);
+			PQDMotor->Close(3000);
+		}
+	}
 }
 
 std::string Rocket::GetInfo() const{
