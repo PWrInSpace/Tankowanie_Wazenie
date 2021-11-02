@@ -12,7 +12,7 @@ public:
 	virtual void Stop() = 0;
 	virtual void Open(uint32_t Milisecs) = 0;
 	virtual void Close(uint32_t Milisecs) = 0;
-	virtual void ValveCommandHandler(char Command, uint32_t Milisecs) = 0;
+	virtual void ValveCommandHandler(char Command, uint32_t Milisecs);
 };
 
 #endif /* INC_VALVE_HH_ */
