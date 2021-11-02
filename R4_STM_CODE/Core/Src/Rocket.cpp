@@ -71,13 +71,13 @@ void Rocket::RocketCommandHandler(const cString & Input){
 			HAL_Delay(10);
 			PQDMotor->Open(0);
 		}
-	}
 	else if(comand.substr(2, 2) == "HH"){	//hamowania, hybryda
 		HAL_Delay(tempNumber);
 		Ignit->FIRE();
 		HAL_Delay(2000);
 		PQDMotor->Open();
 	}
+    }
 }
 
 std::string Rocket::GetInfo() const{
