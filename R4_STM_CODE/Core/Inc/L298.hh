@@ -27,8 +27,8 @@ public:
 			GPIO_TypeDef* LimitSwitchOpenGPIOPort = nullptr, uint16_t LimitSwitchOpenPin = 0,
 			GPIO_TypeDef* LimitSwitchCloseGPIOPort = nullptr, uint16_t LimitSwitchClosePin = 0);
 	void Stop() override;
-	void Open(uint32_t Milisecs = 3000) override;
-	void Close(uint32_t Milisecs = 3000) override;
+	void Open(uint32_t Timeout = 3000) override;
+	void Close(uint32_t Timeout = 3000) override;
 	void ValveCommandHandler(char Command, uint32_t Milisecs = 3000);
 };
 

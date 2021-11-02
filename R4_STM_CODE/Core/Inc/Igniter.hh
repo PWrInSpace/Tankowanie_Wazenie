@@ -20,7 +20,7 @@ public:
 
 	/* Methods */
 	uint8_t GetStatus() const;
-	void FIRE(uint16_t milisecs = 50);
+	void FIRE(uint16_t Milisecs = 50);
 };
 
 #endif /* INC_IGNITER_HH_ */

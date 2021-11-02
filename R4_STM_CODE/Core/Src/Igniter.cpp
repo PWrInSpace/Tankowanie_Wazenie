@@ -20,9 +20,9 @@ uint8_t Igniter::GetStatus() const{
 		return 0;
 }
 
-void Igniter::FIRE(uint16_t milisecs){
+void Igniter::FIRE(uint16_t Milisecs){
 	HAL_GPIO_WritePin(GPIO_PORT_IGNITER, PIN_IGNITER, GPIO_PIN_SET);
-	HAL_Delay(milisecs);
+	HAL_Delay(Milisecs);
 	HAL_GPIO_WritePin(GPIO_PORT_IGNITER, PIN_IGNITER, GPIO_PIN_RESET);
 	tried = true;
 }

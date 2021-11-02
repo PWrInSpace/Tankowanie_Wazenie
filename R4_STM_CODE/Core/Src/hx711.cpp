@@ -44,7 +44,18 @@ void Hx711::Tare(){
 	OffsetInBits = -AverageValue();
 }
 
-void Hx711::InitialCalibration(float TestLoadInGrams, uint16_t CalibrationTimeInMilis){
+int8_t Hx711::WaitingForReadyState(const uint16_t Timeout){
+	for(uint16_t i = 0; i < Timeout; ++i){
+		HAL_Delay(1);
+		if(HAL_GPIO_ReadPin(DataGPIO, DataPin) == 0 ) //ready
+			return 1;
+		else
+			continue;
+	}
+	return 0;
+}
+
+void Hx711::InitialCalibration(float TestLoadInGrams, const uint16_t CalibrationTimeInMilis){
 	if (TestLoadInGrams < 0)
 		return;
 	//starts with load cells empty
@@ -58,7 +69,7 @@ void Hx711::InitialCalibration(float TestLoadInGrams, uint16_t CalibrationTimeIn
 	BitsToGramRatio = (float)(WeightWithLoad - InitialWeight) / TestLoadInGrams;
 }
 
-void Hx711::DoubleCalibration(float FirstTestLoadInGrams, float SecondTestLoadInGrams, uint16_t CalibrationTimeInMilis){
+void Hx711::DoubleCalibration(float FirstTestLoadInGrams, float SecondTestLoadInGrams, const uint16_t CalibrationTimeInMilis){
 	if (FirstTestLoadInGrams < 0)
 		return;
 	if (SecondTestLoadInGrams < 0.01){
@@ -123,17 +134,6 @@ int32_t Hx711::AverageValue(uint16_t SampleSize){
     	return -1;
 }
 
-int8_t Hx711::WaitingForReadyState(uint16_t TimeInMilis){
-	for(uint16_t i = 0; i < TimeInMilis; ++i){
-		HAL_Delay(1);
-		if(HAL_GPIO_ReadPin(DataGPIO, DataPin) == 0 ) //ready
-			return 1;
-		else
-			continue;
-	}
-	return 0;
-}
-
 void Hx711::WeightCommandHandler(char Command, float InputNumber){
 	if(Command == 'C')
 		InitialCalibration(InputNumber);
@@ -156,7 +156,7 @@ void Hx711::TEMPWeightCommandHandler(char Command, float InputNumber, float Seco
 		AddToOffset(InputNumber);
 }
 
-void BlinkNTimesDuringXMilis(uint16_t BlinkTimes, uint16_t TimeInMilis){
+void BlinkNTimesDuringXMilis(const uint16_t BlinkTimes, const uint16_t TimeInMilis){
 	for(uint16_t i = 0; i < BlinkTimes ; ++i){
 		HAL_GPIO_TogglePin(BUILD_IN_LED_GPIO_Port, BUILD_IN_LED_Pin);
 		HAL_Delay(TimeInMilis / BlinkTimes);

@@ -16,7 +16,7 @@ class Hx711: public Weight{
 	volatile float BitsToGramRatio;
 	volatile WeightGain Gain;
 
-	int8_t WaitingForReadyState(uint16_t TimeInMilis = 100);
+	int8_t WaitingForReadyState(const uint16_t Timeout = 100);
 	int32_t ReadValue();
 	int32_t AverageValue(uint16_t SampleSize = 20);
 public:
@@ -33,11 +33,11 @@ public:
 	void SetBitsToGramRatio(float NewBitsToGramRatio);
 	void AddToOffset(float DifferenceOffsetInBits);
 	void Tare() override;
-	void InitialCalibration(float TestLoadInGrams, uint16_t CalibrationTimeInMilis = 6666) override;
-	void DoubleCalibration(float TestLoadInGrams, float SecondTestLoadInGrams, uint16_t CalibrationTimeInMilis = 6666);
+	void InitialCalibration(float TestLoadInGrams, const uint16_t CalibrationTimeInMilis = 6666) override;
+	void DoubleCalibration(float TestLoadInGrams, float SecondTestLoadInGrams, const uint16_t CalibrationTimeInMilis = 6666);
 	void WeightCommandHandler(char Command, float Number) override;
 	void TEMPWeightCommandHandler(char Command, float InputNumber, float SecondInputNumber);
 };
 
-void BlinkNTimesDuringXMilis(uint16_t BlinkTimes = 200, uint16_t TimeInMilis = 10000);
+void BlinkNTimesDuringXMilis(const uint16_t BlinkTimes = 200, const uint16_t TimeInMilis = 10000);
 #endif

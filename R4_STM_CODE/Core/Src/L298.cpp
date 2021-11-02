@@ -23,13 +23,13 @@ void Motor::Stop(){
 	HAL_GPIO_WritePin(Input2GPIOPort, Input2Pin, GPIO_PIN_RESET);
 }
 
-void Motor::Open(uint32_t Milisecs){
+void Motor::Open(uint32_t Timeout){
 	HAL_GPIO_WritePin(Input1GPIOPort, Input1Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(Input2GPIOPort, Input2Pin, GPIO_PIN_RESET);
 	__HAL_TIM_SET_COMPARE(PWMTimerNumber, PWMTimerChannel, 999);
 	State = ValveState::ValveStateAttemptToOpen;
 	if(LimitSwitchOpenGPIOPort != nullptr){ //if has limit switch
-		for(uint32_t steps =  0; steps < Milisecs / 10 ; ++steps){
+		for(uint32_t steps =  0; steps < Timeout / 10 ; ++steps){
 			if(HAL_GPIO_ReadPin(LimitSwitchOpenGPIOPort, LimitSwitchOpenPin) == GPIO_PIN_RESET){
 				State = ValveState::ValveStateOpen;
 				break;
@@ -38,17 +38,17 @@ void Motor::Open(uint32_t Milisecs){
 		}
 	}
 	else
-		HAL_Delay(Milisecs);
+		HAL_Delay(Timeout);
 	Stop();
 }
 
-void Motor::Close(uint32_t Milisecs){
+void Motor::Close(uint32_t Timeout){
 	HAL_GPIO_WritePin(Input1GPIOPort, Input1Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(Input2GPIOPort, Input2Pin, GPIO_PIN_SET);
 	__HAL_TIM_SET_COMPARE(PWMTimerNumber, PWMTimerChannel, 999);
 	State = ValveState::ValveStateAttemptToClose;
 	if(LimitSwitchCloseGPIOPort != nullptr){ //if has limit switch
-		for(uint32_t steps =  0; steps < Milisecs/10; ++steps){
+		for(uint32_t steps =  0; steps < Timeout/10; ++steps){
 			if(HAL_GPIO_ReadPin(LimitSwitchCloseGPIOPort, LimitSwitchClosePin) == GPIO_PIN_RESET){
 				State = ValveState::ValveStateClose;
 				break;
@@ -57,13 +57,13 @@ void Motor::Close(uint32_t Milisecs){
 		}
 	}
 	else
-		HAL_Delay(Milisecs);
+		HAL_Delay(Timeout);
 	Stop();
 }
 
-void Motor::ValveCommandHandler(char Command, uint32_t Milisecs){
+void Motor::ValveCommandHandler(char Command, uint32_t Timeout){
 	if(Command == 'O')
-		Open(Milisecs);
+		Open(Timeout);
 	else if(Command == 'Z')
-		Close(Milisecs);
+		Close(Timeout);
 }
