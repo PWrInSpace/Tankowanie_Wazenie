@@ -12,7 +12,7 @@ class Igniter{
 	// Test Connection
 	GPIO_TypeDef* GPIO_PORT_TEST_CON;
 	uint16_t PIN_TEST_CON;
-	bool tried;
+	volatile bool tried;
 public:
 	/* Constructor */
 	Igniter(GPIO_TypeDef* GPIO_PORT_IGNITER_, uint16_t PIN_IGNITER_,

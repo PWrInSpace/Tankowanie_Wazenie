@@ -4,7 +4,7 @@ Rocket::Rocket(std::shared_ptr<Motor> FillMotor_, std::shared_ptr<Motor> DeprMot
 				std::shared_ptr<Motor> QDMotor_, std::shared_ptr<Igniter> Ignit_,
 				std::shared_ptr<Hx711> RocketWeight_, std::shared_ptr<Hx711> TankWeight_, std::shared_ptr<Motor> PQDMotor_)
 :	FillMotor(FillMotor_), DeprMotor(DeprMotor_), QDMotor(QDMotor_), PQDMotor(PQDMotor_),
-	Ignit(Ignit_), RocketWeight(RocketWeight_), TankWeight(TankWeight_)
+	Ignit(Ignit_), RocketWeight(RocketWeight_), TankWeight(TankWeight_), RocketState(RocketStateInit)
 {
 		RocketState = RocketStateInit;
 }
@@ -64,6 +64,30 @@ void Rocket::RocketCommandHandler(const cString & Input){
 			QDMotor->ValveCommandHandler(comand[3], 3500);
 		else if(comand[2] == 'D')
 			PQDMotor->ValveCommandHandler(comand[3]);
+	}
+	else if(comand.substr(0, 2) == "DS"){	//special
+		if(comand.substr(2, 2) == "ZD"){	//zawory, dwa
+			HAL_Delay(30000);
+			Ignit->FIRE();
+			HAL_Delay(3000);
+			FillMotor->Open(0);
+			HAL_Delay(10);
+			DeprMotor->Open(0);
+			HAL_Delay(3000);
+			FillMotor->Stop();
+			DeprMotor->Stop();
+			FillMotor->Close(0);
+			DeprMotor->Close(0);
+			HAL_Delay(3000);
+			FillMotor->Stop();
+			DeprMotor->Stop();
+		}
+		else if(comand.substr(2, 2) == "HH"){	//hamowania, hybryda
+			HAL_Delay(tempNumber);
+			Ignit->FIRE();
+			HAL_Delay(2000);
+			FillMotor->Open();
+		}
 	}
 }
 
