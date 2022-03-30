@@ -17,12 +17,15 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+
 #include "main.h"
 #include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <MAX14870.hh>
+#include<vector>
+#include<tuple>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,17 +51,24 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 
-/* Definitions for defaultTask */
-osThreadId_t defaultTaskHandle;
-const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
+/* Definitions for COM */
+osThreadId_t COMHandle;
+const osThreadAttr_t COM_attributes = {
+  .name = "COM",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for myTask02 */
-osThreadId_t myTask02Handle;
-const osThreadAttr_t myTask02_attributes = {
-  .name = "myTask02",
+/* Definitions for Valves */
+osThreadId_t ValvesHandle;
+const osThreadAttr_t Valves_attributes = {
+  .name = "Valves",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityBelowNormal,
+};
+/* Definitions for Measure */
+osThreadId_t MeasureHandle;
+const osThreadAttr_t Measure_attributes = {
+  .name = "Measure",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
@@ -74,8 +84,9 @@ static void MX_I2C2_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM4_Init(void);
-void StartDefaultTask(void *argument);
-void StartTask02(void *argument);
+void TaskCOM(void *argument);
+void TaskValves(void *argument);
+void TaskMeasure(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -143,11 +154,14 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  /* creation of COM */
+  COMHandle = osThreadNew(TaskCOM, NULL, &COM_attributes);
 
-  /* creation of myTask02 */
-  myTask02Handle = osThreadNew(StartTask02, NULL, &myTask02_attributes);
+  /* creation of Valves */
+  ValvesHandle = osThreadNew(TaskValves, NULL, &Valves_attributes);
+
+  /* creation of Measure */
+  MeasureHandle = osThreadNew(TaskMeasure, NULL, &Measure_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -551,17 +565,38 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void TryReachExpectedState(Motor* motor, ValveState expectedState, uint16_t parameter = 1000){
+	if(motor->GetState() == expectedState){
+		return;
+	}
+	if(expectedState == ValveStateOpen){
+		motor->State = ValveStateAttemptToOpen;
+		motor->Open();
+	}
+	else if(expectedState == ValveStateClose){
+		motor->State = ValveStateAttemptToClose;
+		motor->Close();
+	}
+	else if(expectedState == ValveStateVent){
+		motor->State = ValveStateAttemptToOpen;
+		motor->Open();
+		osDelay(parameter);
+		motor->State = ValveStateAttemptToClose;
+		motor->Close();
+	}
+}
+
 
 /* USER CODE END 4 */
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_TaskCOM */
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the COM thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void *argument)
+/* USER CODE END Header_TaskCOM */
+void TaskCOM(void *argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
@@ -572,22 +607,51 @@ void StartDefaultTask(void *argument)
   /* USER CODE END 5 */
 }
 
-/* USER CODE BEGIN Header_StartTask02 */
+/* USER CODE BEGIN Header_TaskValves */
 /**
-* @brief Function implementing the myTask02 thread.
+* @brief Function implementing the Valves thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartTask02 */
-void StartTask02(void *argument)
+/* USER CODE END Header_TaskValves */
+void TaskValves(void *argument)
 {
-  /* USER CODE BEGIN StartTask02 */
+  /* USER CODE BEGIN TaskValves */
+	std::vector<std::tuple<Motor*,ValveState>> MotorList;
+	MotorList.push_back({new Motor(M1Dir_GPIO_Port, M1Dir_Pin, &htim4, TIM_CHANNEL_4), ValveStateIDK});
+	MotorList.push_back({new Motor(M2Dir_GPIO_Port, M2Dir_Pin, &htim4, TIM_CHANNEL_3), ValveStateIDK});
+	MotorList.push_back({new Motor(M3Dir_GPIO_Port, M3Dir_Pin, &htim1, TIM_CHANNEL_2), ValveStateIDK});
+	MotorList.push_back({new Motor(M4Dir_GPIO_Port, M4Dir_Pin, &htim1, TIM_CHANNEL_1), ValveStateIDK});
+	MotorList.push_back({new Motor(M5Dir_GPIO_Port, M5Dir_Pin, &htim3, TIM_CHANNEL_3), ValveStateIDK});
+	//to do setter for expected state
+
+	/* Infinite loop */
+	for(;;)
+	{
+		for(auto motor : MotorList){
+			TryReachExpectedState(std::get<0>(motor), std::get<1>(motor));
+		}
+		osDelay(10);
+	}
+  /* USER CODE END TaskValves */
+}
+
+/* USER CODE BEGIN Header_TaskMeasure */
+/**
+* @brief Function implementing the Measure thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_TaskMeasure */
+void TaskMeasure(void *argument)
+{
+  /* USER CODE BEGIN TaskMeasure */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END StartTask02 */
+  /* USER CODE END TaskMeasure */
 }
 
 /**
