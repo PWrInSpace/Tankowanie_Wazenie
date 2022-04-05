@@ -12,10 +12,10 @@ Motor::Motor(	GPIO_TypeDef* DirGPIOPort_,
 {
 	Stop();
 }
-void Motor::Stop() {
+void Motor::Stop(){
 	__HAL_TIM_SET_COMPARE(PWMTimerNumber, PWMTimerChannel, 0);
 }
-void Motor::Open() {
+void Motor::Open(){
 	HAL_GPIO_WritePin(DirGPIOPort, DirPin, GPIO_PIN_SET);
 	__HAL_TIM_SET_COMPARE(PWMTimerNumber, PWMTimerChannel, 999);
 }

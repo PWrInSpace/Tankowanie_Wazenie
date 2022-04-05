@@ -139,6 +139,7 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
+  uint16_t ventingTime = 1000; //tmp
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -158,7 +159,7 @@ int main(void)
   COMHandle = osThreadNew(TaskCOM, NULL, &COM_attributes);
 
   /* creation of Valves */
-  ValvesHandle = osThreadNew(TaskValves, NULL, &Valves_attributes);
+  ValvesHandle = osThreadNew(TaskValves, &ventingTime, &Valves_attributes);
 
   /* creation of Measure */
   MeasureHandle = osThreadNew(TaskMeasure, NULL, &Measure_attributes);
@@ -614,26 +615,30 @@ void TaskCOM(void *argument)
 * @retval None
 */
 /* USER CODE END Header_TaskValves */
-void TaskValves(void *argument)
-{
-  /* USER CODE BEGIN TaskValves */
-	std::vector<std::tuple<Motor*,ValveState>> MotorList;
+void TaskValves(void *argument){
+	/* USER CODE BEGIN TaskValves */
+	std::vector<std::tuple<Motor*,volatile ValveState>> MotorList;
 	MotorList.push_back({new Motor(M1Dir_GPIO_Port, M1Dir_Pin, &htim4, TIM_CHANNEL_4), ValveStateIDK});
 	MotorList.push_back({new Motor(M2Dir_GPIO_Port, M2Dir_Pin, &htim4, TIM_CHANNEL_3), ValveStateIDK});
 	MotorList.push_back({new Motor(M3Dir_GPIO_Port, M3Dir_Pin, &htim1, TIM_CHANNEL_2), ValveStateIDK});
 	MotorList.push_back({new Motor(M4Dir_GPIO_Port, M4Dir_Pin, &htim1, TIM_CHANNEL_1), ValveStateIDK});
 	MotorList.push_back({new Motor(M5Dir_GPIO_Port, M5Dir_Pin, &htim3, TIM_CHANNEL_3), ValveStateIDK});
-	//to do setter for expected state
-
+	//ToDo setter for expected state
 	/* Infinite loop */
-	for(;;)
-	{
-		for(auto motor : MotorList){
-			TryReachExpectedState(std::get<0>(motor), std::get<1>(motor));
-		}
-		osDelay(10);
+	while(true){
+		auto TestMotor = MotorList[0];
+		std::get<1>(TestMotor) = ValveStateOpen;
+		TryReachExpectedState(std::get<0>(TestMotor), std::get<1>(TestMotor), *(static_cast<uint16_t*>(argument)));
+		osDelay(1000);
+		std::get<1>(TestMotor) = ValveStateClose;
+		TryReachExpectedState(std::get<0>(TestMotor), std::get<1>(TestMotor), *(static_cast<uint16_t*>(argument)));
+
+		//for(auto motor : MotorList){
+		//	TryReachExpectedState(std::get<0>(motor), std::get<1>(motor), *(static_cast<uint16_t*>(argument)));
+		//}
+		osDelay(1000);
 	}
-  /* USER CODE END TaskValves */
+	/* USER CODE END TaskValves */
 }
 
 /* USER CODE BEGIN Header_TaskMeasure */
@@ -643,15 +648,14 @@ void TaskValves(void *argument)
 * @retval None
 */
 /* USER CODE END Header_TaskMeasure */
-void TaskMeasure(void *argument)
-{
-  /* USER CODE BEGIN TaskMeasure */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END TaskMeasure */
+void TaskMeasure(void *argument){
+	/* USER CODE BEGIN TaskMeasure */
+	/* Infinite loop */
+	while(1)
+	{
+		osDelay(1);
+	}
+	/* USER CODE END TaskMeasure */
 }
 
 /**
