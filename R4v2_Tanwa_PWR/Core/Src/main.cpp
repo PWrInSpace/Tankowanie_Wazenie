@@ -23,6 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <MAX14870.hh>
+#include <Voltmeter.hh>
 #include<vector>
 #include<tuple>
 /* USER CODE END Includes */
@@ -605,7 +606,7 @@ void TaskCOM(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    osDelay(1000);
   }
   /* USER CODE END 5 */
 }
@@ -619,6 +620,7 @@ void TaskCOM(void *argument)
 /* USER CODE END Header_TaskValves */
 void TaskValves(void *argument)
 {
+	uint16_t* period = static_cast<uint16_t*>(argument);
   /* USER CODE BEGIN TaskValves */
 	std::vector<std::tuple<Motor*,volatile ValveState>> MotorList;
 	MotorList.push_back({new Motor(M1Dir_GPIO_Port, M1Dir_Pin, &htim4, TIM_CHANNEL_4), ValveStateIDK});
@@ -626,16 +628,18 @@ void TaskValves(void *argument)
 	MotorList.push_back({new Motor(M3Dir_GPIO_Port, M3Dir_Pin, &htim1, TIM_CHANNEL_2), ValveStateIDK});
 	MotorList.push_back({new Motor(M4Dir_GPIO_Port, M4Dir_Pin, &htim1, TIM_CHANNEL_1), ValveStateIDK});
 	MotorList.push_back({new Motor(M5Dir_GPIO_Port, M5Dir_Pin, &htim3, TIM_CHANNEL_3), ValveStateIDK});
+
 	//ToDo setter for expected state
+	auto TestMotor = MotorList[0];
+	//volatile uint16_t tmp = 40000;
 	/* Infinite loop */
 	while(true){
-		auto TestMotor = MotorList[0];
 		std::get<1>(TestMotor) = ValveStateOpen;
-		TryReachExpectedState(std::get<0>(TestMotor), std::get<1>(TestMotor), *(static_cast<uint16_t*>(argument)));
+		TryReachExpectedState(std::get<0>(TestMotor), std::get<1>(TestMotor), *period);
 		osDelay(1000);
+
 		std::get<1>(TestMotor) = ValveStateClose;
 		TryReachExpectedState(std::get<0>(TestMotor), std::get<1>(TestMotor), *(static_cast<uint16_t*>(argument)));
-
 		//for(auto motor : MotorList){
 		//	TryReachExpectedState(std::get<0>(motor), std::get<1>(motor), *(static_cast<uint16_t*>(argument)));
 		//}
@@ -655,9 +659,9 @@ void TaskMeasure(void *argument)
 {
   /* USER CODE BEGIN TaskMeasure */
 	/* Infinite loop */
-	while(1)
+	while(true)
 	{
-		osDelay(1);
+		osDelay(1000);
 	}
   /* USER CODE END TaskMeasure */
 }

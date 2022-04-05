@@ -11,6 +11,7 @@ Motor::Motor(	GPIO_TypeDef* DirGPIOPort_,
 	PWMTimerChannel(PWMTimerChannel_)
 {
 	Stop();
+	HAL_TIM_PWM_Start(PWMTimerNumber, PWMTimerChannel);
 }
 void Motor::Stop(){
 	__HAL_TIM_SET_COMPARE(PWMTimerNumber, PWMTimerChannel, 0);
