@@ -8,7 +8,8 @@ void loraTask(void *arg){
   
   vTaskDelay(25 / portTICK_PERIOD_MS);
   
-  xSemaphoreTake(tc->spiMutex, pdTRUE);
+  //xSemaphoreTake(tc->spiMutex, pdTRUE);
+  xSemaphoreTake(mutex, portMAX_DELAY);
 
   LoRa.setSPI(tc->mySPI);
   LoRa.setPins(LORA_CS, LORA_RS, LORA_D0);
@@ -24,11 +25,14 @@ void loraTask(void *arg){
   LoRa.setTxPower(14);
   LoRa.setTimeout(10);
 
-  xSemaphoreGive(tc->spiMutex);
+  //xSemaphoreGive(tc->spiMutex);
+  xSemaphoreGive(mutex);
 
   while(1){
     DEBUG("LORA TASK");
-    xSemaphoreTake(tc->spiMutex, portMAX_DELAY);
+    //xSemaphoreTake(tc->spiMutex, portMAX_DELAY);
+    xSemaphoreTake(mutex, portMAX_DELAY);
+
 
     if(LoRa.parsePacket() != 0){
       DEBUG("LORA PARSE");
@@ -41,10 +45,13 @@ void loraTask(void *arg){
 
     }
 
-    xSemaphoreGive(tc->spiMutex);
+    //xSemaphoreGive(tc->spiMutex);
+    xSemaphoreGive(mutex);
 
     if(xQueueReceive(tc->loraTxQueue, (void*)&loraTx, 0) == pdTRUE){
-      xSemaphoreTake(tc->spiMutex, portMAX_DELAY);
+      xSemaphoreTake(mutex, portMAX_DELAY);
+
+      //xSemaphoreTake(tc->spiMutex, portMAX_DELAY);
         
       if(LoRa.beginPacket() == 0){
         Serial.println("LORA is transmitnig");
@@ -56,7 +63,8 @@ void loraTask(void *arg){
       DEBUG("WYSLANO:");
       DEBUG(loraTx); // DEBUG
 
-      xSemaphoreGive(tc->spiMutex);
+      xSemaphoreGive(mutex);
+      //xSemaphoreGive(tc->spiMutex);
     }
 
     vTaskDelay(50 / portTICK_PERIOD_MS);

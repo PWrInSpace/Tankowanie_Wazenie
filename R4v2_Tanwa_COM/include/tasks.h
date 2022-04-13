@@ -8,6 +8,8 @@
 #include "pinout.h"
 #include "SDcard.h"
 
+extern SemaphoreHandle_t mutex;
+
 //pro_cpu
 void loraTask(void *arg);
 

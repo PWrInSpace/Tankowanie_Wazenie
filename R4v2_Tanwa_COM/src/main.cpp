@@ -4,6 +4,7 @@
 #include "mainClass.h"
 #include "config.h"
 
+SemaphoreHandle_t mutex = NULL;
 
 void setup() {
   #ifdef __DEBUG
@@ -16,6 +17,7 @@ void setup() {
   tc->loraTxQueue = xQueueCreate(LORA_TX_QUEUE_LENGTH, sizeof(char[LORA_TX_FRAME_SIZE]));
 
   tc->spiMutex = xSemaphoreCreateMutex();
+  mutex = xSemaphoreCreateMutex();
 
   vTaskDelay(25 / portTICK_PERIOD_MS);
   

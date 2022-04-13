@@ -7,11 +7,12 @@ void sdTask(void *arg){
   String dataPath = dataFileName;
   uint8_t sd_i = 0;
   
-  vTaskDelay(10 / portTICK_RATE_MS);
+  vTaskDelay(100 / portTICK_RATE_MS);
 
   SDCard mySD(tc->mySPI, SD_CS);
 
-  xSemaphoreTake(tc->spiMutex, pdTRUE);
+  //xSemaphoreTake(tc->spiMutex, pdTRUE);
+  xSemaphoreTake(mutex, portMAX_DELAY);
 
   while(!mySD.init()){
     Serial.println("SD INIT ERROR!");
@@ -23,18 +24,21 @@ void sdTask(void *arg){
   }
   dataPath = dataPath + String(sd_i) + ".txt";
 
-  xSemaphoreGive(tc->spiMutex);
-  
+  //xSemaphoreGive(tc->spiMutex);
+  xSemaphoreGive(mutex);
+
   while(1){
     if(xQueueReceive(tc->sdQueue, (void*)&data, 0) == pdTRUE){
-      xSemaphoreTake(tc->spiMutex, portMAX_DELAY);
-      
+      //xSemaphoreTake(tc->spiMutex, portMAX_DELAY);
+      xSemaphoreTake(mutex, portMAX_DELAY);  
+
       if(!mySD.write(dataPath, data)){
         //SD_WRITE_ERROR
       }
         
       DEBUG("ZAPIS NA SD");
-      xSemaphoreGive(tc->spiMutex);
+      //xSemaphoreGive(tc->spiMutex);
+      xSemaphoreGive(mutex);
     }
    
     
