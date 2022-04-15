@@ -44,6 +44,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
+DMA_HandleTypeDef hdma_adc1;
 
 I2C_HandleTypeDef hi2c2;
 
@@ -83,6 +84,7 @@ static void MX_ADC1_Init(void);
 static void MX_I2C2_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM3_Init(void);
+static void MX_DMA_Init(void);
 static void MX_TIM4_Init(void);
 void TaskCOM(void *argument);
 void TaskValves(void *argument);
@@ -124,6 +126,8 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+
+  MX_DMA_Init();
   MX_GPIO_Init();
   MX_ADC1_Init();
   MX_I2C2_Init();
@@ -132,6 +136,7 @@ int main(void)
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -139,7 +144,7 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
-  uint16_t ventingTime = 1000; //tmp
+uint16_t ventingTime = 1000; //tmp
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -178,8 +183,7 @@ int main(void)
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+  while (true){
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -252,12 +256,12 @@ static void MX_ADC1_Init(void)
   /** Common config
   */
   hadc1.Instance = ADC1;
-  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
+  hadc1.Init.ContinuousConvMode = ENABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.NbrOfConversion = 8;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     Error_Handler();
@@ -266,7 +270,63 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES_5;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_2;
+  sConfig.Rank = ADC_REGULAR_RANK_2;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Rank = ADC_REGULAR_RANK_3;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_4;
+  sConfig.Rank = ADC_REGULAR_RANK_4;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_5;
+  sConfig.Rank = ADC_REGULAR_RANK_5;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_6;
+  sConfig.Rank = ADC_REGULAR_RANK_6;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_7;
+  sConfig.Rank = ADC_REGULAR_RANK_7;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_9;
+  sConfig.Rank = ADC_REGULAR_RANK_8;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -483,6 +543,22 @@ static void MX_TIM4_Init(void)
 }
 
 /**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -569,7 +645,9 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void TryReachExpectedState(Motor* motor, ValveState expectedState, uint16_t parameter = 1000){
+void TryReachExpectedState(const std::tuple<Motor*,volatile ValveState>& Valve, uint16_t parameter = 1000){
+	Motor* motor = std::get<0>(Valve);
+	ValveState expectedState = std::get<1>(Valve);
 	if(motor->GetState() == expectedState){
 		return;
 	}
@@ -590,6 +668,10 @@ void TryReachExpectedState(Motor* motor, ValveState expectedState, uint16_t para
 	}
 }
 
+void setNewExpectedStateOfValveOnVector(std::vector<std::tuple<Motor*,volatile ValveState>>& Valves, const uint8_t& ValveNumber, const ValveState& newExpectedValveState){
+	Valves[ValveNumber] = std::tuple<Motor*,volatile ValveState>(std::get<0>(Valves[ValveNumber]), newExpectedValveState);
+}
+
 
 /* USER CODE END 4 */
 
@@ -606,7 +688,10 @@ void TaskCOM(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1000);
+	{ //test led (M5_DIR xd)
+		HAL_GPIO_TogglePin(M5Dir_GPIO_Port, M5Dir_Pin);
+	}
+	osDelay(1000);
   }
   /* USER CODE END 5 */
 }
@@ -620,26 +705,24 @@ void TaskCOM(void *argument)
 /* USER CODE END Header_TaskValves */
 void TaskValves(void *argument)
 {
-	uint16_t* period = static_cast<uint16_t*>(argument);
   /* USER CODE BEGIN TaskValves */
+	uint16_t* period = (static_cast<uint16_t*>(argument));
 	std::vector<std::tuple<Motor*,volatile ValveState>> MotorList;
 	MotorList.push_back({new Motor(M1Dir_GPIO_Port, M1Dir_Pin, &htim4, TIM_CHANNEL_4), ValveStateIDK});
 	MotorList.push_back({new Motor(M2Dir_GPIO_Port, M2Dir_Pin, &htim4, TIM_CHANNEL_3), ValveStateIDK});
 	MotorList.push_back({new Motor(M3Dir_GPIO_Port, M3Dir_Pin, &htim1, TIM_CHANNEL_2), ValveStateIDK});
 	MotorList.push_back({new Motor(M4Dir_GPIO_Port, M4Dir_Pin, &htim1, TIM_CHANNEL_1), ValveStateIDK});
-	MotorList.push_back({new Motor(M5Dir_GPIO_Port, M5Dir_Pin, &htim3, TIM_CHANNEL_3), ValveStateIDK});
+	//MotorList.push_back({new Motor(M5Dir_GPIO_Port, M5Dir_Pin, &htim3, TIM_CHANNEL_3), ValveStateIDK});
 
-	//ToDo setter for expected state
-	auto TestMotor = MotorList[0];
-	//volatile uint16_t tmp = 40000;
 	/* Infinite loop */
 	while(true){
-		std::get<1>(TestMotor) = ValveStateOpen;
-		TryReachExpectedState(std::get<0>(TestMotor), std::get<1>(TestMotor), *period);
+		{ //test open - close
+		setNewExpectedStateOfValveOnVector(MotorList, 0, ValveStateOpen);
+		TryReachExpectedState(MotorList[0], *period);
 		osDelay(1000);
-
-		std::get<1>(TestMotor) = ValveStateClose;
-		TryReachExpectedState(std::get<0>(TestMotor), std::get<1>(TestMotor), *(static_cast<uint16_t*>(argument)));
+		setNewExpectedStateOfValveOnVector(MotorList, 0, ValveStateClose);
+		TryReachExpectedState(MotorList[0], *period);
+		}
 		//for(auto motor : MotorList){
 		//	TryReachExpectedState(std::get<0>(motor), std::get<1>(motor), *(static_cast<uint16_t*>(argument)));
 		//}
@@ -657,7 +740,11 @@ void TaskValves(void *argument)
 /* USER CODE END Header_TaskMeasure */
 void TaskMeasure(void *argument)
 {
-  /* USER CODE BEGIN TaskMeasure */
+	volatile uint16_t ADCData[8];
+	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADCData, 8);
+	//ToDo change it to Voltmeter class
+
+	/* USER CODE BEGIN TaskMeasure */
 	/* Infinite loop */
 	while(true)
 	{
