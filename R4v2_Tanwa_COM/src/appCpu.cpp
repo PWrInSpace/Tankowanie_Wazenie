@@ -1,5 +1,6 @@
 //application core
 #include "tasks.h"
+#include "data.h"
 
 void sdTask(void *arg){
   TanWaControl * tc = static_cast<TanWaControl*>(arg);
@@ -52,10 +53,31 @@ void dataTask(void *arg){
   char sd[SD_FRAME_SIZE] = {};
   char lora[LORA_TX_FRAME_SIZE] = {};
   char data[SD_FRAME_SIZE] = {};
+  DataStruct dataStruct;
+  HX711_ADC rckWeight(HX1_SDA, HX1_SCL);
+  HX711_ADC tankWeight(HX2_SDA, HX2_SCL);
+
 
   TanWaControl *tc = static_cast<TanWaControl*>(arg);
 
-  
+  rckWeight.begin();
+  rckWeight.start(STABILIZNG_TIME, false); //start without tare
+  rckWeight.setCalFactor(BIT_TO_GRAM_RATIO_RCK);
+  rckWeight.setTareOffset(OFFSET_RCK);
+  rckWeight.setSamplesInUse(20);
+  rckWeight.setGain(64);
+
+  tankWeight.begin();
+  tankWeight.start(STABILIZNG_TIME, false); //start without tare
+  tankWeight.setCalFactor(BIT_TO_GRAM_RATIO_TANK);
+  tankWeight.setTareOffset(OFFSET_TANK);
+  tankWeight.setSamplesInUse(20);
+  tankWeight.setGain(64);
+
+  // TODO na komende nowa kalibracja
+  //rckWeight.getNewCalibration();
+  //tankWeight.getNewCalibration();
+
   vTaskDelay(5000 / portTICK_PERIOD_MS);
   
   while(1){
@@ -68,6 +90,11 @@ void dataTask(void *arg){
     xQueueSend(tc->sdQueue, (void*)sd, 0);
     
     DEBUG(data);
+   
+    dataStruct.rckWeight = rckWeight.getData();
+    dataStruct.tankWeight = tankWeight.getData();
+
     vTaskDelay(1000 / portTICK_PERIOD_MS);
+    
   }
 }

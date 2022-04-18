@@ -20,5 +20,11 @@
 
 static String dataFileName= "/data_";
 
+//weighing
+#define BIT_TO_GRAM_RATIO_RCK 1
+#define BIT_TO_GRAM_RATIO_TANK 1
+#define OFFSET_RCK 1
+#define OFFSET_TANK 1
+#define STABILIZNG_TIME 4000
 
 #endif

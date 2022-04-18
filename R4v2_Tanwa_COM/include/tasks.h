@@ -13,8 +13,10 @@ extern SemaphoreHandle_t mutex;
 //pro_cpu
 void loraTask(void *arg);
 
+
 //app_cpu
 void sdTask(void *arg);
 void dataTask(void *arg);
+
 
 #endif

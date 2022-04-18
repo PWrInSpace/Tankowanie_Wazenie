@@ -70,3 +70,10 @@ void loraTask(void *arg){
     vTaskDelay(50 / portTICK_PERIOD_MS);
   }
 }
+
+void weighingTask(void* arg){
+
+
+
+  
+}
