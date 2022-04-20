@@ -29,19 +29,19 @@ void loraTask(void *arg){
   xSemaphoreGive(mutex);
 
   while(1){
-    DEBUG("LORA TASK");
+    //DEBUGL("LORA TASK");
     //xSemaphoreTake(tc->spiMutex, portMAX_DELAY);
     xSemaphoreTake(mutex, portMAX_DELAY);
 
 
     if(LoRa.parsePacket() != 0){
-      DEBUG("LORA PARSE");
+      DEBUGL("LORA PARSE");
     }
     if (LoRa.available()) {
 
       String rxStr = LoRa.readString();
       DEBUG("ODEBRANO:");
-      DEBUG(rxStr); // DEBUG
+      DEBUGL(rxStr); // DEBUG
 
     }
 
@@ -61,7 +61,7 @@ void loraTask(void *arg){
         Serial.println("End packet error!");
       }
       DEBUG("WYSLANO:");
-      DEBUG(loraTx); // DEBUG
+      DEBUGL(loraTx); // DEBUG
 
       xSemaphoreGive(mutex);
       //xSemaphoreGive(tc->spiMutex);

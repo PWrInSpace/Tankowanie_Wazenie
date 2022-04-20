@@ -37,7 +37,7 @@ void sdTask(void *arg){
         //SD_WRITE_ERROR
       }
         
-      DEBUG("ZAPIS NA SD");
+      DEBUGL("ZAPIS NA SD");
       //xSemaphoreGive(tc->spiMutex);
       xSemaphoreGive(mutex);
     }
@@ -78,7 +78,7 @@ void dataTask(void *arg){
   //rckWeight.getNewCalibration();
   //tankWeight.getNewCalibration();
 
-  vTaskDelay(5000 / portTICK_PERIOD_MS);
+  vTaskDelay(500 / portTICK_PERIOD_MS);
   
   while(1){
     
