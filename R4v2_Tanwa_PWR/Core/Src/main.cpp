@@ -23,14 +23,22 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <MAX14870.hh>
-#include <Voltmeter.hh>
 #include<vector>
 #include<tuple>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+typedef struct {
 
+    bool ledState;
+    uint8_t lastDoneCommandNum;
+    float adcVoltage;
+    int16_t adcValue;
+} COMStruct;
+
+COMStruct txStruct;
+COMStruct rxStruct;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -44,9 +52,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
-DMA_HandleTypeDef hdma_adc1;
 
 I2C_HandleTypeDef hi2c2;
+DMA_HandleTypeDef hdma_i2c2_tx;
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim3;
@@ -126,13 +134,12 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-
-  MX_DMA_Init();
   MX_GPIO_Init();
   MX_ADC1_Init();
   MX_I2C2_Init();
   MX_TIM1_Init();
   MX_TIM3_Init();
+  MX_DMA_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 
@@ -355,7 +362,7 @@ static void MX_I2C2_Init(void)
   hi2c2.Instance = I2C2;
   hi2c2.Init.ClockSpeed = 100000;
   hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c2.Init.OwnAddress1 = 0;
+  hi2c2.Init.OwnAddress1 = 52;
   hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c2.Init.OwnAddress2 = 0;
@@ -552,9 +559,9 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
-  /* DMA1_Channel1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+  /* DMA1_Channel4_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
 
 }
 
@@ -684,16 +691,17 @@ void setNewExpectedStateOfValveOnVector(std::vector<std::tuple<Motor*,volatile V
 /* USER CODE END Header_TaskCOM */
 void TaskCOM(void *argument)
 {
-  /* USER CODE BEGIN 5 */
-  /* Infinite loop */
-  for(;;)
-  {
-	{ //test led (M5_DIR xd)
-		HAL_GPIO_TogglePin(M5Dir_GPIO_Port, M5Dir_Pin);
+	/* USER CODE BEGIN 5 */
+
+	/* Infinite loop */
+	for(;;)
+	{
+		{ //test led (M5_DIR xd)
+			HAL_GPIO_TogglePin(M5Dir_GPIO_Port, M5Dir_Pin);
+		}
+		osDelay(1000);
 	}
-	osDelay(1000);
-  }
-  /* USER CODE END 5 */
+	/* USER CODE END 5 */
 }
 
 /* USER CODE BEGIN Header_TaskValves */
@@ -740,14 +748,14 @@ void TaskValves(void *argument)
 /* USER CODE END Header_TaskMeasure */
 void TaskMeasure(void *argument)
 {
+  /* USER CODE BEGIN TaskMeasure */
+	float ADCDividerRatio[8] = {1.0, 1.0 ,1.0 ,1.0 ,1.0 ,1.0 ,1.0 ,1.0};
 	volatile uint16_t ADCData[8];
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADCData, 8);
-	//ToDo change it to Voltmeter class
-
-	/* USER CODE BEGIN TaskMeasure */
 	/* Infinite loop */
 	while(true)
 	{
+		// prepareTxStruct();
 		osDelay(1000);
 	}
   /* USER CODE END TaskMeasure */
@@ -787,6 +795,18 @@ void Error_Handler(void)
   {
   }
   /* USER CODE END Error_Handler_Debug */
+}
+
+void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode) {
+
+	HAL_I2C_DisableListen_IT(hi2c);
+	if (!TransferDirection) {
+		HAL_I2C_Slave_Transmit(hi2c, (uint8_t*)&txStruct, sizeof(txStruct), 5);
+	}
+	else {
+		HAL_I2C_Slave_Receive(hi2c, (uint8_t*)&rxStruct, sizeof(rxStruct), 5);
+	}
+	HAL_I2C_EnableListen_IT(hi2c);
 }
 
 #ifdef  USE_FULL_ASSERT
