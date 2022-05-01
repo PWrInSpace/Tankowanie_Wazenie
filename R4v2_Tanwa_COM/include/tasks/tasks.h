@@ -3,7 +3,6 @@
 
 #include "../structs/SoftToolsManagment.h"
 #include "../config/pinout.h"
-#include "../structs/mainClass.h"
 #include "LoRa.h"
 #include "../config/config.h"
 #include "../components/SDcard.h"

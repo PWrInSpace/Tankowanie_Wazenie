@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include "../include/tasks/tasks.h"
-#include "../include/structs/mainClass.h"
 #include "../include/config/config.h"
 #include "../include/structs/SoftToolsManagment.h"
 
