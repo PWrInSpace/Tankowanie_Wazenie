@@ -9,7 +9,7 @@
 #define IGN_TEST_CON_2 35
 #define FIRE1 27
 #define FIRE2 26
-#define ARM 32
+#define ARM_PIN 32
 
 #define VOLTAGE_MEASURE 36
 

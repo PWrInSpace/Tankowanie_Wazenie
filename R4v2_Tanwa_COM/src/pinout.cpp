@@ -1,4 +1,4 @@
-#include "pinout.h"
+#include "../include/config/pinout.h"
 #include <Wire.h>
 
 float voltageMeasure(uint8_t batteryPin)
@@ -24,10 +24,10 @@ void pinInit()
     //igniter
     pinMode(IGN_TEST_CON_1, INPUT); 
     pinMode(IGN_TEST_CON_2, INPUT);
-    pinMode(ARM, OUTPUT);
+    pinMode(ARM_PIN, OUTPUT);
     pinMode(FIRE1, OUTPUT);
     pinMode(FIRE2, OUTPUT);
-    digitalWrite(ARM, LOW);
+    digitalWrite(ARM_PIN, LOW);
     digitalWrite(FIRE1, LOW);
     digitalWrite(FIRE2, LOW);
 
