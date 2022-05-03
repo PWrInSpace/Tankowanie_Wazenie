@@ -8,6 +8,7 @@ class ValveInterface{
 public:
 	volatile ValveState State = ValveStateIDK;
 	virtual ValveState GetState() {return State;}
+	virtual void SetState(ValveState NewState) {State = NewState;}
 	virtual void Stop() = 0;
 	virtual void Open() = 0;
 	virtual void Close() = 0;

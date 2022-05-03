@@ -25,20 +25,32 @@
 #include <MAX14870.hh>
 #include<vector>
 #include<tuple>
+#include<queue.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-typedef struct {
-
-    bool ledState;
+struct TxStruct{
+    bool tick;
     uint8_t lastDoneCommandNum;
-    float adcVoltage;
-    int16_t adcValue;
-} COMStruct;
+    ValveState MotorState[5];
+    float adcValue[8];
 
-COMStruct txStruct;
-COMStruct rxStruct;
+};
+
+struct RxStruct{
+    uint8_t CommandNum;
+    uint16_t CommandArgument;
+};
+
+TxStruct txStruct = {0,0,{0,0,0,0,0},{0,0,0,0,0,0,0,0}};
+RxStruct rxStruct = {0,0};
+const uint rxBufferLenght = 10;
+auto rxQueue = xQueueCreate(rxBufferLenght, sizeof(rxStruct));
+uint16_t ventingTime = 500; //tmp
+std::vector<std::tuple<Motor*,volatile ValveState>> MotorList;
+
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -52,6 +64,7 @@ COMStruct rxStruct;
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
+DMA_HandleTypeDef hdma_adc1;
 
 I2C_HandleTypeDef hi2c2;
 DMA_HandleTypeDef hdma_i2c2_tx;
@@ -135,15 +148,19 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init(); //always before ADC_Init's !
   MX_ADC1_Init();
   MX_I2C2_Init();
   MX_TIM1_Init();
   MX_TIM3_Init();
-  MX_DMA_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-
-
+	HAL_Delay(50);
+	MotorList.push_back({new Motor(M1Dir_GPIO_Port, M1Dir_Pin, &htim4, TIM_CHANNEL_4), ValveStateIDK});
+	MotorList.push_back({new Motor(M2Dir_GPIO_Port, M2Dir_Pin, &htim4, TIM_CHANNEL_3), ValveStateIDK});
+	MotorList.push_back({new Motor(M3Dir_GPIO_Port, M3Dir_Pin, &htim1, TIM_CHANNEL_2), ValveStateIDK});
+	MotorList.push_back({new Motor(M4Dir_GPIO_Port, M4Dir_Pin, &htim1, TIM_CHANNEL_1), ValveStateIDK});
+	MotorList.push_back({new Motor(M5Dir_GPIO_Port, M5Dir_Pin, &htim3, TIM_CHANNEL_3), ValveStateIDK});
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -151,7 +168,6 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
-uint16_t ventingTime = 1000; //tmp
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -171,7 +187,7 @@ uint16_t ventingTime = 1000; //tmp
   COMHandle = osThreadNew(TaskCOM, NULL, &COM_attributes);
 
   /* creation of Valves */
-  ValvesHandle = osThreadNew(TaskValves, &ventingTime, &Valves_attributes);
+  ValvesHandle = osThreadNew(TaskValves, NULL, &Valves_attributes);
 
   /* creation of Measure */
   MeasureHandle = osThreadNew(TaskMeasure, NULL, &Measure_attributes);
@@ -559,6 +575,9 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
+  /* DMA1_Channel1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
   /* DMA1_Channel4_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
@@ -652,7 +671,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void TryReachExpectedState(const std::tuple<Motor*,volatile ValveState>& Valve, uint16_t parameter = 1000){
+void TryReachExpectedState(std::tuple<Motor*,volatile ValveState>& Valve, uint16_t parameter = 500){
 	Motor* motor = std::get<0>(Valve);
 	ValveState expectedState = std::get<1>(Valve);
 	if(motor->GetState() == expectedState){
@@ -679,6 +698,26 @@ void setNewExpectedStateOfValveOnVector(std::vector<std::tuple<Motor*,volatile V
 	Valves[ValveNumber] = std::tuple<Motor*,volatile ValveState>(std::get<0>(Valves[ValveNumber]), newExpectedValveState);
 }
 
+void handleRxStruct(RxStruct rxStruct){
+	if(rxStruct.CommandNum > 0 && rxStruct.CommandNum < 6){ //M1 - M5 //TODO
+		if(rxStruct.CommandArgument == 0 || rxStruct.CommandArgument == 1 || rxStruct.CommandArgument == 3){
+			setNewExpectedStateOfValveOnVector(MotorList, rxStruct.CommandNum - 1, (ValveState)rxStruct.CommandArgument);
+		}
+	}
+}
+
+void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode){
+	HAL_I2C_DisableListen_IT(hi2c);
+	if(!TransferDirection) {
+		HAL_I2C_Slave_Transmit(hi2c, (uint8_t*)&txStruct, sizeof(txStruct), 5);
+	}
+	else{
+		HAL_I2C_Slave_Receive(hi2c, (uint8_t*)&rxStruct, sizeof(rxStruct), 5);
+		xQueueSendFromISR(rxQueue, &rxStruct, NULL);
+	}
+	HAL_I2C_EnableListen_IT(hi2c);
+}
+
 
 /* USER CODE END 4 */
 
@@ -691,17 +730,22 @@ void setNewExpectedStateOfValveOnVector(std::vector<std::tuple<Motor*,volatile V
 /* USER CODE END Header_TaskCOM */
 void TaskCOM(void *argument)
 {
-	/* USER CODE BEGIN 5 */
+  /* USER CODE BEGIN 5 */
+	//test
+	rxStruct = {1,1};
+	xQueueSend(rxQueue, &rxStruct, 100);
+	rxStruct = {1,0};
+	xQueueSend(rxQueue, &rxStruct, 100);
 
 	/* Infinite loop */
-	for(;;)
-	{
-		{ //test led (M5_DIR xd)
-			HAL_GPIO_TogglePin(M5Dir_GPIO_Port, M5Dir_Pin);
+	for(;;){
+		HAL_GPIO_TogglePin(M5Dir_GPIO_Port, M5Dir_Pin);//test led (M5_DIR xd)
+		if(xQueueReceive(rxQueue, &rxStruct, 100) == pdPASS){
+			handleRxStruct(rxStruct);
 		}
 		osDelay(1000);
 	}
-	/* USER CODE END 5 */
+  /* USER CODE END 5 */
 }
 
 /* USER CODE BEGIN Header_TaskValves */
@@ -714,32 +758,25 @@ void TaskCOM(void *argument)
 void TaskValves(void *argument)
 {
   /* USER CODE BEGIN TaskValves */
-	uint16_t* period = (static_cast<uint16_t*>(argument));
-	std::vector<std::tuple<Motor*,volatile ValveState>> MotorList;
-	MotorList.push_back({new Motor(M1Dir_GPIO_Port, M1Dir_Pin, &htim4, TIM_CHANNEL_4), ValveStateIDK});
-	MotorList.push_back({new Motor(M2Dir_GPIO_Port, M2Dir_Pin, &htim4, TIM_CHANNEL_3), ValveStateIDK});
-	MotorList.push_back({new Motor(M3Dir_GPIO_Port, M3Dir_Pin, &htim1, TIM_CHANNEL_2), ValveStateIDK});
-	MotorList.push_back({new Motor(M4Dir_GPIO_Port, M4Dir_Pin, &htim1, TIM_CHANNEL_1), ValveStateIDK});
-	//MotorList.push_back({new Motor(M5Dir_GPIO_Port, M5Dir_Pin, &htim3, TIM_CHANNEL_3), ValveStateIDK});
-
 	/* Infinite loop */
 	while(true){
 		{ //test open - close
-		setNewExpectedStateOfValveOnVector(MotorList, 0, ValveStateOpen);
-		TryReachExpectedState(MotorList[0], *period);
-		osDelay(1000);
-		setNewExpectedStateOfValveOnVector(MotorList, 0, ValveStateClose);
-		TryReachExpectedState(MotorList[0], *period);
+		//	setNewExpectedStateOfValveOnVector(MotorList, 0, ValveStateOpen);
+		//	TryReachExpectedState((MotorList)[0], ventingTime);
+		//	osDelay(1000);
+		//	setNewExpectedStateOfValveOnVector(MotorList, 0, ValveStateClose);
+		//	TryReachExpectedState((MotorList)[0], ventingTime);
 		}
-		//for(auto motor : MotorList){
-		//	TryReachExpectedState(std::get<0>(motor), std::get<1>(motor), *(static_cast<uint16_t*>(argument)));
-		//}
-		osDelay(1000);
+		for(auto motor : MotorList){
+			TryReachExpectedState(motor, *(static_cast<uint16_t*>(argument)));
+		}
+		osDelay(100);
 	}
   /* USER CODE END TaskValves */
 }
 
 /* USER CODE BEGIN Header_TaskMeasure */
+
 /**
 * @brief Function implementing the Measure thread.
 * @param argument: Not used
@@ -749,14 +786,37 @@ void TaskValves(void *argument)
 void TaskMeasure(void *argument)
 {
   /* USER CODE BEGIN TaskMeasure */
-	float ADCDividerRatio[8] = {1.0, 1.0 ,1.0 ,1.0 ,1.0 ,1.0 ,1.0 ,1.0};
-	volatile uint16_t ADCData[8];
+	volatile uint16_t ADCData[8] = {1,1,1,1,1,1,1,1};
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADCData, 8);
+	float ADCDividerRatio[8] = {1.0, 1.0 ,1.0 ,1.0 ,1.0 ,1.0 ,1.0 ,1.0};
+	bool tick = false;
 	/* Infinite loop */
 	while(true)
 	{
-		// prepareTxStruct();
-		osDelay(1000);
+		if(HAL_GPIO_ReadPin(M4CloseLimitSwitch_GPIO_Port, M4CloseLimitSwitch_Pin)){ //not an EXT pin cant be handled by interupt
+			std::get<0>(MotorList[3])->SetState(ValveStateClose);
+		}
+		tick = !tick;
+		txStruct = {
+			tick,
+			txStruct.lastDoneCommandNum,
+			{
+			std::get<0>(MotorList[0])->GetState(),
+			std::get<0>(MotorList[1])->GetState(),
+			std::get<0>(MotorList[2])->GetState(),
+			std::get<0>(MotorList[3])->GetState(),
+			std::get<0>(MotorList[4])->GetState()},
+			{
+			ADCData[0]/ADCDividerRatio[0], //M1 Analog
+			ADCData[1]/ADCDividerRatio[1], //M2 Analog
+			ADCData[2]/ADCDividerRatio[2], //M3 Analog
+			ADCData[3]/ADCDividerRatio[3], //M1 Analog
+			ADCData[4]/ADCDividerRatio[4], //Battery Voltage
+			ADCData[5]/ADCDividerRatio[5], //Pressure1
+			ADCData[6]/ADCDividerRatio[6], //Pressure2
+			ADCData[7]/ADCDividerRatio[7]} //M4 Analog
+		};
+		osDelay(500);
 	}
   /* USER CODE END TaskMeasure */
 }
@@ -795,18 +855,6 @@ void Error_Handler(void)
   {
   }
   /* USER CODE END Error_Handler_Debug */
-}
-
-void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode) {
-
-	HAL_I2C_DisableListen_IT(hi2c);
-	if (!TransferDirection) {
-		HAL_I2C_Slave_Transmit(hi2c, (uint8_t*)&txStruct, sizeof(txStruct), 5);
-	}
-	else {
-		HAL_I2C_Slave_Receive(hi2c, (uint8_t*)&rxStruct, sizeof(rxStruct), 5);
-	}
-	HAL_I2C_EnableListen_IT(hi2c);
 }
 
 #ifdef  USE_FULL_ASSERT
