@@ -699,11 +699,12 @@ void setNewExpectedStateOfValveOnVector(std::vector<std::tuple<Motor*,volatile V
 }
 
 void handleRxStruct(RxStruct rxStruct){
-	if(rxStruct.CommandNum > 0 && rxStruct.CommandNum < 6){ //M1 - M5 //TODO
+	if(rxStruct.CommandNum > 0 && rxStruct.CommandNum < 6){ //Motor1 - Motor5
 		if(rxStruct.CommandArgument == 0 || rxStruct.CommandArgument == 1 || rxStruct.CommandArgument == 3){
 			setNewExpectedStateOfValveOnVector(MotorList, rxStruct.CommandNum - 1, (ValveState)rxStruct.CommandArgument);
 		}
 	}
+	//TODO add config setters
 }
 
 void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode){
@@ -731,11 +732,11 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 void TaskCOM(void *argument)
 {
   /* USER CODE BEGIN 5 */
-	//test
-	rxStruct = {1,1};
-	xQueueSend(rxQueue, &rxStruct, 100);
-	rxStruct = {1,0};
-	xQueueSend(rxQueue, &rxStruct, 100);
+	//test OPEN - CLOSE
+	rxStruct = {1,1}; //open M1
+	xQueueSend(rxQueue, &rxStruct, 1000);
+	rxStruct = {1,0}; //close M1
+	xQueueSend(rxQueue, &rxStruct, 1000);
 
 	/* Infinite loop */
 	for(;;){
@@ -743,7 +744,7 @@ void TaskCOM(void *argument)
 		if(xQueueReceive(rxQueue, &rxStruct, 100) == pdPASS){
 			handleRxStruct(rxStruct);
 		}
-		osDelay(1000);
+		osDelay(200);
 	}
   /* USER CODE END 5 */
 }
