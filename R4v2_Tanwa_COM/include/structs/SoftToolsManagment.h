@@ -3,6 +3,7 @@
 
 #include "FreeRTOS.h"
 #include <SPI.h>
+#include <Wire.h>
 
 struct SoftwareToolsManagment{
   TaskHandle_t loraTask;
@@ -13,8 +14,10 @@ struct SoftwareToolsManagment{
   QueueHandle_t sdQueue;
   QueueHandle_t loraTxQueue;
 
+  SemaphoreHandle_t i2cMutex;
   SemaphoreHandle_t spiMutex;
 
+  TwoWire i2c = TwoWire(0);
   SPIClass spi;
 };
 

@@ -26,6 +26,11 @@ void dataTask(void *arg){
   tankWeight.setSamplesInUse(20);
   tankWeight.setGain(64);
   
+
+  // !!!//DEBUG
+  InternalI2C<PWRData, TxData> i2cCOM(&stm.i2c, COM_ADRESS);
+  PWRData pwrData;
+
   vTaskDelay(100 / portTICK_PERIOD_MS);
   
   while(1){
@@ -37,7 +42,27 @@ void dataTask(void *arg){
     strcpy(sd, data);
     xQueueSend(stm.sdQueue, (void*)sd, 0);
     
-    DEBUG(data);
+    //DEBUG(data);
+    
+    i2cCOM.getData(&pwrData);
+    Serial.println("\n\n\nCOM DATA:");
+    Serial.print("BLINK: "); Serial.println(pwrData.tick);
+    Serial.print("LAST COMMAND: "); Serial.println(pwrData.lastDoneCommandNum);
+    Serial.print("MOTOR STATE 0: "); Serial.println(pwrData.motorState[0]);
+    Serial.print("MOTOR STATE 1: "); Serial.println(pwrData.motorState[1]);
+    Serial.print("MOTOR STATE 2: "); Serial.println(pwrData.motorState[2]);
+    Serial.print("MOTOR STATE 3: "); Serial.println(pwrData.motorState[3]);
+    Serial.print("MOTOR STATE 4: "); Serial.println(pwrData.motorState[4]);
+    Serial.print("ADC VALUE 0: "); Serial.println(pwrData.adcValue[0]);
+    Serial.print("ADC VALUE 1: "); Serial.println(pwrData.adcValue[1]);
+    Serial.print("ADC VALUE 2: "); Serial.println(pwrData.adcValue[2]);
+    Serial.print("ADC VALUE 3: "); Serial.println(pwrData.adcValue[3]);
+    Serial.print("ADC VALUE 4: "); Serial.println(pwrData.adcValue[4]);
+    Serial.print("ADC VALUE 5: "); Serial.println(pwrData.adcValue[5]);
+    Serial.print("ADC VALUE 6: "); Serial.println(pwrData.adcValue[6]);
+    Serial.print("ADC VALUE 7: "); Serial.println(pwrData.adcValue[7]);
+
+    
     vTaskDelay(1000 / portTICK_PERIOD_MS);
   }
 }

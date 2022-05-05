@@ -8,6 +8,8 @@
 #include "../components/SDcard.h"
 #include <HX711_ADC.h>
 #include "../structs/stateMachine.h"
+#include "../structs/dataStructs.h"
+#include "../com/internalCommunication.hh"
 
 extern SoftwareToolsManagment stm;
 
