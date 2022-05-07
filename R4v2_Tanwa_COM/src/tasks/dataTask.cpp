@@ -5,12 +5,11 @@ void dataTask(void *arg){
   char sd[SD_FRAME_SIZE] = {};
   char lora[LORA_TX_FRAME_SIZE] = {};
   char data[SD_FRAME_SIZE] = {};
+  DataFrame dataFrame;
 
+  //HX711
   HX711_ADC rckWeight(HX1_SDA, HX1_SCL);
   HX711_ADC tankWeight(HX2_SDA, HX2_SCL);
-
-
-  //TanWaControl *tc = static_cast<TanWaControl*>(arg);
 
   rckWeight.begin();
   rckWeight.start(STABILIZNG_TIME, false); //start without tare
@@ -25,7 +24,7 @@ void dataTask(void *arg){
   tankWeight.setTareOffset(OFFSET_TANK);
   tankWeight.setSamplesInUse(20);
   tankWeight.setGain(64);
-  
+  //
 
   // !!!//DEBUG
   InternalI2C<PWRData, TxData> i2cCOM(&stm.i2c, COM_ADRESS);
@@ -34,6 +33,7 @@ void dataTask(void *arg){
   vTaskDelay(100 / portTICK_PERIOD_MS);
   
   while(1){
+    //dataFrame.vbat = 16.8;
     
     snprintf(data, SD_FRAME_SIZE, "TEST;%lu\n", millis());
     strcpy(lora, data);
@@ -42,8 +42,13 @@ void dataTask(void *arg){
     strcpy(sd, data);
     xQueueSend(stm.sdQueue, (void*)sd, 0);
     
-    //DEBUG(data);
+    //TODO 
+    //sd frame - dataFrame -> char array
+    //lora frame - dataFrame -> char array
+
+
     
+    //DEBUG(data);
     i2cCOM.getData(&pwrData);
     Serial.println("\n\n\nCOM DATA:");
     Serial.print("BLINK: "); Serial.println(pwrData.tick);

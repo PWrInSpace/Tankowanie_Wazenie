@@ -38,14 +38,14 @@ void loraTask(void *arg){
       String rxStr = LoRa.readString();
       DEBUG(rxStr); // DEBUG
 
+      //TODO parser
+
     }
 
     xSemaphoreGive(stm.spiMutex);
 
     if(xQueueReceive(stm.loraTxQueue, (void*)&loraTx, 0) == pdTRUE){
       xSemaphoreTake(stm.spiMutex, portMAX_DELAY);
-
-      //xSemaphoreTake(tc->spiMutex, portMAX_DELAY);
         
       LoRa.beginPacket();
       LoRa.write((uint8_t*) loraTx, strlen(loraTx));

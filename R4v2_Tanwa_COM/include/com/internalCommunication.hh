@@ -1,7 +1,7 @@
 #ifndef INTERNAL_COMMUNICATION_HH
 #define INTERNAL_COMMUNICATION_HH
 
-#include "../include/structs/dataStructs.h"
+#include "../include/structs/commStructs.h"
 #include <Wire.h>
 
 template <typename rxType, typename txType>

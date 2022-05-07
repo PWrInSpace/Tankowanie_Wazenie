@@ -29,6 +29,8 @@ static String dataFileName= "/data_";
 #define CLOSE_DEPR_VALVE 0x04
 
 
+#define LORA_FREQ_MHZ 868
+
 //WEIGHTING
 #define BIT_TO_GRAM_RATIO_RCK 1
 #define BIT_TO_GRAM_RATIO_TANK 1

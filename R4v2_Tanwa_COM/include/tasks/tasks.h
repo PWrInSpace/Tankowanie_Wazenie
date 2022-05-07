@@ -10,8 +10,10 @@
 #include "../structs/stateMachine.h"
 #include "../structs/dataStructs.h"
 #include "../com/internalCommunication.hh"
+#include "../structs/commStructs.h"
 
 extern SoftwareToolsManagment stm;
+extern InternalI2C<PWRData, TxData> i2cCOM;
 
 //pro_cpu
 void loraTask(void *arg);

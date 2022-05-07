@@ -3,17 +3,28 @@
 
 void stateTask(void *arg){
   StateMachine stateMachine(stm.stateTask);
+  TxData txCommand;
   while(1){
     
     if(ulTaskNotifyTake(pdTRUE, false)){
       //state init
       switch(stateMachine.getRequestedState()){
         case IDLE:
+          //
 
-          stateMachine.changeStateConfirmation();
+          //
+          /*example
+          if(GIT){
+            stateMachine.changeStateConfirmation();
+          }else{
+            stateMachine.changeStateRejection();
+          }
+          */
           break;
         case ARMED:
-
+          //
+          
+          //
           stateMachine.changeStateConfirmation();
           break;
         case FUELING:
@@ -29,12 +40,16 @@ void stateTask(void *arg){
           stateMachine.changeStateConfirmation();
           break;
         case HOLD:
+          txCommand = {.command = ValveStateClose, .commandValue = 0};
+          
+          i2cCOM.sendCommand(&txCommand);
 
           stateMachine.changeStateConfirmation();
           break;
         case ABORT:
 
           stateMachine.changeStateConfirmation();
+
           break;
         default:
           break;
