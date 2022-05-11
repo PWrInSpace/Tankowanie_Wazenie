@@ -20,7 +20,6 @@
 #include "main.h"
 #include "cmsis_os.h"
 
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <MAX14870.hh>
@@ -149,11 +148,11 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init(); //always before ADC_Init's !
   MX_ADC1_Init();
   MX_I2C2_Init();
   MX_TIM1_Init();
   MX_TIM3_Init();
+  MX_DMA_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 	HAL_Delay(50);
@@ -379,7 +378,7 @@ static void MX_I2C2_Init(void)
   hi2c2.Instance = I2C2;
   hi2c2.Init.ClockSpeed = 100000;
   hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c2.Init.OwnAddress1 = 52;
+  hi2c2.Init.OwnAddress1 = 64;
   hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
   hi2c2.Init.OwnAddress2 = 0;
@@ -609,7 +608,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : M5CloseLimitSwitchEXT_Pin M5OpenLimitSwitchEXT_Pin */
   GPIO_InitStruct.Pin = M5CloseLimitSwitchEXT_Pin|M5OpenLimitSwitchEXT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
@@ -619,11 +618,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(M4CloseLimitSwitch_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : M4OpenLimitSwitchEXT_Pin */
-  GPIO_InitStruct.Pin = M4OpenLimitSwitchEXT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  /*Configure GPIO pins : M4OpenLimitSwitchEXT_Pin M3CloseLimitSwitchEXT_Pin M3OpenLimitSwitchEXT_Pin M2CloseLimitSwitchEXT_Pin */
+  GPIO_InitStruct.Pin = M4OpenLimitSwitchEXT_Pin|M3CloseLimitSwitchEXT_Pin|M3OpenLimitSwitchEXT_Pin|M2CloseLimitSwitchEXT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(M4OpenLimitSwitchEXT_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : M5Dir_Pin MotorEnable_Pin M4Dir_Pin M2Dir_Pin
                            M1Dir_Pin */
@@ -640,12 +639,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(MotorFault_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : M3CloseLimitSwitchEXT_Pin M3OpenLimitSwitchEXT_Pin M2CloseLimitSwitchEXT_Pin */
-  GPIO_InitStruct.Pin = M3CloseLimitSwitchEXT_Pin|M3OpenLimitSwitchEXT_Pin|M2CloseLimitSwitchEXT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
   /*Configure GPIO pin : M3Dir_Pin */
   GPIO_InitStruct.Pin = M3Dir_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -655,7 +648,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : M2OpenLimitSwitchEXT_Pin M1OpenLimitSwitchEXT_Pin M1CloseLimitSwitchEXT_Pin */
   GPIO_InitStruct.Pin = M2OpenLimitSwitchEXT_Pin|M1OpenLimitSwitchEXT_Pin|M1CloseLimitSwitchEXT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
@@ -774,7 +767,6 @@ void TaskCOM(void *argument)
 	}
 	/* Infinite loop */
 	for(;;){
-		HAL_GPIO_TogglePin(M5Dir_GPIO_Port, M5Dir_Pin);//test led (M5_DIR xd)
 		if(xQueueReceive(rxQueue, &currentCommand, 100) == pdPASS){
 			handleRxStruct(currentCommand);
 		}
