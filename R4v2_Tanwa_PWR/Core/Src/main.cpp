@@ -41,7 +41,7 @@ struct TxStruct{
 
 struct RxStruct{
     uint8_t CommandNum;
-    uint16_t CommandArgument;
+    uint8_t CommandArgument;
 };
 
 TxStruct txStruct = {0,0,{0,0,0,0,0},{0,0,0,0,0,0,0,0}};
@@ -715,20 +715,40 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 		HAL_I2C_Slave_Transmit(hi2c, (uint8_t*)&txStruct, sizeof(txStruct), 5);
 	}
 	else{
-		HAL_I2C_Slave_Receive(hi2c, (uint8_t*)&rxStruct, sizeof(rxStruct), 5);
+		HAL_I2C_Slave_Receive(hi2c, (uint8_t*)&rxStruct, sizeof(rxStruct), 50);
 		xQueueSendFromISR(rxQueue, &rxStruct, NULL);
 	}
 	HAL_I2C_EnableListen_IT(hi2c);
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){ //ToDo add more motors
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){ //ToDo change to loop
 	if(std::get<1>(MotorList[0]) == ValveStateOpen && GPIO_Pin == M1OpenLimitSwitchEXT_Pin){
 		std::get<0>(MotorList[0])->SetState(ValveStateOpen);
 	}
 	else if(std::get<1>(MotorList[0]) == ValveStateClose && GPIO_Pin == M1CloseLimitSwitchEXT_Pin){
 		std::get<0>(MotorList[0])->SetState(ValveStateClose);
 	}
-
+	else if(std::get<1>(MotorList[1]) == ValveStateOpen && GPIO_Pin == M2OpenLimitSwitchEXT_Pin){
+		std::get<0>(MotorList[1])->SetState(ValveStateOpen);
+	}
+	else if(std::get<1>(MotorList[1]) == ValveStateClose && GPIO_Pin == M2CloseLimitSwitchEXT_Pin){
+		std::get<0>(MotorList[1])->SetState(ValveStateClose);
+	}
+	else if(std::get<1>(MotorList[2]) == ValveStateOpen && GPIO_Pin == M3OpenLimitSwitchEXT_Pin){
+		std::get<0>(MotorList[2])->SetState(ValveStateOpen);
+	}
+	else if(std::get<1>(MotorList[2]) == ValveStateClose && GPIO_Pin == M3CloseLimitSwitchEXT_Pin){
+		std::get<0>(MotorList[2])->SetState(ValveStateClose);
+	}
+	else if(std::get<1>(MotorList[3]) == ValveStateOpen && GPIO_Pin == M4OpenLimitSwitchEXT_Pin){
+		std::get<0>(MotorList[3])->SetState(ValveStateOpen);
+	}
+	else if(std::get<1>(MotorList[4]) == ValveStateOpen && GPIO_Pin == M5OpenLimitSwitchEXT_Pin){
+		std::get<0>(MotorList[4])->SetState(ValveStateOpen);
+	}
+	else if(std::get<1>(MotorList[4]) == ValveStateClose && GPIO_Pin == M5CloseLimitSwitchEXT_Pin){
+		std::get<0>(MotorList[4])->SetState(ValveStateClose);
+	}
 }
 
 /* USER CODE END 4 */
@@ -743,13 +763,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){ //ToDo add more motors
 void TaskCOM(void *argument)
 {
   /* USER CODE BEGIN 5 */
-	//test OPEN - CLOSE
-	HAL_I2C_EnableListen_IT(&hi2c2); // Start listening for I2C master call.
-	rxStruct = {1,1}; //open M1
-	xQueueSend(rxQueue, &rxStruct, 1000);
-	rxStruct = {1,0}; //close M1
-	xQueueSend(rxQueue, &rxStruct, 1000);
 	RxStruct currentCommand = {0,0};
+	HAL_I2C_EnableListen_IT(&hi2c2); // Start listening for I2C master call.
+
+	{//test OPEN - CLOSE
+		rxStruct = {1,1}; //open M1
+		xQueueSend(rxQueue, &rxStruct, 1000);
+		rxStruct = {1,0}; //close M1
+		xQueueSend(rxQueue, &rxStruct, 1000);
+	}
 	/* Infinite loop */
 	for(;;){
 		HAL_GPIO_TogglePin(M5Dir_GPIO_Port, M5Dir_Pin);//test led (M5_DIR xd)
@@ -773,13 +795,6 @@ void TaskValves(void *argument)
   /* USER CODE BEGIN TaskValves */
 	/* Infinite loop */
 	while(true){
-		{ //test open - close
-		//	setNewExpectedStateOfValveOnVector(MotorList, 0, ValveStateOpen);
-		//	TryReachExpectedState((MotorList)[0], ventingTime);
-		//	osDelay(1000);
-		//	setNewExpectedStateOfValveOnVector(MotorList, 0, ValveStateClose);
-		//	TryReachExpectedState((MotorList)[0], ventingTime);
-		}
 		for(auto motor : MotorList){
 			TryReachExpectedState(motor, *(static_cast<uint16_t*>(argument)));
 		}
@@ -805,7 +820,7 @@ void TaskMeasure(void *argument)
 	bool tick = false;
 	/* Infinite loop */
 	while(true){
-		if(!HAL_GPIO_ReadPin(M4CloseLimitSwitch_GPIO_Port, M4CloseLimitSwitch_Pin)){ //not an EXT pin cant be handled by interupt
+		if(HAL_GPIO_ReadPin(M4CloseLimitSwitch_GPIO_Port, M4CloseLimitSwitch_Pin) == 0){ //not an EXT pin cant be handled by interupt
 			std::get<0>(MotorList[3])->SetState(ValveStateClose);
 		}
 		tick = !tick;
@@ -813,20 +828,22 @@ void TaskMeasure(void *argument)
 			tick,
 			txStruct.lastDoneCommandNum,
 			{
-			std::get<0>(MotorList[0])->GetState(),
-			std::get<0>(MotorList[1])->GetState(),
-			std::get<0>(MotorList[2])->GetState(),
-			std::get<0>(MotorList[3])->GetState(),
-			std::get<0>(MotorList[4])->GetState()},
+				std::get<0>(MotorList[0])->GetState(),
+				std::get<0>(MotorList[1])->GetState(),
+				std::get<0>(MotorList[2])->GetState(),
+				std::get<0>(MotorList[3])->GetState(),
+				std::get<0>(MotorList[4])->GetState()
+			},
 			{
-			ADCData[0]/ADCDividerRatio[0], //M1 Analog
-			ADCData[1]/ADCDividerRatio[1], //M2 Analog
-			ADCData[2]/ADCDividerRatio[2], //M3 Analog
-			ADCData[3]/ADCDividerRatio[3], //M1 Analog
-			ADCData[4]/ADCDividerRatio[4], //Battery Voltage
-			ADCData[5]/ADCDividerRatio[5], //Pressure1
-			ADCData[6]/ADCDividerRatio[6], //Pressure2
-			ADCData[7]/ADCDividerRatio[7]} //M4 Analog
+				ADCData[0]/ADCDividerRatio[0], //M1 Analog
+				ADCData[1]/ADCDividerRatio[1], //M2 Analog
+				ADCData[2]/ADCDividerRatio[2], //M3 Analog
+				ADCData[3]/ADCDividerRatio[3], //M1 Analog
+				ADCData[4]/ADCDividerRatio[4], //Battery Voltage
+				ADCData[5]/ADCDividerRatio[5], //Pressure1
+				ADCData[6]/ADCDividerRatio[6], //Pressure2
+				ADCData[7]/ADCDividerRatio[7] //M4 Analog
+			}
 		};
 		osDelay(500);
 	}
