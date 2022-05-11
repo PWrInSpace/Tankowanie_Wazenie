@@ -20,6 +20,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <MAX14870.hh>
@@ -43,9 +44,9 @@ struct RxStruct{
     uint16_t CommandArgument;
 };
 
-TxStruct txStruct = {0,0,{0,0,0,0,0},{0,0,0,0,0,0,0,0}};
+TxStruct txStruct = {0,0,{(ValveState)0,(ValveState)0,(ValveState)0,(ValveState)0,(ValveState)0},{0,0,0,0,0,0,0,0}};
 RxStruct rxStruct = {0,0};
-const uint rxBufferLenght = 10;
+const uint16_t rxBufferLenght = 10;
 auto rxQueue = xQueueCreate(rxBufferLenght, sizeof(rxStruct));
 uint16_t ventingTime = 500; //tmp
 std::vector<std::tuple<Motor*,volatile ValveState>> MotorList;
@@ -733,6 +734,7 @@ void TaskCOM(void *argument)
 {
   /* USER CODE BEGIN 5 */
 	//test OPEN - CLOSE
+	HAL_I2C_EnableListen_IT(&hi2c2); // Start listening for I2C master call.
 	rxStruct = {1,1}; //open M1
 	xQueueSend(rxQueue, &rxStruct, 1000);
 	rxStruct = {1,0}; //close M1
@@ -792,8 +794,7 @@ void TaskMeasure(void *argument)
 	float ADCDividerRatio[8] = {1.0, 1.0 ,1.0 ,1.0 ,1.0 ,1.0 ,1.0 ,1.0};
 	bool tick = false;
 	/* Infinite loop */
-	while(true)
-	{
+	while(true){
 		if(HAL_GPIO_ReadPin(M4CloseLimitSwitch_GPIO_Port, M4CloseLimitSwitch_Pin)){ //not an EXT pin cant be handled by interupt
 			std::get<0>(MotorList[3])->SetState(ValveStateClose);
 		}
