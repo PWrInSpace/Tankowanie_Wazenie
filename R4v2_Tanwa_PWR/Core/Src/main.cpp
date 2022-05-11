@@ -34,8 +34,8 @@
 struct TxStruct{
     bool tick;
     uint8_t lastDoneCommandNum;
-    ValveState MotorState[5];
-    float adcValue[8];
+    uint8_t MotorState[5];
+    int32_t adcValue[8];
 
 };
 
@@ -44,7 +44,7 @@ struct RxStruct{
     uint16_t CommandArgument;
 };
 
-TxStruct txStruct = {0,0,{(ValveState)0,(ValveState)0,(ValveState)0,(ValveState)0,(ValveState)0},{0,0,0,0,0,0,0,0}};
+TxStruct txStruct = {0,0,{0,0,0,0,0},{0,0,0,0,0,0,0,0}};
 RxStruct rxStruct = {0,0};
 const uint16_t rxBufferLenght = 10;
 auto rxQueue = xQueueCreate(rxBufferLenght, sizeof(rxStruct));
@@ -676,9 +676,10 @@ void TryReachExpectedState(std::tuple<Motor*,volatile ValveState>& Valve, uint16
 	Motor* motor = std::get<0>(Valve);
 	ValveState expectedState = std::get<1>(Valve);
 	if(motor->GetState() == expectedState){
+		motor->Stop();
 		return;
 	}
-	if(expectedState == ValveStateOpen){
+	else if(expectedState == ValveStateOpen){
 		motor->State = ValveStateAttemptToOpen;
 		motor->Open();
 	}
@@ -720,6 +721,15 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 	HAL_I2C_EnableListen_IT(hi2c);
 }
 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){ //ToDo add more motors
+	if(std::get<1>(MotorList[0]) == ValveStateAttemptToOpen && GPIO_Pin == M1OpenLimitSwitchEXT_Pin){
+		std::get<1>(MotorList[0]) = ValveStateOpen;
+	}
+	else if(std::get<1>(MotorList[0]) == ValveStateAttemptToClose && GPIO_Pin == M1CloseLimitSwitchEXT_Pin){
+		std::get<1>(MotorList[0]) = ValveStateClose;
+	}
+
+}
 
 /* USER CODE END 4 */
 
@@ -795,7 +805,7 @@ void TaskMeasure(void *argument)
 	bool tick = false;
 	/* Infinite loop */
 	while(true){
-		if(HAL_GPIO_ReadPin(M4CloseLimitSwitch_GPIO_Port, M4CloseLimitSwitch_Pin)){ //not an EXT pin cant be handled by interupt
+		if(!HAL_GPIO_ReadPin(M4CloseLimitSwitch_GPIO_Port, M4CloseLimitSwitch_Pin)){ //not an EXT pin cant be handled by interupt
 			std::get<0>(MotorList[3])->SetState(ValveStateClose);
 		}
 		tick = !tick;
