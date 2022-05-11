@@ -722,10 +722,10 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){ //ToDo add more motors
-	if(std::get<1>(MotorList[0]) == ValveStateAttemptToOpen && GPIO_Pin == M1OpenLimitSwitchEXT_Pin){
+	if(std::get<1>(MotorList[0]) == ValveStateOpen && GPIO_Pin == M1OpenLimitSwitchEXT_Pin){
 		std::get<0>(MotorList[0])->SetState(ValveStateOpen);
 	}
-	else if(std::get<1>(MotorList[0]) == ValveStateAttemptToClose && GPIO_Pin == M1CloseLimitSwitchEXT_Pin){
+	else if(std::get<1>(MotorList[0]) == ValveStateClose && GPIO_Pin == M1CloseLimitSwitchEXT_Pin){
 		std::get<0>(MotorList[0])->SetState(ValveStateClose);
 	}
 
@@ -749,12 +749,12 @@ void TaskCOM(void *argument)
 	xQueueSend(rxQueue, &rxStruct, 1000);
 	rxStruct = {1,0}; //close M1
 	xQueueSend(rxQueue, &rxStruct, 1000);
-
+	RxStruct currentCommand = {0,0};
 	/* Infinite loop */
 	for(;;){
 		HAL_GPIO_TogglePin(M5Dir_GPIO_Port, M5Dir_Pin);//test led (M5_DIR xd)
-		if(xQueueReceive(rxQueue, &rxStruct, 100) == pdPASS){
-			handleRxStruct(rxStruct);
+		if(xQueueReceive(rxQueue, &currentCommand, 100) == pdPASS){
+			handleRxStruct(currentCommand);
 		}
 		osDelay(200);
 	}
