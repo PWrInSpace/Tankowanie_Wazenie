@@ -2,8 +2,6 @@
 
 //kod w tym tasku jest tylko do debugu 
 void dataTask(void *arg){
-  char sd[SD_FRAME_SIZE] = {};
-  char lora[LORA_TX_FRAME_SIZE] = {};
   char data[SD_FRAME_SIZE] = {};
   DataFrame dataFrame;
 
@@ -33,19 +31,14 @@ void dataTask(void *arg){
   vTaskDelay(100 / portTICK_PERIOD_MS);
   
   while(1){
-    //dataFrame.vbat = 16.8;
-    
-    snprintf(data, SD_FRAME_SIZE, "TEST;%lu\n", millis());
-    strcpy(lora, data);
-    xQueueSend(stm.loraTxQueue, (void*)lora, 0);
+    dataFrame.vbat = 16.8;
+    createDataFrame(dataFrame, data);
 
-    strcpy(sd, data);
-    xQueueSend(stm.sdQueue, (void*)sd, 0);
-    
-    //TODO 
-    //sd frame - dataFrame -> char array
-    //lora frame - dataFrame -> char array
 
+    Serial.println(data);
+    xQueueSend(stm.loraTxQueue, (void*)data, 0);
+
+    xQueueSend(stm.sdQueue, (void*)data, 0);
 
     
     //DEBUG(data);

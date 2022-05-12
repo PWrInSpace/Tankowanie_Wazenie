@@ -43,7 +43,7 @@ struct DataFrame{
   bool tankHeating : 1;
   bool abortButton : 1;
   bool armButton : 1;
-  bool iginiterContinouity[2];
+  bool igniterContinouity[2];
   float vbat;
   ValveState motorState[5];
   float rocketWeight;
@@ -52,5 +52,7 @@ struct DataFrame{
   uint32_t butlaWeightRaw;
   float thermocouple[3];
 };
+
+void createDataFrame(DataFrame dataFrame, char *data);
 
 #endif

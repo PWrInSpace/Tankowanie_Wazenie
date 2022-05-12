@@ -61,6 +61,10 @@ void stateTask(void *arg){
           break;
 
         case HOLD:
+          txCommand = {.command = ValveStateClose, .commandValue = 0};
+          
+          pwrCom.sendCommand(&txCommand);
+
           stateMachine.changeStateConfirmation();
           break;
 

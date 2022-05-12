@@ -8,8 +8,7 @@
 #include "../components/SDcard.h"
 #include <HX711_ADC.h>
 #include "../structs/stateMachine.h"
-#include "../structs/dataStructs.h"
-#include "../com/internalCommunication.hh"
+#include "../com/internalCommunication.h"
 #include "../structs/commStructs.h"
 
 extern SoftwareToolsManagment stm;
@@ -17,6 +16,7 @@ extern InternalI2C<PWRData, TxData> pwrCom;
 
 //pro_cpu
 void loraTask(void *arg);
+void rxHandlingTask(void *arg);
 
 
 //app_cpu

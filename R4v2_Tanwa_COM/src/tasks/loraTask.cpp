@@ -2,6 +2,7 @@
 
 void loraTask(void *arg){
   char loraTx[LORA_TX_FRAME_SIZE] = {};
+  char loraRx[LORA_RX_FRAME_SIZE] = {};
 
   //TanWaControl * tc = static_cast<TanWaControl*>(arg);
   
@@ -36,10 +37,12 @@ void loraTask(void *arg){
     if (LoRa.available()) {
 
       String rxStr = LoRa.readString();
-      DEBUG(rxStr); // DEBUG
+      strcpy(loraRx, rxStr.c_str());
+     
+      //send data to rxHandleTask
+      if(xQueueSend(stm.loraRxQueue, (void*)&loraRx, 0) == pdFALSE){
 
-      //TODO parser
-
+      }
     }
 
     xSemaphoreGive(stm.spiMutex);
