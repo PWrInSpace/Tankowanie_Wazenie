@@ -1,4 +1,4 @@
-#include "../include/com/internalCommunication.hh"
+#include "../include/com/internalCommunication.h"
 
 template <typename rxType, typename txType>
 InternalI2C<rxType, txType>::InternalI2C(TwoWire *_wire, uint8_t _address):

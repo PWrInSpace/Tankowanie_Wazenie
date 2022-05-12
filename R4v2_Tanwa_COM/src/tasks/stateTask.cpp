@@ -42,7 +42,7 @@ void stateTask(void *arg){
         case HOLD:
           txCommand = {.command = ValveStateClose, .commandValue = 0};
           
-          i2cCOM.sendCommand(&txCommand);
+          pwrCom.sendCommand(&txCommand);
 
           stateMachine.changeStateConfirmation();
           break;

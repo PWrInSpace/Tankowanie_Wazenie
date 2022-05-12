@@ -18,6 +18,10 @@
 #define SD_QUEUE_LENGTH 10
 #define LORA_TX_FRAME_SIZE 256
 #define LORA_TX_QUEUE_LENGTH 10
+#define ESP_NOW_QUEUE_LENGTH 10
+#define LORA_RX_QUEUE_LENGTH 256
+#define LORA_RX_FRAME_SIZE 10
+#define DATA_PREFIX "R4T;"
 
 //SD FILE PATH
 static String dataFileName= "/data_";
