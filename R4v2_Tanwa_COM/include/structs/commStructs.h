@@ -51,6 +51,21 @@ struct DataFrame{
   uint32_t rocketWeightRaw;
   uint32_t butlaWeightRaw;
   float thermocouple[3];
+
+  DataFrame():
+    tanWaState(States::INIT),
+    tankHeating(0),
+    abortButton(0),
+    armButton(0),
+    igniterContinouity{},
+    vbat(0),
+    motorState{},
+    rocketWeight(0),
+    butlaWeight(0),
+    rocketWeightRaw(0),
+    butlaWeightRaw(0),
+    thermocouple{}
+  {}
 };
 
 void createDataFrame(DataFrame dataFrame, char *data);

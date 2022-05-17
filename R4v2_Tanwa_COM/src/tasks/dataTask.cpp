@@ -32,8 +32,15 @@ void dataTask(void *arg){
   
   while(1){
     dataFrame.vbat = 16.8;
-    createDataFrame(dataFrame, data);
+    if(tankWeight.update() == 1){
+      dataFrame.butlaWeight = tankWeight.getData();
+    }
 
+    if(rckWeight.update() == 1){
+      dataFrame.rocketWeight = rckWeight.getData();
+    }
+
+    createDataFrame(dataFrame, data);
 
     Serial.println(data);
     xQueueSend(stm.loraTxQueue, (void*)data, 0);
