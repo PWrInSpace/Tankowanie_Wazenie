@@ -808,11 +808,11 @@ void TaskMeasure(void *argument)
   /* USER CODE BEGIN TaskMeasure */
 	volatile uint16_t ADCData[8] = {1,1,1,1,1,1,1,1};
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADCData, 8);
-	float ADCDividerRatio[8] = {1.0, 1.0 ,1.0 ,1.0 ,1.0 ,1.0 ,1.0 ,1.0};
+	float ADCDividerRatio[8] = {1.0 * (3.3 / 4096), 1.0 * (3.3 / 4096), 1.0 * (3.3 / 4096), 1.0 * (3.3 / 4096), 5.7 * (3.3 / 4096), 1.0 * (3.3 / 4096), 1.0 * (3.3 / 4096), 1.0 * (3.3 / 4096)};
 	bool tick = false;
 	/* Infinite loop */
 	while(true){
-		if(HAL_GPIO_ReadPin(M4CloseLimitSwitch_GPIO_Port, M4CloseLimitSwitch_Pin) == 0){ //not an EXT pin cant be handled by interupt
+		if(std::get<1>(MotorList[3]) == ValveStateClose && HAL_GPIO_ReadPin(M4CloseLimitSwitch_GPIO_Port, M4CloseLimitSwitch_Pin) == 0){ //not an EXT pin cant be handled by interupt
 			std::get<0>(MotorList[3])->SetState(ValveStateClose);
 		}
 		tick = !tick;
