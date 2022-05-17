@@ -16,6 +16,7 @@ void setup() {
   Serial.begin(115200);
 
   stm.i2c.begin(I2C_SDA, I2C_SCL, 100E3);
+  stm.spi.begin();
 
   nowInit();
   nowAddPeer(adressObc, 0);

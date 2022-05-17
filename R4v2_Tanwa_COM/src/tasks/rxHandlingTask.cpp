@@ -10,7 +10,7 @@ void rxHandlingTask(void* arg){
       Serial.println(espNowCommand.command);
     }
 
-    if(xQueueReceive(stm.loraRxQueue, (void*)&loraRx, 0) == pdFALSE){
+    if(xQueueReceive(stm.loraRxQueue, (void*)&loraRx, 0) == pdTRUE){
       Serial.print("LORA: ");
       Serial.println(loraRx);
     }
