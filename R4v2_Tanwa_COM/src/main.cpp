@@ -41,7 +41,7 @@ void setup() {
    ESP.restart();
   }*/
   StateMachine::changeStateRequest(States::IDLE);
-  //stm.changeState(State::IDLE);
+  // stm.changeState(State::IDLE);
   vTaskDelete(NULL); 
 }
 
