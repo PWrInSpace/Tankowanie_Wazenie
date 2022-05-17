@@ -8,45 +8,90 @@ void stateTask(void *arg){
     if(ulTaskNotifyTake(pdTRUE, false)){
       //state init
       switch(stateMachine.getRequestedState()){
+        case INIT:
+          if(stateMachine.changeStateRequest(INIT))
+            stateMachine.changeStateConfirmation();
+          else
+            stateMachine.changeStateRejection();
+
+          vTaskDelay(500 / portTICK_PERIOD_MS);
+          break;
         case IDLE:
           //Idle state means nothing is going on
 
-          stateMachine.changeStateConfirmation();
+          if(stateMachine.changeStateRequest(IDLE))
+            stateMachine.changeStateConfirmation();
+          else
+            stateMachine.changeStateRejection();
+
+          vTaskDelay(500 / portTICK_PERIOD_MS);
           break;
+      
         case ARMED:
           //CHECK THE CONTINUITY OF IGNITERS
-          stateMachine.changeStateConfirmation();
+          if(stateMachine.changeStateRequest(ARMED))
+            stateMachine.changeStateConfirmation();
+          else
+            stateMachine.changeStateRejection();
+          
+          vTaskDelay(500 / portTICK_PERIOD_MS);
           break;
+           
         case FUELING:
           //CAN GO FROM ARMED
           //ALLOW IF INGITERS HAVE CONTINUITY (HARDWARE ARMED)
           //ALLOW FOR VALE MANIPULATION, NO ACCESS TO IGNITER
-          stateMachine.changeStateConfirmation();
+          if(stateMachine.changeStateRequest(FUELING))
+            stateMachine.changeStateConfirmation();
+          else
+            stateMachine.changeStateRejection();
+          vTaskDelay(250 / portTICK_PERIOD_MS);
           break;
+
         case RDY_TO_LAUNCH:
           //
           //Do not allow valve manipulation, do not give access to the igniter
-          stateMachine.changeStateConfirmation();
+          if(stateMachine.changeStateRequest(RDY_TO_LAUNCH))
+            stateMachine.changeStateConfirmation();
+          else
+            stateMachine.changeStateRejection();
+          vTaskDelay(500 / portTICK_PERIOD_MS);
           break;
+
         case COUNTDOWN:
           //ALLOW TO STOP AND GO BACK TO RDY_TO_LAUNCH
           //CAN GO IN IF ARMED AND SOFTWARMED AND IGNITERS HAVE CONTINUITY
           //FIRE THE IGNITER AFTER COUNTDOWN
-          stateMachine.changeStateConfirmation();
+           if(stateMachine.changeStateRequest(COUNTDOWN))
+            stateMachine.changeStateConfirmation();
+          else
+            stateMachine.changeStateRejection();
+
+          vTaskDelay(1000 / portTICK_PERIOD_MS);
           break;
+
         case HOLD:
           //ALLOW TO GO FROM ANY STATE
           //SOFTWARE DISARM, NO ACCESS TO VALVES
-          stateMachine.changeStateConfirmation();
+          if(stateMachine.changeStateRequest(HOLD))
+            stateMachine.changeStateConfirmation();
+          else
+            stateMachine.changeStateRejection();
           break;
+
         case ABORT:
           //ALLOW TO GO FROM ANY STATE
           //CAN BE CAUSED EITHER BY SOFTWARE OR SAFETY SWITCH ON THE CASE
           //SOFTWARE DISARM IF ARMED, CLOSE FILL AND OPEN DEPR (DISCONNECT QUICK DISCONN?)
           //IF POSSIBLE GIVE MANUAL CONTROL OVER BOARD STEERING THE VENT AND MAIN VALVE
-          stateMachine.changeStateConfirmation();
+          if(stateMachine.changeStateRequest(ABORT))
+            stateMachine.changeStateConfirmation();
+          else
+            stateMachine.changeStateRejection();
           break;
-        default:
+
+        default: 
+          stateMachine.changeStateRejection();
           break;
       }
     }
