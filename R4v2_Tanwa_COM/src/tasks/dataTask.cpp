@@ -49,7 +49,9 @@ void dataTask(void *arg){
 
     
     //DEBUG(data);
+    xSemaphoreTake(stm.i2cMutex, pdTRUE);
     i2cCOM.getData(&pwrData);
+    xSemaphoreGive(stm.i2cMutex);
     Serial.println("\n\n\nCOM DATA:");
     Serial.print("BLINK: "); Serial.println(pwrData.tick);
     Serial.print("LAST COMMAND: "); Serial.println(pwrData.lastDoneCommandNum);

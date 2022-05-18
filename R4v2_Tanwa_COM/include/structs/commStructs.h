@@ -39,7 +39,7 @@ struct Options{
 };
 
 struct DataFrame{
-  States tanWaState : 4;
+  States tanWaState;
   bool tankHeating : 1;
   bool abortButton : 1;
   bool armButton : 1;

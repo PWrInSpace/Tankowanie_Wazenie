@@ -95,7 +95,10 @@ void stateTask(void *arg){
         //send msg to close valves?
         ramka.command = 1;
         ramka.commandValue = 0;
+
+        xSemaphoreTake(stm.i2cMutex, pdTRUE);
         pwrCom.sendCommand(&ramka);
+        xSemaphoreGive(stm.i2cMutex);
 
       
         break;
