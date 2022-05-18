@@ -60,7 +60,7 @@ void StateMachine::changeStateConfirmation(){
     currentState = requestState;
   }
 
-  requestState = INIT;
+  requestState = INIT; //=do not change
 }
 
 void StateMachine::changeStateRejection(){
