@@ -18,7 +18,12 @@ void stateTask(void *arg){
         case IDLE:
           //Idle state means nothing is going on
 
-          if(stateMachine.changeStateRequest(IDLE))
+          if(digitalRead(ARM_PIN)==LOW &&
+           digitalRead(FIRE1)==LOW &&
+           digitalRead(FIRE2)==LOW &&
+           digitalRead(BUZZER)==LOW &&
+           digitalRead(SPEAKER)== LOW &&
+           digitalRead(RUNCAM)==LOW)
             stateMachine.changeStateConfirmation();
           else
             stateMachine.changeStateRejection();
@@ -29,7 +34,16 @@ void stateTask(void *arg){
           //CAN GO FROM ARMED
           //ALLOW IF INGITERS HAVE CONTINUITY (HARDWARE ARMED)
           //ALLOW FOR VALE MANIPULATION, NO ACCESS TO IGNITER
-          if(stateMachine.changeStateRequest(FUELING))
+          if(digitalRead(IGN_TEST_CON_1)==HIGH &&
+           digitalRead(IGN_TEST_CON_2)==HIGH &&
+           digitalRead(ARM_PIN)==LOW &&
+           digitalRead(FIRE1)==LOW &&
+           digitalRead(FIRE2)==LOW &&
+           digitalRead(IGN_TEST_CON_1)==HIGH &&
+           digitalRead(IGN_TEST_CON_2)==HIGH &&
+           digitalRead(BUZZER)==HIGH &&
+           digitalRead(SPEAKER)== HIGH &&
+           digitalRead(RUNCAM)==HIGH)
             stateMachine.changeStateConfirmation();
           else
             stateMachine.changeStateRejection();
@@ -37,7 +51,16 @@ void stateTask(void *arg){
 
         case ARMED:
           //CHECK THE CONTINUITY OF IGNITERS
-          if(stateMachine.changeStateRequest(ARMED))
+          if(digitalRead(IGN_TEST_CON_1)==HIGH &&
+           digitalRead(IGN_TEST_CON_2)==HIGH &&
+           digitalRead(ARM_PIN)==HIGH &&
+           digitalRead(FIRE1)==LOW &&
+           digitalRead(FIRE2)==LOW &&
+           digitalRead(IGN_TEST_CON_1)==HIGH &&
+           digitalRead(IGN_TEST_CON_2)==HIGH &&
+           digitalRead(BUZZER)==HIGH &&
+           digitalRead(SPEAKER)== HIGH &&
+           digitalRead(RUNCAM)==HIGH)
             stateMachine.changeStateConfirmation();
           else
             stateMachine.changeStateRejection();          
@@ -46,7 +69,16 @@ void stateTask(void *arg){
         case RDY_TO_LAUNCH:
           //
           //Do not allow valve manipulation, do not give access to the igniter
-          if(stateMachine.changeStateRequest(RDY_TO_LAUNCH))
+          if(digitalRead(IGN_TEST_CON_1)==HIGH &&
+           digitalRead(IGN_TEST_CON_2)==HIGH &&
+           digitalRead(ARM_PIN)==HIGH &&
+           digitalRead(FIRE1)==LOW &&
+           digitalRead(FIRE2)==LOW &&
+           digitalRead(IGN_TEST_CON_1)==HIGH &&
+           digitalRead(IGN_TEST_CON_2)==HIGH &&
+           digitalRead(BUZZER)==HIGH &&
+           digitalRead(SPEAKER)== HIGH &&
+           digitalRead(RUNCAM)==HIGH)
             stateMachine.changeStateConfirmation();
           else
             stateMachine.changeStateRejection();
@@ -56,7 +88,16 @@ void stateTask(void *arg){
           //ALLOW TO STOP AND GO BACK TO RDY_TO_LAUNCH
           //CAN GO IN IF ARMED AND SOFTWARMED AND IGNITERS HAVE CONTINUITY
           //FIRE THE IGNITER AFTER COUNTDOWN
-           if(stateMachine.changeStateRequest(COUNTDOWN))
+           if(digitalRead(IGN_TEST_CON_1)==HIGH &&
+           digitalRead(IGN_TEST_CON_2)==HIGH &&
+           digitalRead(ARM_PIN)==HIGH &&
+           digitalRead(FIRE1)==LOW &&
+           digitalRead(FIRE2)==LOW &&
+           digitalRead(IGN_TEST_CON_1)==HIGH &&
+           digitalRead(IGN_TEST_CON_2)==HIGH &&
+           digitalRead(BUZZER)==HIGH &&
+           digitalRead(SPEAKER)== HIGH &&
+           digitalRead(RUNCAM)==HIGH)
             stateMachine.changeStateConfirmation();
           else
             stateMachine.changeStateRejection();
