@@ -13,7 +13,7 @@
 #include "../structs/commStructs.h"
 
 extern SoftwareToolsManagment stm;
-extern InternalI2C<PWRData, TxData> i2cCOM;
+extern InternalI2C<PWRData, TxData> pwrCom;
 
 //pro_cpu
 void loraTask(void *arg);

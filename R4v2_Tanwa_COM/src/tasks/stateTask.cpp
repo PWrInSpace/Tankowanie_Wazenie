@@ -1,8 +1,10 @@
 #include "../include/tasks/tasks.h"
 
 
+
 void stateTask(void *arg){
   StateMachine stateMachine(stm.stateTask);
+  TxData ramka{0,0};
   while(1){
 
     if(ulTaskNotifyTake(pdTRUE, false)){
@@ -91,6 +93,9 @@ void stateTask(void *arg){
         digitalWrite(FIRE1, LOW);
         digitalWrite(FIRE2, LOW);
         //send msg to close valves?
+        ramka.command = 1;
+        ramka.commandValue = 0;
+        pwrCom.sendCommand(&ramka);
 
       
         break;

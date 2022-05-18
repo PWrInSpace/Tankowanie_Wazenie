@@ -8,6 +8,7 @@
 SoftwareToolsManagment stm;
 InternalI2C<PWRData, TxData> pwrCom(&stm.i2c, COM_ADRESS);
 
+
 void setup() {
   //#ifdef __DEBUG
   //Serial.begin(115200);
