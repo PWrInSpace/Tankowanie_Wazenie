@@ -23,10 +23,12 @@
 static String dataFileName= "/data_";
 
 //I2C COM COMMAND
-#define OPEN_FILL_VALVE 0x01
-#define CLOSE_FILL_VALVE 0x02
-#define OPEN_DEPR_VALVE 0x03
-#define CLOSE_DEPR_VALVE 0x04
+#define OPEN_VALVE 0x01
+#define CLOSE_VALVE 0x02
+#define TIMED_OPEN_VALVE 0x03
+#define MOTOR_FILL 0x01
+#define MOTOR_DEPR 0x02
+#define MOTOR_QUICK_DISCONNECT 0x03
 
 
 #define LORA_FREQ_MHZ 868

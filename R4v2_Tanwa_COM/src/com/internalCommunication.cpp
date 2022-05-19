@@ -36,3 +36,23 @@ bool InternalI2C<rxType, txType>::getData(rxType* _data){
   return true;
 
 }
+
+
+
+
+/**********************************************************************************************/
+
+template <typename rxType, typename txType>
+bool InternalI2C<rxType, txType>::sendCommandMotor(uint8_t commmand, uint8_t commandValue){
+  size_t writeStatus = 0;
+  i2c->beginTransmission(address);
+  writeStatus = i2c->write((uint8_t*) _data, sizeof(txType));
+  if(i2c->endTransmission() != I2C_ERROR_OK){
+    return false;
+  }
+  
+  return writeStatus != 0 ? true : false; 
+}
+
+
+/**********************************************************************************************/

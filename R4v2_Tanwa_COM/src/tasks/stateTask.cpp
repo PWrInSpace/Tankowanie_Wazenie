@@ -4,7 +4,7 @@
 
 void stateTask(void *arg){
   StateMachine stateMachine(stm.stateTask);
-  TxData ramka{0,0};
+  // TxData motorMsg{0,0};
   while(1){
 
     if(ulTaskNotifyTake(pdTRUE, false)){
@@ -93,14 +93,14 @@ void stateTask(void *arg){
         digitalWrite(FIRE1, LOW);
         digitalWrite(FIRE2, LOW);
         //send msg to close valves?
-        ramka.command = 1;
-        ramka.commandValue = 0;
+        // motorMsg.command = MOTOR_FILL;
+        // motorMsg.commandValue = CLOSE_VALVE;
 
         xSemaphoreTake(stm.i2cMutex, pdTRUE);
-        pwrCom.sendCommand(&ramka);
+        pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
+        pwrCom.sendCommandMotor(MOTOR_DEPR, CLOSE_VALVE);
         xSemaphoreGive(stm.i2cMutex);
 
-      
         break;
 
 
@@ -111,8 +111,8 @@ void stateTask(void *arg){
         digitalWrite(ARM_PIN, HIGH);
         digitalWrite(FIRE1, LOW);
         digitalWrite(FIRE2, LOW);
+
         
-        // vTaskDelay(10 / portTICK_PERIOD_MS);
         break;
 
       case RDY_TO_LAUNCH:
@@ -122,7 +122,6 @@ void stateTask(void *arg){
         digitalWrite(FIRE1, LOW);
         digitalWrite(FIRE2, LOW);
 
-        // vTaskDelay(10 / portTICK_PERIOD_MS);
         break;
 
       case COUNTDOWN:
@@ -133,7 +132,6 @@ void stateTask(void *arg){
         digitalWrite(FIRE1, LOW);
         digitalWrite(FIRE2, LOW);
 
-        // vTaskDelay(10 / portTICK_PERIOD_MS);
         break;
 
       case HOLD:
@@ -143,6 +141,10 @@ void stateTask(void *arg){
         digitalWrite(FIRE1, LOW);
         digitalWrite(FIRE2, LOW);
         //CLOSE VALVES MSG
+        xSemaphoreTake(stm.i2cMutex, pdTRUE);
+        pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
+        pwrCom.sendCommandMotor(MOTOR_DEPR, CLOSE_VALVE);
+        xSemaphoreGive(stm.i2cMutex);
 
         break;
 
@@ -155,6 +157,11 @@ void stateTask(void *arg){
         digitalWrite(FIRE1, LOW);
         digitalWrite(FIRE2, LOW);
         //CLOSE FILL, OPEN DEPR, OPEN VENT
+        xSemaphoreTake(stm.i2cMutex, pdTRUE);
+        pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
+        pwrCom.sendCommandMotor(MOTOR_DEPR, OPEN_VALVE);
+        // pwrCom.sendCommandMotor(MOTOR_VENT, OPEN_VALVE);
+        xSemaphoreGive(stm.i2cMutex);
 
         break;
 
