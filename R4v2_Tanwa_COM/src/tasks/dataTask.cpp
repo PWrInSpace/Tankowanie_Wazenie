@@ -15,7 +15,7 @@ void dataTask(void *arg){
   rckWeight.start(STABILIZNG_TIME, false); //start without tare
   rckWeight.setCalFactor(BIT_TO_GRAM_RATIO_RCK);
   rckWeight.setTareOffset(OFFSET_RCK);
-  rckWeight.setSamplesInUse(20);
+  rckWeight.setSamplesInUse(16);
   rckWeight.setGain(64);
 
   tankWeight.begin();
@@ -24,6 +24,7 @@ void dataTask(void *arg){
   tankWeight.setTareOffset(OFFSET_TANK);
   tankWeight.setSamplesInUse(20);
   tankWeight.setGain(64);
+  
   //
 
   // !!!//DEBUG
@@ -33,9 +34,24 @@ void dataTask(void *arg){
   vTaskDelay(100 / portTICK_PERIOD_MS);
   
   while(1){
-    //dataFrame.vbat = 16.8;
+    // dataFrame.vbat = 16.8;
+
+    //TODO
+    // create calibration condition i.e. if arm cont up or after reset
+    //tankWeight.getNewCalibration(float known_mass);
+    // rckWeight.getNewCalibration(float known_mass);
+
+    // get data averaged from 16 samples 
+    dataFrame.rocketWeight = rckWeight.getData();
+    dataFrame.tankWeight = tankWeight.getData();
+
+    //get raw data;
+    dataFrame.rocketWeightRaw = (uint32_t) rckWeight.getRawData();
+    dataFrame.tankWeightRaw = (uint32_t) tankWeight.getRawData();
+
     
     snprintf(data, SD_FRAME_SIZE, "TEST;%lu\n", millis());
+
     strcpy(lora, data);
     xQueueSend(stm.loraTxQueue, (void*)lora, 0);
 
