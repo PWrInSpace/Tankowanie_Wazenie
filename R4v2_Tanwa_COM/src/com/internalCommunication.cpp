@@ -38,8 +38,6 @@ bool InternalI2C<rxType, txType>::getData(rxType* _data){
 }
 
 
-
-
 /**********************************************************************************************/
 
 template <typename rxType, typename txType>

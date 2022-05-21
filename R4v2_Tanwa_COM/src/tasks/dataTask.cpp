@@ -13,15 +13,18 @@ void dataTask(void *arg){
   rckWeight.start(STABILIZNG_TIME, false); //start without tare
   rckWeight.setCalFactor(BIT_TO_GRAM_RATIO_RCK);
   rckWeight.setTareOffset(OFFSET_RCK);
-  rckWeight.setSamplesInUse(20);
+  rckWeight.setSamplesInUse(16);
   rckWeight.setGain(64);
 
   tankWeight.begin();
   tankWeight.start(STABILIZNG_TIME, false); //start without tare
   tankWeight.setCalFactor(BIT_TO_GRAM_RATIO_TANK);
   tankWeight.setTareOffset(OFFSET_TANK);
-  tankWeight.setSamplesInUse(20);
+  tankWeight.setSamplesInUse(16);
   tankWeight.setGain(64);
+  //calibration after rest or on eg continuity with the use of CUSTOM function
+  // rckWeight.CustomCalibration(float known_mass, int delay_ms);
+  // tankWeight.CustomCalibration(float kown_mass, int delay_ms);
   //
 
   // !!!//DEBUG
@@ -29,15 +32,24 @@ void dataTask(void *arg){
   PWRData pwrData;
 
   vTaskDelay(100 / portTICK_PERIOD_MS);
+ 
+  
   
   while(1){
-    dataFrame.vbat = 16.8;
+
+    xSemaphoreTake(stm.i2cMutex, pdTRUE);
+    i2cCOM.getData(&pwrData);
+    xSemaphoreGive(stm.i2cMutex);
+    
+    dataFrame.vbat = pwrData.tanwaVoltage;
     if(tankWeight.update() == 1){
-      dataFrame.butlaWeight = tankWeight.getData();
+      dataFrame.tankWeight = tankWeight.getData();
+      dataFrame.tankWeightRaw = (uint32_t) tankWeight.getRawData();
     }
 
     if(rckWeight.update() == 1){
       dataFrame.rocketWeight = rckWeight.getData();
+      dataFrame.rocketWeightRaw = (uint32_t) rckWeight.getRawData();
     }
 
     createDataFrame(dataFrame, data);
@@ -46,12 +58,11 @@ void dataTask(void *arg){
     xQueueSend(stm.loraTxQueue, (void*)data, 0);
 
     xQueueSend(stm.sdQueue, (void*)data, 0);
-
     
     //DEBUG(data);
-    xSemaphoreTake(stm.i2cMutex, pdTRUE);
-    i2cCOM.getData(&pwrData);
-    xSemaphoreGive(stm.i2cMutex);
+    // xSemaphoreTake(stm.i2cMutex, pdTRUE);
+    // i2cCOM.getData(&pwrData);
+    // xSemaphoreGive(stm.i2cMutex);
     Serial.println("\n\n\nCOM DATA:");
     Serial.print("BLINK: "); Serial.println(pwrData.tick);
     Serial.print("LAST COMMAND: "); Serial.println(pwrData.lastDoneCommandNum);
@@ -68,6 +79,7 @@ void dataTask(void *arg){
     Serial.print("ADC VALUE 5: "); Serial.println(pwrData.adcValue[5]);
     Serial.print("ADC VALUE 6: "); Serial.println(pwrData.adcValue[6]);
     Serial.print("ADC VALUE 7: "); Serial.println(pwrData.adcValue[7]);
+    Serial.print("TanWa Voltage: "); Serial.println(pwrData.tanwaVoltage);
 
     
     vTaskDelay(1000 / portTICK_PERIOD_MS);

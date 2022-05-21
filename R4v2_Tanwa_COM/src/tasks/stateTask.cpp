@@ -4,7 +4,7 @@
 
 void stateTask(void *arg){
   StateMachine stateMachine(stm.stateTask);
-  // TxData motorMsg{0,0};
+  
   while(1){
 
     if(ulTaskNotifyTake(pdTRUE, false)){
@@ -61,9 +61,13 @@ void stateTask(void *arg){
           break;
 
         case HOLD:
-          txCommand = {.command = ValveStateClose, .commandValue = 0};
-          
-          pwrCom.sendCommand(&txCommand);
+          // piekny przyklad uzycia klasy uniwersalnej -- nie dla debili jak ja ~ molon
+          //TxData motorMsg{0,0}; predefined at the beginning of a file
+          // motorMsg = {.command = MOTOR_FILL, .commandValue = CLOSE_VALVE};
+          // pwrCom.sendCommand(&motorMsg);
+          // xSemaphoreTake(stm.i2cMutex, pdTRUE);
+          // pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
+          // xSemaphoreGive(stm.i2cMutex);
 
           stateMachine.changeStateConfirmation();
           break;

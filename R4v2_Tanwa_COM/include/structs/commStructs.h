@@ -24,6 +24,7 @@ struct PWRData{
   uint8_t lastDoneCommandNum = {};
   ValveState motorState[5] = {};
   float adcValue[8] = {};
+  float tanwaVoltage = 0;
 };
 
 struct Options{
@@ -47,9 +48,9 @@ struct DataFrame{
   float vbat;
   ValveState motorState[5];
   float rocketWeight;
-  float butlaWeight; 
+  float tankWeight; 
   uint32_t rocketWeightRaw;
-  uint32_t butlaWeightRaw;
+  uint32_t tankWeightRaw;
   float thermocouple[3];
 
   DataFrame():
@@ -61,9 +62,9 @@ struct DataFrame{
     vbat(0),
     motorState{},
     rocketWeight(0),
-    butlaWeight(0),
+    tankWeight(0),
     rocketWeightRaw(0),
-    butlaWeightRaw(0),
+    tankWeightRaw(0),
     thermocouple{}
   {}
 };

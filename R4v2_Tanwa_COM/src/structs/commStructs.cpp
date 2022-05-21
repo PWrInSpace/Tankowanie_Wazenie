@@ -7,8 +7,8 @@ void createDataFrame(DataFrame df, char *data){
     df.tanWaState, df.vbat, df.igniterContinouity[0],
     df.igniterContinouity[1], df.motorState[0], df.motorState[1],
     df.motorState[2], df.motorState[3], df.motorState[4],
-    df.rocketWeight, df.butlaWeight, df.rocketWeightRaw, 
-    df.butlaWeightRaw, df.thermocouple[0], df.thermocouple[1], df.thermocouple[2]) + 1;
+    df.rocketWeight, df.tankWeight, df.rocketWeightRaw, 
+    df.tankWeightRaw, df.thermocouple[0], df.thermocouple[1], df.thermocouple[2]) + 1;
   
   char loraFrame[loraDataSize];
 
@@ -17,8 +17,8 @@ void createDataFrame(DataFrame df, char *data){
     df.tanWaState, df.vbat, df.igniterContinouity[0],
     df.igniterContinouity[1], df.motorState[0], df.motorState[1],
     df.motorState[2], df.motorState[3], df.motorState[4],
-    df.rocketWeight, df.butlaWeight, df.rocketWeightRaw, 
-    df.butlaWeightRaw, df.thermocouple[0], df.thermocouple[1], df.thermocouple[2]);//10
+    df.rocketWeight, df.tankWeight, df.rocketWeightRaw, 
+    df.tankWeightRaw, df.thermocouple[0], df.thermocouple[1], df.thermocouple[2]);//10
   
   strcpy(data, DATA_PREFIX);
   strcat(data, loraFrame);
