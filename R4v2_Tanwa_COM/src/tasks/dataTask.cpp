@@ -40,6 +40,10 @@ void dataTask(void *arg){
     xSemaphoreTake(stm.i2cMutex, pdTRUE);
     i2cCOM.getData(&pwrData);
     xSemaphoreGive(stm.i2cMutex);
+    //DEBUG
+    // xSemaphoreTake(stm.i2cMutex, pdTRUE);
+    // pwrCom.sendCommandMotor(10, 1000);
+    // xSemaphoreGive(stm.i2cMutex);
     
     dataFrame.vbat = pwrData.adcValue[4];
     if(tankWeight.update() == 1){

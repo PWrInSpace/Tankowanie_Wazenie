@@ -22,9 +22,9 @@ struct TxData{
 struct PWRData{
   bool tick = {};
   uint8_t lastDoneCommandNum = {};
-  ValveState motorState[5] = {};
-  float adcValue[8] = {};
-  float tanwaVoltage = 0;
+  uint8_t motorState[5] = {};
+  int16_t adcValue[8] = {}; //tanwa voltage adc[4]
+ 
 };
 
 struct Options{
