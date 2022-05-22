@@ -13,7 +13,7 @@ class InternalI2C{
   InternalI2C(TwoWire* _wire, uint8_t _adress);
 
   bool sendCommand(txType *_data);
-  bool sendCommandMotor(uint8_t command, uint8_t commandValue);
+  bool sendCommandMotor(uint8_t command, uint16_t commandValue);
   bool getData(rxType* _data);
 };
 

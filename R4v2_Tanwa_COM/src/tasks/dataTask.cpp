@@ -41,7 +41,7 @@ void dataTask(void *arg){
     i2cCOM.getData(&pwrData);
     xSemaphoreGive(stm.i2cMutex);
     
-    dataFrame.vbat = pwrData.tanwaVoltage;
+    dataFrame.vbat = pwrData.adcValue[4];
     if(tankWeight.update() == 1){
       dataFrame.tankWeight = tankWeight.getData();
       dataFrame.tankWeightRaw = (uint32_t) tankWeight.getRawData();
@@ -75,11 +75,11 @@ void dataTask(void *arg){
     Serial.print("ADC VALUE 1: "); Serial.println(pwrData.adcValue[1]);
     Serial.print("ADC VALUE 2: "); Serial.println(pwrData.adcValue[2]);
     Serial.print("ADC VALUE 3: "); Serial.println(pwrData.adcValue[3]);
-    Serial.print("ADC VALUE 4: "); Serial.println(pwrData.adcValue[4]);
+    Serial.print("TANWA VOLTAGE 4: "); Serial.println(pwrData.adcValue[4]);
     Serial.print("ADC VALUE 5: "); Serial.println(pwrData.adcValue[5]);
     Serial.print("ADC VALUE 6: "); Serial.println(pwrData.adcValue[6]);
     Serial.print("ADC VALUE 7: "); Serial.println(pwrData.adcValue[7]);
-    Serial.print("TanWa Voltage: "); Serial.println(pwrData.tanwaVoltage);
+  
 
     
     vTaskDelay(1000 / portTICK_PERIOD_MS);

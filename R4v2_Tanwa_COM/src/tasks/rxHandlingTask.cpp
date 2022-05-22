@@ -8,11 +8,13 @@ void rxHandlingTask(void* arg){
     if(xQueueReceive(stm.espNowRxQueue, (void*)&espNowCommand, 0) == pdTRUE){
       Serial.print("ESP NOW: ");
       Serial.println(espNowCommand.command);
+        //TODO parser
     }
 
     if(xQueueReceive(stm.loraRxQueue, (void*)&loraRx, 0) == pdTRUE){
       Serial.print("LORA: ");
       Serial.println(loraRx);
+      //TODO parser
     }
     vTaskDelay(100 / portTICK_PERIOD_MS);
   }
