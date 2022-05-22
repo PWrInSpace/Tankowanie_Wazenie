@@ -7,8 +7,8 @@
 enum States{
   INIT = 0,
   IDLE,
-  ARMED,
   FUELING,
+  ARMED,
   RDY_TO_LAUNCH,
   COUNTDOWN,
   FLIGHT,
@@ -16,14 +16,15 @@ enum States{
   SECOND_STAGE_RECOVERY,
   ON_GROUND,
   HOLD,
-  ABORT
+  ABORT,
+  NO_CHANGE = 0xff //DO NOT USE, ONLY FOR REQUEST PURPOSE
 };
 
 class StateMachine{
   static States currentState;
   static States requestState;
   static xTaskHandle stateTask;
-  static States holdedState; //keep holded state, default is States::HOLD
+  static States holdedState; //keep holded state default is States::HOLD
 
   public:
   StateMachine(xTaskHandle _stateTask);
@@ -33,5 +34,9 @@ class StateMachine{
   States getRequestedState();
   static States getCurrentState();
 };
+
+//static init value
+
+
 
 #endif

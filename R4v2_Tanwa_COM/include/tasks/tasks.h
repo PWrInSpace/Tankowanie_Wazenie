@@ -7,6 +7,7 @@
 #include "../config/config.h"
 #include "../components/SDcard.h"
 #include <HX711_ADC.h>
+#include "../components/hx711.h"
 #include "../structs/stateMachine.h"
 #include "../com/internalCommunication.h"
 #include "../structs/commStructs.h"

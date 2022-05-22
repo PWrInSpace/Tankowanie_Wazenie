@@ -53,7 +53,7 @@ void pinInit()
 
     //CAMERA
     pinMode(RUNCAM, OUTPUT);
-    digitalWrite(BUZZER, HIGH);
+    digitalWrite(RUNCAM, LOW);
 
     //
 }

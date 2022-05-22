@@ -9,6 +9,7 @@
 SoftwareToolsManagment stm;
 InternalI2C<PWRData, TxData> pwrCom(&stm.i2c, COM_ADRESS);
 
+
 void setup() {
   //#ifdef __DEBUG
   //Serial.begin(115200);
@@ -51,7 +52,7 @@ void setup() {
    ESP.restart();
   }*/
   StateMachine::changeStateRequest(States::IDLE);
-  //stm.changeState(State::IDLE);
+  // stm.changeState(State::IDLE);
   vTaskDelete(NULL); 
 }
 
