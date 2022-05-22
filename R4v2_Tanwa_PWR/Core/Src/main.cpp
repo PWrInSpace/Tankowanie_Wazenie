@@ -34,13 +34,13 @@ struct TxStruct{
     bool tick;
     uint8_t lastDoneCommandNum;
     uint8_t MotorState[5];
-    int32_t adcValue[8];
+    int16_t adcValue[8];
 
 };
 
 struct RxStruct{
     uint8_t CommandNum;
-    uint8_t CommandArgument;
+    uint16_t CommandArgument;
 };
 
 TxStruct txStruct = {0,0,{0,0,0,0,0},{0,0,0,0,0,0,0,0}};
@@ -706,10 +706,10 @@ void handleRxStruct(RxStruct rxStruct){
 void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode){
 	HAL_I2C_DisableListen_IT(hi2c);
 	if(!TransferDirection) {
-		HAL_I2C_Slave_Transmit(hi2c, (uint8_t*)&txStruct, sizeof(txStruct), 5);
+		HAL_I2C_Slave_Transmit(hi2c, (uint8_t*)&txStruct, sizeof(TxStruct), 5);
 	}
 	else{
-		HAL_I2C_Slave_Receive(hi2c, (uint8_t*)&rxStruct, sizeof(rxStruct), 50);
+		HAL_I2C_Slave_Receive(hi2c, (uint8_t*)&rxStruct, sizeof(RxStruct), 50);
 		xQueueSendFromISR(rxQueue, &rxStruct, NULL);
 	}
 	HAL_I2C_EnableListen_IT(hi2c);
