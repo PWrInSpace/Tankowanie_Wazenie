@@ -761,10 +761,10 @@ void TaskCOM(void *argument)
 	HAL_I2C_EnableListen_IT(&hi2c2); // Start listening for I2C master call.
 
 	{//test OPEN - CLOSE
-		rxStruct = {1,1}; //open M1
-		xQueueSend(rxQueue, &rxStruct, 1000);
-		rxStruct = {1,0}; //close M1
-		xQueueSend(rxQueue, &rxStruct, 1000);
+	//	rxStruct = {1,1}; //open M1
+	//	xQueueSend(rxQueue, &rxStruct, 1000);
+	//	rxStruct = {1,0}; //close M1
+	//	xQueueSend(rxQueue, &rxStruct, 1000);
 	}
 	/* Infinite loop */
 	for(;;){
