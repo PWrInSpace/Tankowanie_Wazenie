@@ -700,6 +700,9 @@ void handleRxStruct(RxStruct rxStruct){
 			setNewExpectedStateOfValveOnVector(MotorList, rxStruct.CommandNum - 1, (ValveState)rxStruct.CommandArgument);
 		}
 	}
+	if(rxStruct.CommandNum == 99){
+		HAL_NVIC_SystemReset();
+	}
 	//TODO add config setters
 }
 
