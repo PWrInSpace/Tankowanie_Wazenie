@@ -13,6 +13,8 @@
 
 #define VOLTAGE_MEASURE 36
 
+#define RESET_COMMAND 99
+
 //LORA
 #define LORA_D0 39
 #define LORA_CS 5

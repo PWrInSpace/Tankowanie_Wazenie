@@ -41,10 +41,10 @@ bool InternalI2C<rxType, txType>::getData(rxType* _data){
 /**********************************************************************************************/
 
 template <typename rxType, typename txType>
-bool InternalI2C<rxType, txType>::sendCommandMotor(uint8_t _command, uint16_t _commandValue){
+bool InternalI2C<rxType, txType>::sendCommandMotor(uint8_t _command_valve, uint8_t _command_state, uint16_t _commandValue){
   size_t writeStatus = 0;
-  TxData motorMsg{0,0};
-  motorMsg.command = _command;
+  TxData motorMsg{00,0};
+  motorMsg.command = _command_valve*10+_command_state;// combinig command valve with state (33,300) - vent vale open_timed for 300ms
   motorMsg.commandValue = _commandValue;
   txType *_data = &motorMsg;
   i2c->beginTransmission(address);
@@ -55,6 +55,7 @@ bool InternalI2C<rxType, txType>::sendCommandMotor(uint8_t _command, uint16_t _c
   
   return writeStatus != 0 ? true : false; 
 }
-
+//EXAMPLE OF RESET:
+//obj.sendCommandMotor(0,RESET_COMMAND);
 
 /**********************************************************************************************/
