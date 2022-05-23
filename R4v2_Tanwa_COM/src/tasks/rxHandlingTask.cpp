@@ -8,6 +8,7 @@ enum FrameStates {
     TANK,
     DEPR,
     ARMM,
+    STAT,
     INVALID
 };
 
@@ -18,6 +19,7 @@ FrameStates resolveOption(string input) {
     if( input == "TANK" ) return TANK;
     if( input == "DEPR" ) return DEPR;
     if( input == "ARMM" ) return ARMM;
+    if( input == "STAT" ) return STAT;
     //...
     return INVALID;
  }
@@ -55,7 +57,7 @@ void rxHandlingTask(void* arg){
 
         } while (loraRx_frame.compare("") != 0);
 
-      if(frame_array[0]!="R4T")
+      if(frame_array[0]!="R4T"||"R4A")
             break;
 
       frame_function = frame_array[1];
@@ -65,13 +67,10 @@ void rxHandlingTask(void* arg){
         case TANK:
         case DEPR:
         case ARMM:
+        case STAT:
         default:
           break;
       }
-
-
-
-
 
     }
     vTaskDelay(100 / portTICK_PERIOD_MS);
