@@ -34,6 +34,10 @@ void rxHandlingTask(void* arg){
       Serial.print("ESP NOW: ");
       Serial.println(espNowCommand.command);
         //TODO parser
+
+      xSemaphoreTake(stm.i2cMutex, pdTRUE);
+      pwrCom.sendCommand(&espNowCommand);
+      xSemaphoreGive(stm.i2cMutex);
     }
 
     if(xQueueReceive(stm.loraRxQueue, (void*)&loraRx, 0) == pdTRUE){

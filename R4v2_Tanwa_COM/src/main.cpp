@@ -5,6 +5,7 @@
 #include "../include/structs/SoftToolsManagment.h"
 #include "../include/structs/commStructs.h"
 #include "../include/com/now.h"
+#include <esp_wifi.h>
 
 SoftwareToolsManagment stm;
 InternalI2C<PWRData, TxData> pwrCom(&stm.i2c, COM_ADRESS);
@@ -15,6 +16,9 @@ void setup() {
   //Serial.begin(115200);
   //#endif
   Serial.begin(115200);
+
+  WiFi.mode(WIFI_STA);
+  esp_wifi_set_mac(ESP_IF_WIFI_STA, adressTanwa);
 
   stm.i2c.begin(I2C_SDA, I2C_SCL, 100E3);
   stm.spi.begin();

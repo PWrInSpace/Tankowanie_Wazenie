@@ -11,6 +11,7 @@
 #include "../structs/stateMachine.h"
 #include "../com/internalCommunication.h"
 #include "../structs/commStructs.h"
+#include "../com/now.h"
 
 extern SoftwareToolsManagment stm;
 extern InternalI2C<PWRData, TxData> pwrCom;

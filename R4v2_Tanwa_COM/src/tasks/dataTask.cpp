@@ -45,7 +45,6 @@ void dataTask(void *arg){
     // pwrCom.sendCommandMotor(10, 1000);
     // xSemaphoreGive(stm.i2cMutex);
     
-    dataFrame.vbat = pwrData.adcValue[4];
     if(tankWeight.update() == 1){
       dataFrame.tankWeight = tankWeight.getData();
       dataFrame.tankWeightRaw = (uint32_t) tankWeight.getRawData();
@@ -55,6 +54,9 @@ void dataTask(void *arg){
       dataFrame.rocketWeight = rckWeight.getData();
       dataFrame.rocketWeightRaw = (uint32_t) rckWeight.getRawData();
     }
+
+    dataFrame.vbat = pwrData.adcValue[4];
+    memcpy(dataFrame.motorState, pwrData.motorState, sizeof(uint8_t[5]));
 
     createDataFrame(dataFrame, data);
 
@@ -84,7 +86,7 @@ void dataTask(void *arg){
     Serial.print("ADC VALUE 6: "); Serial.println(pwrData.adcValue[6]);
     Serial.print("ADC VALUE 7: "); Serial.println(pwrData.adcValue[7]);
   
-
+    esp_now_send(adressObc, (uint8_t*) &dataFrame, sizeof(DataFrame));
     
     vTaskDelay(1000 / portTICK_PERIOD_MS);
   }
