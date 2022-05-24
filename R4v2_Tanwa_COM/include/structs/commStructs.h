@@ -47,9 +47,9 @@ struct DataFrame{
   float vbat;
   ValveState motorState[5];
   float rocketWeight;
-  float butlaWeight; 
+  float tankWeight; 
   uint32_t rocketWeightRaw;
-  uint32_t butlaWeightRaw;
+  uint32_t tankWeightRaw;
   float thermocouple[3];
 };
 
