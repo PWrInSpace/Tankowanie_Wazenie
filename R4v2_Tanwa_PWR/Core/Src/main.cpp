@@ -695,8 +695,8 @@ void setNewExpectedStateOfValveOnVector(std::vector<std::tuple<Motor*,volatile V
 
 void handleRxStruct(RxStruct rxStruct){
 	txStruct.lastDoneCommandNum = rxStruct.CommandNum;
-	CommandNumValve = (rxStruct.CommandNum / 10) % 10;
-	CommandNumState = rxStruct.CommandNum % 10;
+	uint8_t CommandNumValve = (rxStruct.CommandNum / 10) % 10;
+	uint8_t CommandNumState = rxStruct.CommandNum % 10;
 	ventingTime = rxStruct.CommandArgument; //new venting time
 	if(CommandNumValve > 0 && CommandNumValve < 6){ //Motor1 - Motor5
 		if(CommandNumState == 0 || CommandNumState == 1 || CommandNumState == 3){
