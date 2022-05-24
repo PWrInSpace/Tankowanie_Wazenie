@@ -18,7 +18,7 @@ struct SoftwareToolsManagment{
   SemaphoreHandle_t spiMutex;
 
   TwoWire i2c = TwoWire(0);
-  SPIClass spi;
+  SPIClass spi = SPIClass(VSPI);
 };
 
 

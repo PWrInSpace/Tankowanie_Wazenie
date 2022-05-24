@@ -16,6 +16,7 @@ void setup() {
   Serial.begin(115200);
 
   stm.i2c.begin(I2C_SDA, I2C_SCL, 100E3);
+  stm.spi.begin();
 
   stm.sdQueue = xQueueCreate(SD_QUEUE_LENGTH, sizeof(char[SD_FRAME_SIZE]));
   stm.loraTxQueue = xQueueCreate(LORA_TX_QUEUE_LENGTH, sizeof(char[LORA_TX_FRAME_SIZE]));
