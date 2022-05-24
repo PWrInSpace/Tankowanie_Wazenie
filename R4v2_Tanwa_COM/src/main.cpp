@@ -9,11 +9,13 @@
 
 SoftwareToolsManagment stm;
 InternalI2C<PWRData, TxData> pwrCom(&stm.i2c, COM_ADRESS);
-
+   //HX711
+  Hx711 rckWeight(HX1_SDA, HX1_SCL);
+  Hx711 tankWeight(HX2_SDA, HX2_SCL);
 
 void setup() {
   //#ifdef __DEBUG
-  //Serial.begin(115200);
+  // Serial.begin(115200);
   //#endif
   Serial.begin(115200);
 
@@ -58,6 +60,56 @@ void setup() {
   StateMachine::changeStateRequest(States::IDLE);
   // stm.changeState(State::IDLE);
   vTaskDelete(NULL); 
+
+
+
 }
 
 void loop() {}
+
+/* //TESTY WAAAAAAG
+
+void setup(){
+
+
+  Serial.begin(115200);
+
+  
+  rckWeight.begin();
+  rckWeight.start(STABILIZNG_TIME, false); //start without tare
+  rckWeight.setCalFactor(BIT_TO_GRAM_RATIO_RCK);
+  rckWeight.setTareOffset(OFFSET_RCK);
+  rckWeight.setSamplesInUse(16);
+  rckWeight.setGain(64);
+
+  tankWeight.begin();
+  tankWeight.start(STABILIZNG_TIME, false); //start without tare
+  tankWeight.setCalFactor(BIT_TO_GRAM_RATIO_TANK);
+  tankWeight.setTareOffset(OFFSET_TANK);
+  tankWeight.setSamplesInUse(16);
+  tankWeight.setGain(64);
+  //calibration after rest or on eg continuity with the use of CUSTOM function
+  // rckWeight.CustomCalibration(float known_mass, int delay_ms);
+  // tankWeight.CustomCalibration(float kown_mass, int delay_ms);
+  //
+
+
+  // tankWeight.tareNoDelay();
+  Serial.println("starting calibration\n");
+  tankWeight.CustomCalibration(1500,10000);
+}
+
+
+void loop() {
+
+
+  vTaskDelay(1000 / portTICK_PERIOD_MS);
+  // while(1){
+    float x = tankWeight.getRawData();
+    Serial.printf("TANK WEIGHT = %f\n", x);
+
+  // }
+
+
+}
+*/
