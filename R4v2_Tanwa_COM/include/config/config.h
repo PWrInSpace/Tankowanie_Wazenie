@@ -19,8 +19,8 @@
 #define LORA_TX_FRAME_SIZE 256
 #define LORA_TX_QUEUE_LENGTH 10
 #define ESP_NOW_QUEUE_LENGTH 10
-#define LORA_RX_QUEUE_LENGTH 256
-#define LORA_RX_FRAME_SIZE 10
+#define LORA_RX_QUEUE_LENGTH 10
+#define LORA_RX_FRAME_SIZE 512
 #define DATA_PREFIX "R4T;"
 
 //SD FILE PATH
@@ -28,7 +28,7 @@ static String dataFileName= "/data_";
 
 //I2C COM COMMAND
 #define OPEN_VALVE 0x01
-#define CLOSE_VALVE 0x02
+#define CLOSE_VALVE 0x00
 #define TIMED_OPEN_VALVE 0x03
 #define MOTOR_FILL 0x01
 #define MOTOR_DEPR 0x02

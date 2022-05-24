@@ -1,5 +1,6 @@
 #include "../include/tasks/tasks.h"
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -27,7 +28,7 @@ FrameStates resolveOption(string input) {
 
 void rxHandlingTask(void* arg){
   TxData espNowCommand;
-  char loraRx[LORA_TX_FRAME_SIZE];
+  char loraRx[LORA_RX_FRAME_SIZE];
 
   while(1){
     if(xQueueReceive(stm.espNowRxQueue, (void*)&espNowCommand, 0) == pdTRUE){
@@ -43,39 +44,56 @@ void rxHandlingTask(void* arg){
     if(xQueueReceive(stm.loraRxQueue, (void*)&loraRx, 0) == pdTRUE){
       Serial.print("LORA: ");
       Serial.println(loraRx);
+    
       //TODO parser
-      string frame_array [4];
+      string frame_array [50];
       string loraRx_frame = loraRx;
       string delimiter = ";";
       string frame_elem;
       string frame_function;
-      int i = 0;
+      
+      frame_elem = loraRx_frame.substr(0, loraRx_frame.find(delimiter));
+      frame_array[0] = frame_elem;
+      loraRx_frame = loraRx_frame.substr(frame_elem.length());
+      loraRx_frame = loraRx_frame.erase(0, 1);
+     
+
+      if(frame_array[0]=="R4T" || frame_array[0]=="R4A"){  
+         int i = 1;
+        do {//decomposition of the frame
+          
+              frame_elem = loraRx_frame.substr(0, loraRx_frame.find(delimiter));
+              frame_array[i] = frame_elem;
+              loraRx_frame = loraRx_frame.substr(frame_elem.length());
+              loraRx_frame = loraRx_frame.erase(0, 1);
+              i++;
+              cout<<"lora = "<<frame_elem<<endl;
+
+          } while (loraRx_frame.compare("") != 0);
+
         
-      do {//decomposition of the frame
+          
 
-            frame_elem = loraRx_frame.substr(0, loraRx_frame.find(delimiter));
-            frame_array[i] = frame_elem;
-            loraRx_frame = loraRx_frame.substr(frame_elem.length());
-            loraRx_frame = loraRx_frame.erase(0, 1);
-            i++;
+          frame_function = frame_array[1];
 
-        } while (loraRx_frame.compare("") != 0);
-
-      if(frame_array[0]!="R4T"||"R4A")
-            break;
-
-      frame_function = frame_array[1];
-
-      switch(resolveOption(frame_function)){
-        case PLSS://do wywalenia?
-        case TANK:
-        case DEPR:
-        case ARMM:
-        case STAT:
-        default:
-          break;
+          switch(resolveOption(frame_function)){
+            case PLSS://do wywalenia?
+            case TANK:
+              xSemaphoreTake(stm.i2cMutex, pdTRUE);
+              pwrCom.sendCommandMotor(MOTOR_FILL, atoi(frame_array[2].c_str()),atoi(frame_array[3].c_str()));
+              xSemaphoreGive(stm.i2cMutex);
+              printf("MOTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOR\n");
+              break;
+            
+            case DEPR:
+            case ARMM:
+            case STAT:
+            default:
+              break;
+          }
       }
 
+    
     }
     vTaskDelay(100 / portTICK_PERIOD_MS);
   }

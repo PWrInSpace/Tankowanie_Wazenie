@@ -31,20 +31,20 @@ void loraTask(void *arg){
   vTaskDelay(100 / portTICK_PERIOD_MS);
 
   while(1){
+    
     xSemaphoreTake(stm.spiMutex, portMAX_DELAY);
-
     LoRa.parsePacket();
     if (LoRa.available()) {
-
       String rxStr = LoRa.readString();
       strcpy(loraRx, rxStr.c_str());
      
+      
       //send data to rxHandleTask
       if(xQueueSend(stm.loraRxQueue, (void*)&loraRx, 0) == pdFALSE){
-
       }
+     
+      memset(loraRx, 0, LORA_RX_FRAME_SIZE);
     }
-
     xSemaphoreGive(stm.spiMutex);
 
     if(xQueueReceive(stm.loraTxQueue, (void*)&loraTx, 0) == pdTRUE){

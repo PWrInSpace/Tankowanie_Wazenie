@@ -4,6 +4,7 @@
 void dataTask(void *arg){
   char data[SD_FRAME_SIZE] = {};
   DataFrame dataFrame;
+  PWRData pwrData;
 
   //HX711
   Hx711 rckWeight(HX1_SDA, HX1_SCL);
@@ -28,8 +29,7 @@ void dataTask(void *arg){
   //
 
   // !!!//DEBUG
-  InternalI2C<PWRData, TxData> i2cCOM(&stm.i2c, COM_ADRESS);
-  PWRData pwrData;
+  //InternalI2C<PWRData, TxData> i2cCOM(&stm.i2c, COM_ADRESS);
 
   vTaskDelay(100 / portTICK_PERIOD_MS);
  
@@ -38,7 +38,7 @@ void dataTask(void *arg){
   while(1){
 
     xSemaphoreTake(stm.i2cMutex, pdTRUE);
-    i2cCOM.getData(&pwrData);
+    pwrCom.getData(&pwrData);
     xSemaphoreGive(stm.i2cMutex);
     //DEBUG
     // xSemaphoreTake(stm.i2cMutex, pdTRUE);
@@ -61,7 +61,7 @@ void dataTask(void *arg){
     createDataFrame(dataFrame, data);
 
     Serial.println(data);
-    xQueueSend(stm.loraTxQueue, (void*)data, 0);
+    // xQueueSend(stm.loraTxQueue, (void*)data, 0);
 
     xQueueSend(stm.sdQueue, (void*)data, 0);
     
