@@ -26,7 +26,7 @@
 
 //HX711
 #define HX1_SDA 15
-#define HX1_SCL 12
+#define HX1_SCL 2
 #define HX2_SDA 14
 #define HX2_SCL 12
 
