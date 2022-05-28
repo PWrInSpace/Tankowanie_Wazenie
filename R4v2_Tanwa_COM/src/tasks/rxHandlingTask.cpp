@@ -34,7 +34,8 @@ void rxHandlingTask(void* arg){
     if(xQueueReceive(stm.espNowRxQueue, (void*)&espNowCommand, 0) == pdTRUE){
       Serial.print("ESP NOW: ");
       Serial.println(espNowCommand.command);
-        //TODO parser
+      Serial.println(espNowCommand.commandValue);
+        //TODO parser zaplnik, kalibracja, state
 
       xSemaphoreTake(stm.i2cMutex, pdTRUE);
       pwrCom.sendCommand(&espNowCommand);
@@ -82,10 +83,15 @@ void rxHandlingTask(void* arg){
               xSemaphoreTake(stm.i2cMutex, pdTRUE);
               pwrCom.sendCommandMotor(MOTOR_FILL, atoi(frame_array[2].c_str()),atoi(frame_array[3].c_str()));
               xSemaphoreGive(stm.i2cMutex);
-              printf("MOTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOR\n");
+              printf("MOTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOR FILL\n");
               break;
             
             case DEPR:
+              xSemaphoreTake(stm.i2cMutex, pdTRUE);
+              pwrCom.sendCommandMotor(MOTOR_DEPR, atoi(frame_array[2].c_str()),atoi(frame_array[3].c_str()));
+              xSemaphoreGive(stm.i2cMutex);
+              printf("MOTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOR DEPR\n");
+              break;
             case ARMM:
             case STAT:
             default:
