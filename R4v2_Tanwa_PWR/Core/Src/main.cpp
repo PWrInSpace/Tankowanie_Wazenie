@@ -690,6 +690,7 @@ void TryReachExpectedState(std::tuple<Motor*,volatile ValveState>& Valve, uint16
 }
 
 void setNewExpectedStateOfValveOnVector(std::vector<std::tuple<Motor*,volatile ValveState>>& Valves, const uint8_t& ValveNumber, const ValveState& newExpectedValveState){
+	std::get<0>(Valves[ValveNumber])->SetState(ValveStateIDK);
 	Valves[ValveNumber] = std::tuple<Motor*,volatile ValveState>(std::get<0>(Valves[ValveNumber]), newExpectedValveState);
 }
 
@@ -777,7 +778,7 @@ void TaskCOM(void *argument)
 		if(xQueueReceive(rxQueue, &currentCommand, 100) == pdPASS){
 			handleRxStruct(currentCommand);
 		}
-		osDelay(200);
+		osDelay(100);
 	}
   /* USER CODE END 5 */
 }
@@ -797,7 +798,7 @@ void TaskValves(void *argument)
 		for(auto motor : MotorList){
 			TryReachExpectedState(motor, *(static_cast<uint16_t*>(argument)));
 		}
-		osDelay(100);
+		osDelay(50);
 	}
   /* USER CODE END TaskValves */
 }
@@ -827,18 +828,18 @@ void TaskMeasure(void *argument)
 			tick,
 			txStruct.lastDoneCommandNum,
 			{
-				std::get<0>(MotorList[0])->GetState(),
-				std::get<0>(MotorList[1])->GetState(),
-				std::get<0>(MotorList[2])->GetState(),
-				std::get<0>(MotorList[3])->GetState(),
-				std::get<0>(MotorList[4])->GetState()
+				(uint8_t)std::get<0>(MotorList[0])->GetState(),
+				(uint8_t)std::get<0>(MotorList[1])->GetState(),
+				(uint8_t)std::get<0>(MotorList[2])->GetState(),
+				(uint8_t)std::get<0>(MotorList[3])->GetState(),
+				(uint8_t)std::get<0>(MotorList[4])->GetState()
 			},
 			{
 				ADCData[0]/ADCDividerRatio[0], //M1 Analog
 				ADCData[1]/ADCDividerRatio[1], //M2 Analog
 				ADCData[2]/ADCDividerRatio[2], //M3 Analog
 				ADCData[3]/ADCDividerRatio[3], //M1 Analog
-				ADCData[4]/ADCDividerRatio[4], //Battery Voltage
+				(int16_t)(ADCData[4]/ADCDividerRatio[4]), //Battery Voltage
 				ADCData[5]/ADCDividerRatio[5], //Pressure1
 				ADCData[6]/ADCDividerRatio[6], //Pressure2
 				ADCData[7]/ADCDividerRatio[7] //M4 Analog
