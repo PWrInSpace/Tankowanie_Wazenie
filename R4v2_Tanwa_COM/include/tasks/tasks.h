@@ -15,6 +15,9 @@
 
 extern SoftwareToolsManagment stm;
 extern InternalI2C<PWRData, TxData> pwrCom;
+extern Hx711 rckWeight;
+extern Hx711 tankWeight;
+
 
 //pro_cpu
 void loraTask(void *arg);
