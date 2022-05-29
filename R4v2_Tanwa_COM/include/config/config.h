@@ -46,4 +46,15 @@ static String dataFileName= "/data_";
 
 #define COM_ADRESS 0x1A
 
+//ESPNOW COMMANDS
+
+#define IGNITER 60
+#define TARE_RCK 70
+#define CALIBRATE_RCK 71
+#define TARE_TANK 80
+#define CALIBRATE_TANK 81
+#define SOFT_ARM 90
+#define SOFT_DISARM 91
+#define SOFT_RESTART 99
+
 #endif

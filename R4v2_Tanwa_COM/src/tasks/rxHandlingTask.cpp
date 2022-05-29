@@ -9,7 +9,11 @@ enum FrameStates {
     TANK,
     DEPR,
     ARMM,
+    ARM,
+    DISARM,
     STAT,
+    HOLD,
+    ABRT,
     INVALID
 };
 
@@ -20,7 +24,11 @@ FrameStates resolveOption(string input) {
     if( input == "TANK" ) return TANK;
     if( input == "DEPR" ) return DEPR;
     if( input == "ARMM" ) return ARMM;
+    if( input == "ARM" ) return ARM;
+    if( input == "DISARM" ) return DISARM;
     if( input == "STAT" ) return STAT;
+    if( input == "HOLD" ) return HOLD;
+    if( input == "ABRT" ) return ABRT;
     //...
     return INVALID;
  }
@@ -37,9 +45,51 @@ void rxHandlingTask(void* arg){
       Serial.println(espNowCommand.commandValue);
         //TODO parser zaplnik, kalibracja, state
 
-      xSemaphoreTake(stm.i2cMutex, pdTRUE);
-      pwrCom.sendCommand(&espNowCommand);
-      xSemaphoreGive(stm.i2cMutex);
+      switch(espNowCommand.command){
+        case IGNITER:
+          if(espNowCommand.commandValue==1)
+            digitalWrite(FIRE1, HIGH);
+          if(espNowCommand.commandValue==2)
+            digitalWrite(FIRE2, HIGH);
+          break;
+
+        case TARE_RCK:
+          rckWeight.tare();
+          break;
+        
+        case CALIBRATE_RCK:
+          rckWeight.CustomCalibration(espNowCommand.commandValue,0);
+          break;
+
+        case TARE_TANK:
+          tankWeight.tare();
+          break;
+
+        case CALIBRATE_TANK:
+          tankWeight.CustomCalibration(espNowCommand.commandValue,0);
+          break;
+
+        case SOFT_ARM:
+          digitalWrite(ARM_PIN, HIGH);
+          break;
+
+        case SOFT_DISARM:
+          digitalWrite(ARM_PIN, LOW);
+          break;
+        
+        case SOFT_RESTART:
+        //RESET ESP COMMAND
+          ESP.restart();
+          break;
+
+        default:
+          xSemaphoreTake(stm.i2cMutex, pdTRUE);
+          pwrCom.sendCommand(&espNowCommand);
+          xSemaphoreGive(stm.i2cMutex);
+          break;
+        
+      }
+      
     }
 
     if(xQueueReceive(stm.loraRxQueue, (void*)&loraRx, 0) == pdTRUE){
@@ -72,13 +122,11 @@ void rxHandlingTask(void* arg){
 
           } while (loraRx_frame.compare("") != 0);
 
-        
-          
-
           frame_function = frame_array[1];
 
           switch(resolveOption(frame_function)){
             case PLSS://do wywalenia?
+
             case TANK:
               xSemaphoreTake(stm.i2cMutex, pdTRUE);
               pwrCom.sendCommandMotor(MOTOR_FILL, atoi(frame_array[2].c_str()),atoi(frame_array[3].c_str()));
@@ -92,8 +140,35 @@ void rxHandlingTask(void* arg){
               xSemaphoreGive(stm.i2cMutex);
               printf("MOTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOR DEPR\n");
               break;
+
             case ARMM:
+              xSemaphoreTake(stm.i2cMutex, pdTRUE);
+              pwrCom.sendCommandMotor(MOTOR_QUICK_DISCONNECT, atoi(frame_array[2].c_str()),atoi(frame_array[3].c_str()));
+              xSemaphoreGive(stm.i2cMutex);
+              printf("MOTOOOR QUICK DISCONNECT\n");
+              break;
+
+            case ARM:
+              digitalWrite(ARM_PIN, HIGH);
+              break;
+
+            case DISARM:
+              digitalWrite(ARM_PIN, LOW);
+              break;
+
             case STAT:
+              stateMachine.changeStateRequest(atoi(frame_array[3].c_str()));
+              printf("STATE CHANGE REQUEST");
+              break;
+              
+            case HOLD:
+              stateMachine.changeStateRequest(HOLD);
+              break;
+
+            case ABRT:
+              stateMachine.changeStateRequest(ABORT);
+              break;
+
             default:
               break;
           }

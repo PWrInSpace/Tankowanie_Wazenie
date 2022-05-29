@@ -15,18 +15,15 @@ void dataTask(void *arg){
   rckWeight.setCalFactor(BIT_TO_GRAM_RATIO_RCK);
   rckWeight.setTareOffset(OFFSET_RCK);
   rckWeight.setSamplesInUse(16);
-  rckWeight.setGain(64);
+  // rckWeight.setGain(64);
 
   tankWeight.begin();
   tankWeight.start(STABILIZNG_TIME, false); //start without tare
   tankWeight.setCalFactor(BIT_TO_GRAM_RATIO_TANK);
   tankWeight.setTareOffset(OFFSET_TANK);
   tankWeight.setSamplesInUse(16);
-  tankWeight.setGain(64);
-  //calibration after rest or on eg continuity with the use of CUSTOM function
-  // rckWeight.CustomCalibration(float known_mass, int delay_ms);
-  // tankWeight.CustomCalibration(float kown_mass, int delay_ms);
-  //
+  // tankWeight.setGain(64);
+
 
   // !!!//DEBUG
   //InternalI2C<PWRData, TxData> i2cCOM(&stm.i2c, COM_ADRESS);
@@ -85,6 +82,9 @@ void dataTask(void *arg){
     Serial.print("ADC VALUE 5: "); Serial.println(pwrData.adcValue[5]);
     Serial.print("ADC VALUE 6: "); Serial.println(pwrData.adcValue[6]);
     Serial.print("ADC VALUE 7: "); Serial.println(pwrData.adcValue[7]);
+    Serial.print("TANK WEIGHT: "); Serial.println(dataFrame.tankWeight);
+    Serial.print("ROCKET WEIGHT: "); Serial.println(dataFrame.rocketWeight);
+
   
     esp_now_send(adressObc, (uint8_t*) &dataFrame, sizeof(DataFrame));
     
