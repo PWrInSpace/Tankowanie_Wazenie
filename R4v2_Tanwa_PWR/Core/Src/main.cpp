@@ -723,6 +723,7 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){ //ToDo change to loop
+	HAL_Delay(50); //de-bounce
 	if(std::get<1>(MotorList[0]) == ValveStateOpen && GPIO_Pin == M1OpenLimitSwitchEXT_Pin){
 		std::get<0>(MotorList[0])->SetState(ValveStateOpen);
 	}
