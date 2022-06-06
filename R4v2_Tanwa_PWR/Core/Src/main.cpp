@@ -148,11 +148,11 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
   MX_ADC1_Init();
   MX_I2C2_Init();
   MX_TIM1_Init();
   MX_TIM3_Init();
+  MX_DMA_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 	HAL_Delay(50);
@@ -609,19 +609,19 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pins : M5CloseLimitSwitchEXT_Pin M5OpenLimitSwitchEXT_Pin */
   GPIO_InitStruct.Pin = M5CloseLimitSwitchEXT_Pin|M5OpenLimitSwitchEXT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : M4CloseLimitSwitch_Pin */
   GPIO_InitStruct.Pin = M4CloseLimitSwitch_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(M4CloseLimitSwitch_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : M4OpenLimitSwitchEXT_Pin M3CloseLimitSwitchEXT_Pin M3OpenLimitSwitchEXT_Pin M2CloseLimitSwitchEXT_Pin */
   GPIO_InitStruct.Pin = M4OpenLimitSwitchEXT_Pin|M3CloseLimitSwitchEXT_Pin|M3OpenLimitSwitchEXT_Pin|M2CloseLimitSwitchEXT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : M5Dir_Pin MotorEnable_Pin M4Dir_Pin M2Dir_Pin
@@ -649,7 +649,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pins : M2OpenLimitSwitchEXT_Pin M1OpenLimitSwitchEXT_Pin M1CloseLimitSwitchEXT_Pin */
   GPIO_InitStruct.Pin = M2OpenLimitSwitchEXT_Pin|M1OpenLimitSwitchEXT_Pin|M1CloseLimitSwitchEXT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
