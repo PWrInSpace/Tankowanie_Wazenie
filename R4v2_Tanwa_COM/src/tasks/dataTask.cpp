@@ -1,15 +1,18 @@
 #include "../include/tasks/tasks.h"
 
+
 //kod w tym tasku jest tylko do debugu 
 void dataTask(void *arg){
   char data[SD_FRAME_SIZE] = {};
+  int turnVar = 0;
   DataFrame dataFrame;
   PWRData pwrData;
+
 
   //HX711
   Hx711 rckWeight(HX1_SDA, HX1_SCL);
   Hx711 tankWeight(HX2_SDA, HX2_SCL);
-
+  MCP23017 expander = MCP23017(&stm.i2c,MCP_ADDRESS,RST);
   rckWeight.begin();
   rckWeight.start(STABILIZNG_TIME, false); //start without tare
   rckWeight.setCalFactor(BIT_TO_GRAM_RATIO_RCK);
@@ -30,7 +33,7 @@ void dataTask(void *arg){
 
   vTaskDelay(100 / portTICK_PERIOD_MS);
  
-  
+   
   
   while(1){
 
@@ -41,6 +44,14 @@ void dataTask(void *arg){
     // xSemaphoreTake(stm.i2cMutex, pdTRUE);
     // pwrCom.sendCommandMotor(10, 1000);
     // xSemaphoreGive(stm.i2cMutex);
+
+    expander.setPinPullUp(2,B,turnVar);
+
+    if(turnVar == 1)
+      turnVar = 0;
+    else
+      turnVar = 1;
+
     
     if(tankWeight.update() == 1){
       dataFrame.tankWeight = tankWeight.getData();
@@ -66,6 +77,7 @@ void dataTask(void *arg){
     // xSemaphoreTake(stm.i2cMutex, pdTRUE);
     // i2cCOM.getData(&pwrData);
     // xSemaphoreGive(stm.i2cMutex);
+    
     Serial.println("\n\n\nCOM DATA:");
     Serial.print("BLINK: "); Serial.println(pwrData.tick);
     Serial.print("LAST COMMAND: "); Serial.println(pwrData.lastDoneCommandNum);
@@ -78,7 +90,7 @@ void dataTask(void *arg){
     Serial.print("ADC VALUE 1: "); Serial.println(pwrData.adcValue[1]);
     Serial.print("ADC VALUE 2: "); Serial.println(pwrData.adcValue[2]);
     Serial.print("ADC VALUE 3: "); Serial.println(pwrData.adcValue[3]);
-    Serial.print("TANWA VOLTAGE 4: "); Serial.println(pwrData.adcValue[4]);
+    Serial.print("TANWA VOLTAGE 4: "); Serial.println(voltageMeasure(VOLTAGE_MEASURE));
     Serial.print("ADC VALUE 5: "); Serial.println(pwrData.adcValue[5]);
     Serial.print("ADC VALUE 6: "); Serial.println(pwrData.adcValue[6]);
     Serial.print("ADC VALUE 7: "); Serial.println(pwrData.adcValue[7]);
@@ -87,6 +99,8 @@ void dataTask(void *arg){
 
   
     esp_now_send(adressObc, (uint8_t*) &dataFrame, sizeof(DataFrame));
+
+
     
     vTaskDelay(1000 / portTICK_PERIOD_MS);
   }

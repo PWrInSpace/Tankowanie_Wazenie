@@ -17,9 +17,9 @@ enum FrameStates {
     TARE_TANK_,
     CALIBRATE_TANK_,
     SOFT_RESTART_,
-    STAT,
-    HOLD,
-    ABRT,
+    STAT_,
+    HOLD_,
+    ABRT_,
     INVALID
 };
 
@@ -37,9 +37,9 @@ FrameStates resolveOption(string input) {
     if( input == "TARE_TANK" ) return TARE_TANK_;
     if( input == "CALIBRATE_TANK" ) return CALIBRATE_TANK_;
     if( input == "SOFT_RESTART" ) return SOFT_RESTART_;
-    if( input == "STAT" ) return STAT;
-    if( input == "HOLD" ) return HOLD;
-    if( input == "ABRT" ) return ABRT;
+    if( input == "STAT" ) return STAT_;
+    if( input == "HOLD" ) return HOLD_;
+    if( input == "ABRT" ) return ABRT_;
     //...
     return INVALID;
  }
@@ -191,16 +191,16 @@ void rxHandlingTask(void* arg){
               ESP.restart();
               break;
 
-            case STAT:
+            case STAT_:
               StateMachine::changeStateRequest(static_cast<States>(atoi(frame_array[3].c_str())));
               printf("STATE CHANGE REQUEST");
               break;
               
-            case HOLD:
+            case HOLD_:
               StateMachine::changeStateRequest(States::HOLD);
               break;
 
-            case ABRT:
+            case ABRT_:
               StateMachine::changeStateRequest(States::ABORT);
               break;
 

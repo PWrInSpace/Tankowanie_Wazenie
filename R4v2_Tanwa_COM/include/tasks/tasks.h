@@ -12,9 +12,11 @@
 #include "../com/internalCommunication.h"
 #include "../structs/commStructs.h"
 #include "../com/now.h"
+#include <MCP23017.h>
 
 extern SoftwareToolsManagment stm;
 extern InternalI2C<PWRData, TxData> pwrCom;
+extern MCP23017 myMCP;
 extern Hx711 rckWeight;
 extern Hx711 tankWeight;
 

@@ -4,7 +4,9 @@
 float voltageMeasure(uint8_t batteryPin)
 {
     // reverseDividerVal = (R1 + R2) / R2 = 58/11
-    return (analogRead(batteryPin) / 4095) * 3.3 * (58/11);//TODO sprawdizc rezystor
+    // return (analogReadMilliVolts(batteryPin) / 4095) * 3300 * (58/11);//TODO sprawdizc rezystor
+    return (analogReadMilliVolts(batteryPin)*0.005528);
+    
 }
 
 

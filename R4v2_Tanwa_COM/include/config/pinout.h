@@ -54,8 +54,13 @@
 #define BOOT 0 //????????
 
 
+//expander
+#define MCP_ADDRESS 0x20 // (A2/A1/A0 = LOW)
+#define RESET_PIN 4 
+
+
 void beepBoop(int delay, int times);
-float voltageMeasure(uint8_t batteryPin, const float &reverseDividerVal);
+float voltageMeasure(uint8_t batteryPin);
 void pinInit();
 
 #endif

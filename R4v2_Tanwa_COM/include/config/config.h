@@ -57,4 +57,7 @@ static String dataFileName= "/data_";
 #define SOFT_DISARM 91
 #define SOFT_RESTART 99
 
+//Expander 
+#define MCP_ADDRESS 0x20 
+
 #endif
