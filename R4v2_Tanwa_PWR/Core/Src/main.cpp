@@ -699,15 +699,15 @@ void handleRxStruct(RxStruct rxStruct){
 	uint8_t CommandNumValve = (rxStruct.CommandNum / 10) % 10;
 	uint8_t CommandNumState = rxStruct.CommandNum % 10;
 	ventingTime = rxStruct.CommandArgument; //new venting time
-	if(CommandNumValve > 0 && CommandNumValve < 6){ //Motor1 - Motor5
+	if(rxStruct.CommandNum == 99){
+			HAL_NVIC_SystemReset();
+	}
+	else if(CommandNumValve > 0 && CommandNumValve < 6){ //Motor1 - Motor5
 		if(CommandNumState == 0 || CommandNumState == 1 || CommandNumState == 3){
 			setNewExpectedStateOfValveOnVector(MotorList, CommandNumValve - 1, (ValveState)CommandNumState);
 		}
 	}
-	if(rxStruct.CommandNum == 99){
-		HAL_NVIC_SystemReset();
-	}
-	//TODO add config setters
+
 }
 
 void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode){
@@ -723,7 +723,8 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){ //ToDo change to loop
-	HAL_Delay(50); //de-bounce
+	HAL_Delay(50);
+	//ToDO add real de-bounce // https://www.instructables.com/STM32CubeMX-Button-Debounce-With-Interrupt/
 	if(std::get<1>(MotorList[0]) == ValveStateOpen && GPIO_Pin == M1OpenLimitSwitchEXT_Pin){
 		std::get<0>(MotorList[0])->SetState(ValveStateOpen);
 	}
