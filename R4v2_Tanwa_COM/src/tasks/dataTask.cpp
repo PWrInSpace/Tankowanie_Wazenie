@@ -27,7 +27,9 @@ void dataTask(void *arg){
   tankWeight.setSamplesInUse(16);
   // tankWeight.setGain(64);
 
-
+  xSemaphoreTake(stm.i2cMutex, pdTRUE);
+  pwrCom.sendCommandMotor(3, 1, 100);
+  xSemaphoreGive(stm.i2cMutex);
   // !!!//DEBUG
   //InternalI2C<PWRData, TxData> i2cCOM(&stm.i2c, COM_ADRESS);
 
@@ -41,9 +43,10 @@ void dataTask(void *arg){
     pwrCom.getData(&pwrData);
     xSemaphoreGive(stm.i2cMutex);
     //DEBUG
-    // xSemaphoreTake(stm.i2cMutex, pdTRUE);
-    // pwrCom.sendCommandMotor(10, 1000);
-    // xSemaphoreGive(stm.i2cMutex);
+    xSemaphoreTake(stm.i2cMutex, pdTRUE);
+    if(pwrData.motorState[2]==1)
+      pwrCom.sendCommandMotor(3, 1, 100);
+    xSemaphoreGive(stm.i2cMutex);
 
     expander.setPinPullUp(2,B,turnVar);
 
