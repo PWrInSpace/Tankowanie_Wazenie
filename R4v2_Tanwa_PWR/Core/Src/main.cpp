@@ -34,8 +34,7 @@ struct TxStruct{
     bool tick;
     uint8_t lastDoneCommandNum;
     uint8_t MotorState[5];
-    int16_t adcValue[8];
-
+    //int16_t adcValue[8];
 };
 
 struct RxStruct{
@@ -43,7 +42,7 @@ struct RxStruct{
     uint16_t CommandArgument;
 };
 
-TxStruct txStruct = {0,0,{0,0,0,0,0},{0,0,0,0,0,0,0,0}};
+TxStruct txStruct = {0,0,{0,0,0,0,0}};
 RxStruct rxStruct = {0,0};
 const uint16_t rxBufferLenght = 10;
 auto rxQueue = xQueueCreate(rxBufferLenght, sizeof(rxStruct));
@@ -726,39 +725,39 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){ //ToDo change to loop
 	HAL_Delay(50);
 	//ToDO add real de-bounce // https://www.instructables.com/STM32CubeMX-Button-Debounce-With-Interrupt/
 	if(std::get<1>(MotorList[0]) == ValveStateOpen && GPIO_Pin == M1OpenLimitSwitchEXT_Pin){
-		//if (HAL_GPIO_ReadPin(GPIOB, M1OpenLimitSwitchEXT_Pin) == 0
+		if (HAL_GPIO_ReadPin(GPIOB, M1OpenLimitSwitchEXT_Pin) == 0)
 			std::get<0>(MotorList[0])->SetState(ValveStateOpen);
 	}
 	else if(std::get<1>(MotorList[0]) == ValveStateClose && GPIO_Pin == M1CloseLimitSwitchEXT_Pin){
-		//HAL_GPIO_ReadPin(GPIOB, M1CloseLimitSwitchEXT_Pin) == 0
+		if (HAL_GPIO_ReadPin(GPIOB, M1CloseLimitSwitchEXT_Pin) == 0)
 			std::get<0>(MotorList[0])->SetState(ValveStateClose);
 	}
 	else if(std::get<1>(MotorList[1]) == ValveStateOpen && GPIO_Pin == M2OpenLimitSwitchEXT_Pin){
-		//HAL_GPIO_ReadPin(GPIOB, M2OpenLimitSwitchEXT_Pin) == 0
+		if (HAL_GPIO_ReadPin(GPIOB, M2OpenLimitSwitchEXT_Pin) == 0)
 			std::get<0>(MotorList[1])->SetState(ValveStateOpen);
 	}
 	else if(std::get<1>(MotorList[1]) == ValveStateClose && GPIO_Pin == M2CloseLimitSwitchEXT_Pin){
-		//HAL_GPIO_ReadPin(GPIOA, M2CloseLimitSwitchEXT_Pin) == 0
+		if (HAL_GPIO_ReadPin(GPIOA, M2CloseLimitSwitchEXT_Pin) == 0)
 			std::get<0>(MotorList[1])->SetState(ValveStateClose);
 	}
 	else if(std::get<1>(MotorList[2]) == ValveStateOpen && GPIO_Pin == M3OpenLimitSwitchEXT_Pin){
-		//HAL_GPIO_ReadPin(GPIOA, M3OpenLimitSwitchEXT_Pin) == 0
+		if (HAL_GPIO_ReadPin(GPIOA, M3OpenLimitSwitchEXT_Pin) == 0)
 			std::get<0>(MotorList[2])->SetState(ValveStateOpen);
 	}
 	else if(std::get<1>(MotorList[2]) == ValveStateClose && GPIO_Pin == M3CloseLimitSwitchEXT_Pin){
-		//HAL_GPIO_ReadPin(GPIOA, M3CloseLimitSwitchEXT_Pin) == 0
+		if (HAL_GPIO_ReadPin(GPIOA, M3CloseLimitSwitchEXT_Pin) == 0)
 			std::get<0>(MotorList[2])->SetState(ValveStateClose);
 	}
 	else if(std::get<1>(MotorList[3]) == ValveStateOpen && GPIO_Pin == M4OpenLimitSwitchEXT_Pin){
-		//HAL_GPIO_ReadPin(GPIOC, M4OpenLimitSwitchEXT_Pin) == 0
+		if (HAL_GPIO_ReadPin(GPIOC, M4OpenLimitSwitchEXT_Pin) == 0)
 			std::get<0>(MotorList[3])->SetState(ValveStateOpen);
 	}
 	else if(std::get<1>(MotorList[4]) == ValveStateOpen && GPIO_Pin == M5OpenLimitSwitchEXT_Pin){
-		//HAL_GPIO_ReadPin(GPIOC, M5OpenLimitSwitchEXT_Pin) == 0
+		if (HAL_GPIO_ReadPin(GPIOC, M5OpenLimitSwitchEXT_Pin) == 0)
 			std::get<0>(MotorList[4])->SetState(ValveStateOpen);
 	}
 	else if(std::get<1>(MotorList[4]) == ValveStateClose && GPIO_Pin == M5CloseLimitSwitchEXT_Pin){
-		//HAL_GPIO_ReadPin(GPIOC, M5CloseLimitSwitchEXT_Pin) == 0
+		if (HAL_GPIO_ReadPin(GPIOC, M5CloseLimitSwitchEXT_Pin) == 0)
 			std::get<0>(MotorList[4])->SetState(ValveStateClose);
 	}
 }
@@ -844,7 +843,8 @@ void TaskMeasure(void *argument)
 				(uint8_t)std::get<0>(MotorList[2])->GetState(),
 				(uint8_t)std::get<0>(MotorList[3])->GetState(),
 				(uint8_t)std::get<0>(MotorList[4])->GetState()
-			},
+			}
+			/*,
 			{
 				ADCData[0]/ADCDividerRatio[0], //M1 Analog
 				ADCData[1]/ADCDividerRatio[1], //M2 Analog
@@ -854,7 +854,7 @@ void TaskMeasure(void *argument)
 				ADCData[5]/ADCDividerRatio[5], //Pressure1
 				ADCData[6]/ADCDividerRatio[6], //Pressure2
 				ADCData[7]/ADCDividerRatio[7] //M4 Analog
-			}
+			}*/
 		};
 		osDelay(500);
 	}
