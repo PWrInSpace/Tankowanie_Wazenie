@@ -30,6 +30,7 @@ void setup() {
   stm.i2c.begin(I2C_SDA, I2C_SCL, 100E3);
   stm.spi.begin();
 
+
   if(!expander.Init())
   Serial.println("Not connected!");
   else
