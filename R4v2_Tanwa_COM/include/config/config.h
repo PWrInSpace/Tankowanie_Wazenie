@@ -35,7 +35,7 @@ static String dataFileName= "/data_";
 #define MOTOR_QUICK_DISCONNECT 0x03
 
 
-#define LORA_FREQ_MHZ 868
+#define LORA_FREQ_MHZ 927    //927
 
 //WEIGHTING
 #define BIT_TO_GRAM_RATIO_RCK 1
@@ -44,7 +44,7 @@ static String dataFileName= "/data_";
 #define OFFSET_TANK 1
 #define STABILIZNG_TIME 4000
 
-#define COM_ADRESS 0x1A
+#define COM_ADRESS 0x1A //26 dec
 
 //ESPNOW COMMANDS
 

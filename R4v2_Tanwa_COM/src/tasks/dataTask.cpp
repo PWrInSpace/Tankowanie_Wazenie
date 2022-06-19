@@ -1,13 +1,13 @@
 #include "../include/tasks/tasks.h"
 
-
+char data[SD_FRAME_SIZE] = {};
 //kod w tym tasku jest tylko do debugu 
 void dataTask(void *arg){
-  char data[SD_FRAME_SIZE] = {};
+  
   int turnVar = 0;
   DataFrame dataFrame;
   PWRData pwrData;
-
+  int iter = 0;
 
   //HX711
   Hx711 rckWeight(HX1_SDA, HX1_SCL);
@@ -27,9 +27,7 @@ void dataTask(void *arg){
   tankWeight.setSamplesInUse(16);
   // tankWeight.setGain(64);
 
-  xSemaphoreTake(stm.i2cMutex, pdTRUE);
-  pwrCom.sendCommandMotor(3, 1, 100);
-  xSemaphoreGive(stm.i2cMutex);
+  tankWeight.CustomCalibration(3500,0);
   // !!!//DEBUG
   //InternalI2C<PWRData, TxData> i2cCOM(&stm.i2c, COM_ADRESS);
 
@@ -43,10 +41,9 @@ void dataTask(void *arg){
     pwrCom.getData(&pwrData);
     xSemaphoreGive(stm.i2cMutex);
     //DEBUG
-    xSemaphoreTake(stm.i2cMutex, pdTRUE);
-    if(pwrData.motorState[2]==1)
-      pwrCom.sendCommandMotor(3, 1, 100);
-    xSemaphoreGive(stm.i2cMutex);
+    // xSemaphoreTake(stm.i2cMutex, pdTRUE);
+    // pwrCom.sendCommandMotor(2, iter, 1000);
+    // xSemaphoreGive(stm.i2cMutex);
 
     expander.setPinPullUp(2,B,turnVar);
 
@@ -66,7 +63,7 @@ void dataTask(void *arg){
       dataFrame.rocketWeightRaw = (uint32_t) rckWeight.getRawData();
     }
 
-    dataFrame.vbat = pwrData.adcValue[4];
+    dataFrame.vbat = voltageMeasure(VOLTAGE_MEASURE);
     memcpy(dataFrame.motorState, pwrData.motorState, sizeof(uint8_t[5]));
 
     createDataFrame(dataFrame, data);
@@ -74,7 +71,7 @@ void dataTask(void *arg){
     Serial.println(data);
     // xQueueSend(stm.loraTxQueue, (void*)data, 0);
 
-    xQueueSend(stm.sdQueue, (void*)data, 0);
+    xQueueSend(stm.sdQueue, (void*)data, 0); 
     
     //DEBUG(data);
     // xSemaphoreTake(stm.i2cMutex, pdTRUE);
@@ -102,9 +99,11 @@ void dataTask(void *arg){
 
   
     esp_now_send(adressObc, (uint8_t*) &dataFrame, sizeof(DataFrame));
+  
+    iter++;
 
-
-    
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    if (iter == 2)
+      iter = 0;
+    vTaskDelay(100 / portTICK_PERIOD_MS);
   }
 }

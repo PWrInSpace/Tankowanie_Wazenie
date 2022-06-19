@@ -30,25 +30,29 @@ void setup() {
   stm.i2c.begin(I2C_SDA, I2C_SCL, 100E3);
   stm.spi.begin();
 
-  if(!expander.Init())
-  Serial.println("Not connected!");
+  if(!expander.Init()){
+
+    Serial.println("Not connected!");
+    expander.setPinPullUp(5,A,OFF); //all termopary down
+    expander.setPinPullUp(6,A,OFF);
+    expander.setPinPullUp(7,A,OFF);
+
+    expander.setPinPullUp(4,A,ON); // STM RST OFF
+    expander.setPinMode(0,B,INPUT); //input for abort button
+
+    expander.setPinPullUp(1,B,OFF);// all leds on
+    expander.setPinPullUp(2,B,OFF);
+    expander.setPinPullUp(3,B,OFF);
+    expander.setPinPullUp(4,B,OFF);
+    expander.setPinPullUp(5,B,OFF);
+    expander.setPinPullUp(6,B,OFF);
+    expander.setPinPullUp(7,B,OFF);
+  }
+
   else
     Serial.println("CONNECTED");
 
-  expander.setPinPullUp(5,A,OFF); //all termopary down
-  expander.setPinPullUp(6,A,OFF);
-  expander.setPinPullUp(7,A,OFF);
 
-  expander.setPinPullUp(4,A,ON); // STM RST OFF
-  expander.setPinMode(0,B,INPUT); //input for abort button
-
-  expander.setPinPullUp(1,B,OFF);// all leds on
-  expander.setPinPullUp(2,B,OFF);
-  expander.setPinPullUp(3,B,OFF);
-  expander.setPinPullUp(4,B,OFF);
-  expander.setPinPullUp(5,B,OFF);
-  expander.setPinPullUp(6,B,OFF);
-  expander.setPinPullUp(7,B,OFF);
 
 
   nowInit();

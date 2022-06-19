@@ -4,6 +4,8 @@
 
 using namespace std;
 
+extern char data[SD_FRAME_SIZE];
+
 enum FrameStates {
     PLSS_,
     TANK_,
@@ -59,6 +61,13 @@ void rxHandlingTask(void* arg){
         //TODO parser zaplnik, kalibracja, state
 
       switch(espNowCommand.command){
+        case PLSS_:
+          if(xQueueSend(stm.loraTxQueue, (void*)data, 0) == pdTRUE){
+            Serial.print("ESP NOW SEND VIA LORA: ");
+            // Serial.println(data);
+          }
+          break;
+
         case IGNITER:
           digitalWrite(FIRE1, HIGH);
           digitalWrite(FIRE2, HIGH);
@@ -91,6 +100,8 @@ void rxHandlingTask(void* arg){
         case SOFT_RESTART:
           //RESET ESP COMMAND
           ESP.restart();
+          //RESET STM
+          pwrCom.sendCommandMotor(0, RESET_COMMAND);
           break;
 
         default:
@@ -135,6 +146,13 @@ void rxHandlingTask(void* arg){
           frame_function = frame_array[1];
 
           switch(resolveOption(frame_function)){
+
+            case PLSS_:
+              if(xQueueSend(stm.loraTxQueue, (void*)data, 0) == pdTRUE){
+                Serial.print("ESP NOW SEND VIA LORA: ");
+                // Serial.println(data);//debug
+              }
+              break;
 
             case TANK_:
               xSemaphoreTake(stm.i2cMutex, pdTRUE);
@@ -189,6 +207,8 @@ void rxHandlingTask(void* arg){
             case SOFT_RESTART_:
               //RESET ESP COMMAND
               ESP.restart();
+                //RESET STM
+              pwrCom.sendCommandMotor(0, RESET_COMMAND);
               break;
 
             case STAT_:

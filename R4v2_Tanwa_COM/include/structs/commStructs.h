@@ -23,7 +23,7 @@ struct PWRData{
   bool tick = {};
   uint8_t lastDoneCommandNum = {};
   uint8_t motorState[5] = {};
-  int16_t adcValue[8] = {}; //tanwa voltage adc[4]
+  // int16_t adcValue[8] = {}; //tanwa voltage adc[4]
  
 };
 
@@ -40,13 +40,13 @@ struct Options{
 };
 
 struct DataFrame{
-  States tanWaState;
+  uint8_t tanWaState;
   bool tankHeating : 1;
   bool abortButton : 1;
   bool armButton : 1;
   bool igniterContinouity[2];
   float vbat;
-  ValveState motorState[5];
+  uint8_t motorState[5];
   float rocketWeight;
   float tankWeight; 
   uint32_t rocketWeightRaw;
