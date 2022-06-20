@@ -1,5 +1,8 @@
 #include "../include/tasks/tasks.h"
 
+ extern Hx711 rckWeight;
+ extern Hx711 tankWeight;
+
 char data[SD_FRAME_SIZE] = {};
 //kod w tym tasku jest tylko do debugu 
 void dataTask(void *arg){
@@ -10,8 +13,7 @@ void dataTask(void *arg){
   int iter = 0;
 
   //HX711
-  Hx711 rckWeight(HX1_SDA, HX1_SCL);
-  Hx711 tankWeight(HX2_SDA, HX2_SCL);
+
   MCP23017 expander = MCP23017(&stm.i2c,MCP_ADDRESS,RST);
   rckWeight.begin();
   rckWeight.start(STABILIZNG_TIME, true); //start without tare
@@ -63,7 +65,7 @@ void dataTask(void *arg){
       dataFrame.tankWeightRaw = (uint32_t) tankWeight.getRawData();
     }
 
-    rckWeight.refreshDataSet();
+    //rckWeight.refreshDataSet();
     if(rckWeight.update() == 1){
       dataFrame.rocketWeight = rckWeight.getData();
       dataFrame.rocketWeightRaw = (uint32_t) rckWeight.getRawData();

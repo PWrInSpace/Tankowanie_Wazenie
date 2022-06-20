@@ -1,6 +1,6 @@
 #include "../include/components/hx711.h"
 
-float Hx711::CustomCalibration(float known_mass, int delay_ms)
+float Hx711::CustomCalibration(float known_mass)
 {
 	//Serial.println("WAIT FOR TARE");
 
@@ -16,11 +16,10 @@ float Hx711::CustomCalibration(float known_mass, int delay_ms)
 	setCalFactor(((float)(finalValue-initialValue)/known_mass));*/
 
   //tare();
-  Serial.println("param");
-  Serial.println(getData());
-	Serial.println(getCalFactor());
 
-  getNewCalibration(3500);
+
+
+  getNewCalibration(known_mass);
 
 
 	return getCalFactor();

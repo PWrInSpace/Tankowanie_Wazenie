@@ -78,7 +78,7 @@ void rxHandlingTask(void* arg){
           break;
         
         case CALIBRATE_RCK:
-          rckWeight.CustomCalibration(espNowCommand.commandValue,0);
+          rckWeight.CustomCalibration(espNowCommand.commandValue);
           break;
 
         case TARE_TANK:
@@ -86,7 +86,7 @@ void rxHandlingTask(void* arg){
           break;
 
         case CALIBRATE_TANK:
-          tankWeight.CustomCalibration(espNowCommand.commandValue,0);
+          tankWeight.CustomCalibration(espNowCommand.commandValue);
           break;
 
         case SOFT_ARM:
@@ -194,7 +194,7 @@ void rxHandlingTask(void* arg){
               break;
             
             case CALIBRATE_RCK_:
-              rckWeight.CustomCalibration(atoi(frame_array[3].c_str()),0);
+              rckWeight.CustomCalibration(atoi(frame_array[2].c_str()));
               break;
 
             case TARE_TANK_:
@@ -203,7 +203,7 @@ void rxHandlingTask(void* arg){
 
             case CALIBRATE_TANK_:
               // tankWeight.CustomCalibration(atoi(frame_array[3].c_str()),0);
-              Serial.print("CALIBRATION = "); Serial.println(tankWeight.CustomCalibration(atoi(frame_array[3].c_str()),0));
+              tankWeight.CustomCalibration(atoi(frame_array[2].c_str()));
               break;
 
             case SOFT_RESTART_:

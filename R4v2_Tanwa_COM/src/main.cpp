@@ -33,7 +33,7 @@ void setup() {
   if(!expander.Init())
     Serial.println("Not connected!");
   else{
-    Serial.println("CONNECTED");
+     Serial.println("CONNECTED");
     expander.setPinPullUp(5,A,OFF); //all termopary down
     expander.setPinPullUp(6,A,OFF);
     expander.setPinPullUp(7,A,OFF);
