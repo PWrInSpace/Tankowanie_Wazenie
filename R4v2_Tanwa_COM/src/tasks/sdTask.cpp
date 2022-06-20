@@ -4,7 +4,7 @@ void sdTask(void *arg){
   //TanWaControl * tc = static_cast<TanWaControl*>(arg);
   char data[SD_FRAME_SIZE] = {};
   String dataPath = dataFileName;
-  uint8_t sd_i = 0;
+  uint32_t sd_i = 0;
   
   vTaskDelay(100 / portTICK_RATE_MS);
 

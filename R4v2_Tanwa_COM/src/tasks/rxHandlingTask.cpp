@@ -115,6 +115,7 @@ void rxHandlingTask(void* arg){
     //LORA 
     if(xQueueReceive(stm.loraRxQueue, (void*)&loraRx, 0) == pdTRUE){
       Serial.print("LORA: ");
+      
       Serial.println(loraRx);
     
       //TODO parser
@@ -201,7 +202,8 @@ void rxHandlingTask(void* arg){
               break;
 
             case CALIBRATE_TANK_:
-              tankWeight.CustomCalibration(atoi(frame_array[3].c_str()),0);
+              // tankWeight.CustomCalibration(atoi(frame_array[3].c_str()),0);
+              Serial.print("CALIBRATION = "); Serial.println(tankWeight.CustomCalibration(atoi(frame_array[3].c_str()),0));
               break;
 
             case SOFT_RESTART_:

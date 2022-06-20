@@ -14,27 +14,32 @@ void dataTask(void *arg){
   Hx711 tankWeight(HX2_SDA, HX2_SCL);
   MCP23017 expander = MCP23017(&stm.i2c,MCP_ADDRESS,RST);
   rckWeight.begin();
-  rckWeight.start(STABILIZNG_TIME, false); //start without tare
-  rckWeight.setCalFactor(BIT_TO_GRAM_RATIO_RCK);
-  rckWeight.setTareOffset(OFFSET_RCK);
-  rckWeight.setSamplesInUse(16);
+  rckWeight.start(STABILIZNG_TIME, true); //start without tare
+  // rckWeight.setCalFactor(BIT_TO_GRAM_RATIO_RCK);
+  // rckWeight.setTareOffset(OFFSET_RCK);
+  rckWeight.setSamplesInUse(1);
   // rckWeight.setGain(64);
 
   tankWeight.begin();
-  tankWeight.start(STABILIZNG_TIME, false); //start without tare
-  tankWeight.setCalFactor(BIT_TO_GRAM_RATIO_TANK);
-  tankWeight.setTareOffset(OFFSET_TANK);
-  tankWeight.setSamplesInUse(16);
+  tankWeight.start(STABILIZNG_TIME, true); //start without tare
+  // tankWeight.setCalFactor(BIT_TO_GRAM_RATIO_TANK);
+  // tankWeight.setTareOffset(OFFSET_TANK);
+  tankWeight.setSamplesInUse(1);
   // tankWeight.setGain(64);
+  while (tankWeight.getTareTimeoutFlag() && rckWeight.getTareTimeoutFlag())
+  {
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+  }
 
-  tankWeight.CustomCalibration(3500,0);
+// tankWeight.tare();
+// rckWeight.tare();
+
   // !!!//DEBUG
   //InternalI2C<PWRData, TxData> i2cCOM(&stm.i2c, COM_ADRESS);
 
   vTaskDelay(100 / portTICK_PERIOD_MS);
  
    
-  
   while(1){
 
     xSemaphoreTake(stm.i2cMutex, pdTRUE);
@@ -52,12 +57,13 @@ void dataTask(void *arg){
     else
       turnVar = 1;
 
-    
+    // tankWeight.refreshDataSet();
     if(tankWeight.update() == 1){
       dataFrame.tankWeight = tankWeight.getData();
       dataFrame.tankWeightRaw = (uint32_t) tankWeight.getRawData();
     }
 
+    rckWeight.refreshDataSet();
     if(rckWeight.update() == 1){
       dataFrame.rocketWeight = rckWeight.getData();
       dataFrame.rocketWeightRaw = (uint32_t) rckWeight.getRawData();
@@ -104,6 +110,6 @@ void dataTask(void *arg){
 
     if (iter == 2)
       iter = 0;
-    vTaskDelay(100 / portTICK_PERIOD_MS);
+    vTaskDelay(500/ portTICK_PERIOD_MS);
   }
 }

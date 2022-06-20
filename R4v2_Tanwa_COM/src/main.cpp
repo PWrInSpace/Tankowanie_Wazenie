@@ -30,9 +30,10 @@ void setup() {
   stm.i2c.begin(I2C_SDA, I2C_SCL, 100E3);
   stm.spi.begin();
 
-  if(!expander.Init()){
-
+  if(!expander.Init())
     Serial.println("Not connected!");
+  else{
+    Serial.println("CONNECTED");
     expander.setPinPullUp(5,A,OFF); //all termopary down
     expander.setPinPullUp(6,A,OFF);
     expander.setPinPullUp(7,A,OFF);
@@ -48,9 +49,7 @@ void setup() {
     expander.setPinPullUp(6,B,OFF);
     expander.setPinPullUp(7,B,OFF);
   }
-
-  else
-    Serial.println("CONNECTED");
+ 
 
 
 

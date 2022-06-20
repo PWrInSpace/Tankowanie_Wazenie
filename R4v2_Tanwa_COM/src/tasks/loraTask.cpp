@@ -31,7 +31,6 @@ void loraTask(void *arg){
   vTaskDelay(100 / portTICK_PERIOD_MS);
 
   while(1){
-    
     xSemaphoreTake(stm.spiMutex, portMAX_DELAY);
     LoRa.parsePacket();
     if (LoRa.available()) {
@@ -56,7 +55,6 @@ void loraTask(void *arg){
 
       xSemaphoreGive(stm.spiMutex);
     }
-
-    vTaskDelay(50 / portTICK_PERIOD_MS);
+    vTaskDelay(100 / portTICK_PERIOD_MS);
   }
 }
