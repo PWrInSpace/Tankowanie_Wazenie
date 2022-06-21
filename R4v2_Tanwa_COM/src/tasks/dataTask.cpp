@@ -1,5 +1,6 @@
 #include "../include/tasks/tasks.h"
 
+
  extern Hx711 rckWeight;
  extern Hx711 tankWeight;
 
@@ -10,7 +11,7 @@ void dataTask(void *arg){
   int turnVar = 0;
   DataFrame dataFrame;
   PWRData pwrData;
-  int iter = 0;
+  // int iter = 2;
 
   //HX711
 
@@ -49,7 +50,8 @@ void dataTask(void *arg){
     xSemaphoreGive(stm.i2cMutex);
     //DEBUG
     // xSemaphoreTake(stm.i2cMutex, pdTRUE);
-    // pwrCom.sendCommandMotor(2, iter, 1000);
+
+    // pwrCom.sendCommandMotor(iter / 2, iter % 2, 1000);
     // xSemaphoreGive(stm.i2cMutex);
 
     expander.setPinPullUp(2,B,turnVar);
@@ -73,6 +75,12 @@ void dataTask(void *arg){
 
     dataFrame.vbat = voltageMeasure(VOLTAGE_MEASURE);
     memcpy(dataFrame.motorState, pwrData.motorState, sizeof(uint8_t[5]));
+
+    dataFrame.tanWaState = StateMachine::getCurrentState();
+    
+    dataFrame.igniterContinouity[0] = digitalRead(IGN_TEST_CON_1);
+    dataFrame.igniterContinouity[1] = digitalRead(IGN_TEST_CON_2);
+
 
     createDataFrame(dataFrame, data);
 
@@ -108,10 +116,9 @@ void dataTask(void *arg){
   
     esp_now_send(adressObc, (uint8_t*) &dataFrame, sizeof(DataFrame));
   
-    iter++;
-
-    if (iter == 2)
-      iter = 0;
-    vTaskDelay(500/ portTICK_PERIOD_MS);
+    // iter++;
+    // if (iter == 8)
+    //   iter = 2;
+    vTaskDelay(200 / portTICK_PERIOD_MS);
   }
 }
