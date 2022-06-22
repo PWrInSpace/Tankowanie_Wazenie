@@ -3,7 +3,7 @@
 #include <iostream>
 
 using namespace std;
-
+extern MCP23017 expander;
 extern char data[SD_FRAME_SIZE];
 
 enum FrameStates {
@@ -18,7 +18,8 @@ enum FrameStates {
     CALIBRATE_RCK_,
     TARE_TANK_,
     CALIBRATE_TANK_,
-    SOFT_RESTART_,
+    SOFT_RESTART_ESP_,
+    SOFT_RESTART_STM_,
     STAT_,
     HOLD_,
     ABRT_,
@@ -38,7 +39,8 @@ FrameStates resolveOption(string input) {
     if( input == "CALIBRATE_RCK" ) return CALIBRATE_RCK_;
     if( input == "TARE_TANK" ) return TARE_TANK_;
     if( input == "CALIBRATE_TANK" ) return CALIBRATE_TANK_;
-    if( input == "SOFT_RESTART" ) return SOFT_RESTART_;
+    if( input == "SOFT_RESTART_ESP" ) return SOFT_RESTART_ESP_;
+    if( input == "SOFT_RESTART_STM" ) return SOFT_RESTART_STM_;
     if( input == "STAT" ) return STAT_;
     if( input == "HOLD" ) return HOLD_;
     if( input == "ABRT" ) return ABRT_;
@@ -101,7 +103,7 @@ void rxHandlingTask(void* arg){
           //RESET ESP COMMAND
           ESP.restart();
           //RESET STM
-          pwrCom.sendCommandMotor(0, RESET_COMMAND);
+          // pwrCom.sendCommandMotor(0, RESET_COMMAND);
           break;
 
         default:
@@ -206,10 +208,13 @@ void rxHandlingTask(void* arg){
               tankWeight.CustomCalibration(atoi(frame_array[2].c_str()));
               break;
 
-            case SOFT_RESTART_:
+            case SOFT_RESTART_ESP_:
               //RESET ESP COMMAND
               ESP.restart();
-                //RESET STM
+              break;
+
+            case SOFT_RESTART_STM_:
+              //RESET STM
               pwrCom.sendCommandMotor(0, RESET_COMMAND);
               break;
 

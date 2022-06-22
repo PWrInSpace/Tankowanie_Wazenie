@@ -1,9 +1,9 @@
 #include "../include/tasks/tasks.h"
 
 
- extern Hx711 rckWeight;
- extern Hx711 tankWeight;
-
+extern Hx711 rckWeight;
+extern Hx711 tankWeight;
+extern MCP23017 expander;
 char data[SD_FRAME_SIZE] = {};
 //kod w tym tasku jest tylko do debugu 
 void dataTask(void *arg){
@@ -11,31 +11,27 @@ void dataTask(void *arg){
   int turnVar = 0;
   DataFrame dataFrame;
   PWRData pwrData;
-  // int iter = 2;
+  expander.setPinMode(0,B,INPUT); //input for abort button
 
   //HX711
 
-  MCP23017 expander = MCP23017(&stm.i2c,MCP_ADDRESS,RST);
   rckWeight.begin();
   rckWeight.start(STABILIZNG_TIME, true); //start without tare
   // rckWeight.setCalFactor(BIT_TO_GRAM_RATIO_RCK);
   // rckWeight.setTareOffset(OFFSET_RCK);
   rckWeight.setSamplesInUse(1);
-  // rckWeight.setGain(64);
 
   tankWeight.begin();
   tankWeight.start(STABILIZNG_TIME, true); //start without tare
   // tankWeight.setCalFactor(BIT_TO_GRAM_RATIO_TANK);
   // tankWeight.setTareOffset(OFFSET_TANK);
   tankWeight.setSamplesInUse(1);
-  // tankWeight.setGain(64);
   while (tankWeight.getTareTimeoutFlag() && rckWeight.getTareTimeoutFlag())
   {
     vTaskDelay(1000 / portTICK_PERIOD_MS);
   }
 
-// tankWeight.tare();
-// rckWeight.tare();
+
 
   // !!!//DEBUG
   //InternalI2C<PWRData, TxData> i2cCOM(&stm.i2c, COM_ADRESS);
@@ -44,30 +40,35 @@ void dataTask(void *arg){
  
    
   while(1){
+   
 
     xSemaphoreTake(stm.i2cMutex, pdTRUE);
     pwrCom.getData(&pwrData);
     xSemaphoreGive(stm.i2cMutex);
-    //DEBUG
-    // xSemaphoreTake(stm.i2cMutex, pdTRUE);
 
-    // pwrCom.sendCommandMotor(iter / 2, iter % 2, 1000);
-    // xSemaphoreGive(stm.i2cMutex);
-
+    expander.setPinPullUp(6,B,OFF);
     expander.setPinPullUp(2,B,turnVar);
+
+
+
+    // vTaskDelay(5000 / portTICK_PERIOD_MS);
+    // expander.setPinPullUp(4,A,OFF);
+    // vTaskDelay(20 / portTICK_PERIOD_MS);
+    // expander.setPinPullUp(4,A,ON);
+
+
+
 
     if(turnVar == 1)
       turnVar = 0;
     else
       turnVar = 1;
 
-    // tankWeight.refreshDataSet();
     if(tankWeight.update() == 1){
       dataFrame.tankWeight = tankWeight.getData();
       dataFrame.tankWeightRaw = (uint32_t) tankWeight.getRawData();
     }
 
-    //rckWeight.refreshDataSet();
     if(rckWeight.update() == 1){
       dataFrame.rocketWeight = rckWeight.getData();
       dataFrame.rocketWeightRaw = (uint32_t) rckWeight.getRawData();
@@ -78,8 +79,8 @@ void dataTask(void *arg){
 
     dataFrame.tanWaState = StateMachine::getCurrentState();
     
-    dataFrame.igniterContinouity[0] = digitalRead(IGN_TEST_CON_1);
-    dataFrame.igniterContinouity[1] = digitalRead(IGN_TEST_CON_2);
+    dataFrame.igniterContinouity[0] = analogRead(IGN_TEST_CON_1) > 1000;
+    dataFrame.igniterContinouity[1] = analogRead(IGN_TEST_CON_2) > 1000;
 
 
     createDataFrame(dataFrame, data);
@@ -112,13 +113,12 @@ void dataTask(void *arg){
     // Serial.print("ADC VALUE 7: "); Serial.println(pwrData.adcValue[7]);
     Serial.print("TANK WEIGHT: "); Serial.println(dataFrame.tankWeight);
     Serial.print("ROCKET WEIGHT: "); Serial.println(dataFrame.rocketWeight);
+    Serial.print("continuity 1 "); Serial.println(dataFrame.igniterContinouity[0]);
+    Serial.print("continuity 2 "); Serial.println(dataFrame.igniterContinouity[1]);
+
 
   
     esp_now_send(adressObc, (uint8_t*) &dataFrame, sizeof(DataFrame));
-  
-    // iter++;
-    // if (iter == 8)
-    //   iter = 2;
-    vTaskDelay(200 / portTICK_PERIOD_MS);
+    vTaskDelay(500 / portTICK_PERIOD_MS);
   }
 }

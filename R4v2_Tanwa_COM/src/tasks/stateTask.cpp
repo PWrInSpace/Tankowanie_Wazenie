@@ -1,6 +1,6 @@
 #include "../include/tasks/tasks.h"
 
-
+extern MCP23017 expander;
 
 void stateTask(void *arg){
   StateMachine stateMachine(stm.stateTask);
@@ -14,11 +14,8 @@ void stateTask(void *arg){
           break;
            
         case FUELING:
-          if((digitalRead(IGN_TEST_CON_1)==HIGH ||
-           digitalRead(IGN_TEST_CON_2)==HIGH) &&
-           digitalRead(ARM_PIN)==LOW &&
-           digitalRead(FIRE1)==LOW &&
-           digitalRead(FIRE2)==LOW )
+          if(( analogRead(IGN_TEST_CON_1) > 1000 ||
+            analogRead(IGN_TEST_CON_2) > 1000))
            
             stateMachine.changeStateConfirmation();
           else
@@ -26,11 +23,8 @@ void stateTask(void *arg){
           break;
 
         case ARMED:
-          if((digitalRead(IGN_TEST_CON_1)==HIGH ||
-           digitalRead(IGN_TEST_CON_2)==HIGH) &&
-           digitalRead(ARM_PIN)==LOW &&
-           digitalRead(FIRE1)==LOW &&
-           digitalRead(FIRE2)==LOW )
+          if(( analogRead(IGN_TEST_CON_1) > 1000 ||
+            analogRead(IGN_TEST_CON_2) > 1000))
 
             stateMachine.changeStateConfirmation();
           else
@@ -38,22 +32,16 @@ void stateTask(void *arg){
           break;
 
         case RDY_TO_LAUNCH:
-          if((digitalRead(IGN_TEST_CON_1)==HIGH ||
-           digitalRead(IGN_TEST_CON_2)==HIGH) &&
-           digitalRead(ARM_PIN)==HIGH &&
-           digitalRead(FIRE1)==LOW &&
-           digitalRead(FIRE2)==LOW)
+          if(( analogRead(IGN_TEST_CON_1) > 1000 ||
+            analogRead(IGN_TEST_CON_2) > 1000))
             stateMachine.changeStateConfirmation();
           else
             stateMachine.changeStateRejection();
           break;
 
         case COUNTDOWN:
-           if((digitalRead(IGN_TEST_CON_1)==HIGH ||
-           digitalRead(IGN_TEST_CON_2)==HIGH) &&
-           digitalRead(ARM_PIN)==HIGH &&
-           digitalRead(FIRE1)==LOW &&
-           digitalRead(FIRE2)==LOW)
+           if(( analogRead(IGN_TEST_CON_1) > 1000 ||
+            analogRead(IGN_TEST_CON_2) > 1000))
             stateMachine.changeStateConfirmation();
           else
             stateMachine.changeStateRejection();
