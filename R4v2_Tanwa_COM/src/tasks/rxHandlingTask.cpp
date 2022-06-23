@@ -3,7 +3,7 @@
 #include <iostream>
 
 using namespace std;
-extern MCP23017 expander;
+// extern MCP23017 expander;
 extern char data[SD_FRAME_SIZE];
 
 enum FrameStates {
@@ -21,7 +21,8 @@ enum FrameStates {
     SOFT_RESTART_ESP_,
     SOFT_RESTART_STM_,
     STAT_,
-    HOLD_,
+    HOLD_IN_,
+    HOLD_OUT_,
     ABRT_,
     INVALID
 };
@@ -42,7 +43,8 @@ FrameStates resolveOption(string input) {
     if( input == "SOFT_RESTART_ESP" ) return SOFT_RESTART_ESP_;
     if( input == "SOFT_RESTART_STM" ) return SOFT_RESTART_STM_;
     if( input == "STAT" ) return STAT_;
-    if( input == "HOLD" ) return HOLD_;
+    if( input == "HOLD_IN" ) return HOLD_IN_;
+    if( input == "HOLD_OUT" ) return HOLD_OUT_;
     if( input == "ABRT" ) return ABRT_;
     //...
     return INVALID;
@@ -215,19 +217,44 @@ void rxHandlingTask(void* arg){
 
             case SOFT_RESTART_STM_:
               //RESET STM
-              pwrCom.sendCommandMotor(0, RESET_COMMAND);
+              // pwrCom.sendCommandMotor(0, RESET_COMMAND);
+              xSemaphoreTake(stm.i2cMutex, pdTRUE);
+              expander.setPinX(4,A,OUTPUT,OFF);
+              xSemaphoreGive(stm.i2cMutex);
+        
+              Serial.println("RESeeeeeeeeeeeeeeeET");
+              vTaskDelay(100 / portTICK_PERIOD_MS);
+              xSemaphoreTake(stm.i2cMutex, pdTRUE);
+              expander.setPinX(4,A,OUTPUT,ON);
+              xSemaphoreGive(stm.i2cMutex);
+
               break;
 
             case STAT_:
               StateMachine::changeStateRequest(static_cast<States>(atoi(frame_array[3].c_str())));
-              printf("STATE CHANGE REQUEST");
+              Serial.println("STATE CHANGE REQUEST");
               break;
               
-            case HOLD_:
-              StateMachine::changeStateRequest(States::HOLD);
+            case HOLD_IN_:
+              Serial.println("hold in");
+              if(StateMachine::getCurrentState() != States::HOLD){
+                if(StateMachine::changeStateRequest(States::HOLD) == false)
+                  Serial.println("ERROR HOLD IN");
+              }else
+                Serial.println("ERROR HOLD IN");
+              break;
+          
+            case HOLD_OUT_:
+              Serial.println("hold out");
+              if(StateMachine::getCurrentState() == States::HOLD){
+                if(StateMachine::changeStateRequest(States::HOLD) == false)
+                  Serial.println("ERROR HOLD OUT");
+              }else
+                Serial.println("ERROR HOLD OUT");
               break;
 
             case ABRT_:
+              Serial.println("ABORT");
               StateMachine::changeStateRequest(States::ABORT);
               break;
 

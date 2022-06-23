@@ -1,10 +1,10 @@
 #include "../include/tasks/tasks.h"
 
-extern MCP23017 expander;
+// extern MCP23017 expander;
 
 void stateTask(void *arg){
   StateMachine stateMachine(stm.stateTask);
-  
+  bool initialCondition = false;
   while(1){
 
     if(ulTaskNotifyTake(pdTRUE, false)){
@@ -51,12 +51,6 @@ void stateTask(void *arg){
         case HOLD:
           // piekny przyklad uzycia klasy uniwersalnej -- nie dla debili jak ja ~ molon
           //TxData motorMsg{0,0}; predefined at the beginning of a file
-          // motorMsg = {.command = MOTOR_FILL, .commandValue = CLOSE_VALVE};
-          // pwrCom.sendCommand(&motorMsg);
-          // xSemaphoreTake(stm.i2cMutex, pdTRUE);
-          // pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
-          // xSemaphoreGive(stm.i2cMutex);
-
           stateMachine.changeStateConfirmation();
           break;
 
@@ -74,7 +68,9 @@ void stateTask(void *arg){
     switch(StateMachine::getCurrentState()){
       case IDLE:
         //Idle state means nothing is going on
-
+        xSemaphoreTake(stm.i2cMutex, pdTRUE);
+        expander.setPinPullUp(3,B,ON);
+        xSemaphoreGive(stm.i2cMutex);
         vTaskDelay(500 / portTICK_PERIOD_MS);
         break;
     
@@ -91,11 +87,13 @@ void stateTask(void *arg){
         //send msg to close valves?
         // motorMsg.command = MOTOR_FILL;
         // motorMsg.commandValue = CLOSE_VALVE;
-
-        xSemaphoreTake(stm.i2cMutex, pdTRUE);
-        pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
-        pwrCom.sendCommandMotor(MOTOR_DEPR, CLOSE_VALVE);
-        xSemaphoreGive(stm.i2cMutex);
+        if(initialCondition == false){
+          xSemaphoreTake(stm.i2cMutex, pdTRUE);
+          pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
+          pwrCom.sendCommandMotor(MOTOR_DEPR, CLOSE_VALVE);
+          xSemaphoreGive(stm.i2cMutex);
+          initialCondition = true;
+        }
 
         break;
 
@@ -105,6 +103,10 @@ void stateTask(void *arg){
         //if armed 
        // soft arm
         digitalWrite(ARM_PIN, HIGH);
+        xSemaphoreTake(stm.i2cMutex, pdTRUE);
+        expander.setPinPullUp(4,B,ON);
+        xSemaphoreGive(stm.i2cMutex);
+
         digitalWrite(FIRE1, LOW);
         digitalWrite(FIRE2, LOW);
 
@@ -115,6 +117,11 @@ void stateTask(void *arg){
         //
         //Do not allow valve manipulation, do not give access to the igniter
         digitalWrite(ARM_PIN, HIGH);
+        
+        xSemaphoreTake(stm.i2cMutex, pdTRUE);
+        expander.setPinPullUp(5,B,ON);
+        xSemaphoreGive(stm.i2cMutex);
+
         digitalWrite(FIRE1, LOW);
         digitalWrite(FIRE2, LOW);
 
@@ -124,6 +131,10 @@ void stateTask(void *arg){
         //ALLOW TO STOP AND GO BACK TO RDY_TO_LAUNCH
         //CAN GO IN IF ARMED AND SOFTWARMED AND IGNITERS HAVE CONTINUITY
         //FIRE THE IGNITER AFTER COUNTDOWN
+        xSemaphoreTake(stm.i2cMutex, pdTRUE);
+        expander.setPinPullUp(6,B,ON);
+        xSemaphoreGive(stm.i2cMutex);
+
         digitalWrite(ARM_PIN, HIGH);
         digitalWrite(FIRE1, LOW);
         digitalWrite(FIRE2, LOW);

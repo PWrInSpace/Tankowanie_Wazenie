@@ -16,7 +16,7 @@
 
 extern SoftwareToolsManagment stm;
 extern InternalI2C<PWRData, TxData> pwrCom;
-extern MCP23017 myMCP;
+extern MCP23017 expander;
 extern Hx711 rckWeight;
 extern Hx711 tankWeight;
 

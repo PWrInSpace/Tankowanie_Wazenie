@@ -1,9 +1,9 @@
 #include "../include/tasks/tasks.h"
 
 
-extern Hx711 rckWeight;
-extern Hx711 tankWeight;
-extern MCP23017 expander;
+// extern Hx711 rckWeight;
+// extern Hx711 tankWeight;
+// extern MCP23017 expander;
 char data[SD_FRAME_SIZE] = {};
 //kod w tym tasku jest tylko do debugu 
 void dataTask(void *arg){
@@ -14,7 +14,6 @@ void dataTask(void *arg){
   expander.setPinMode(0,B,INPUT); //input for abort button
 
   //HX711
-
   rckWeight.begin();
   rckWeight.start(STABILIZNG_TIME, true); //start without tare
   // rckWeight.setCalFactor(BIT_TO_GRAM_RATIO_RCK);
@@ -41,22 +40,10 @@ void dataTask(void *arg){
    
   while(1){
    
-
     xSemaphoreTake(stm.i2cMutex, pdTRUE);
     pwrCom.getData(&pwrData);
-    xSemaphoreGive(stm.i2cMutex);
-
-    expander.setPinPullUp(6,B,OFF);
     expander.setPinPullUp(2,B,turnVar);
-
-
-
-    // vTaskDelay(5000 / portTICK_PERIOD_MS);
-    // expander.setPinPullUp(4,A,OFF);
-    // vTaskDelay(20 / portTICK_PERIOD_MS);
-    // expander.setPinPullUp(4,A,ON);
-
-
+    xSemaphoreGive(stm.i2cMutex);
 
 
     if(turnVar == 1)
@@ -89,7 +76,16 @@ void dataTask(void *arg){
     // xQueueSend(stm.loraTxQueue, (void*)data, 0);
 
     xQueueSend(stm.sdQueue, (void*)data, 0); 
-    
+
+      // xSemaphoreTake(stm.i2cMutex, pdTRUE);
+      // expander.setPinX(4,A,OUTPUT,OFF);
+      // xSemaphoreGive(stm.i2cMutex);
+
+      // Serial.println("RESeeeeeeeeeeeeeeeET");
+      // vTaskDelay(5000 / portTICK_PERIOD_MS);
+      // xSemaphoreTake(stm.i2cMutex, pdTRUE);
+      // expander.setPinX(4,A,OUTPUT,ON);
+      // xSemaphoreGive(stm.i2cMutex);
     //DEBUG(data);
     // xSemaphoreTake(stm.i2cMutex, pdTRUE);
     // i2cCOM.getData(&pwrData);

@@ -14,7 +14,6 @@ InternalI2C<PWRData, TxData> pwrCom(&stm.i2c, COM_ADRESS);
 Hx711 rckWeight(HX1_SDA, HX1_SCL);
 Hx711 tankWeight(HX2_SDA, HX2_SCL);
 
-
 MCP23017 expander = MCP23017(&stm.i2c,MCP_ADDRESS,RST);
 
 void setup() {
@@ -39,7 +38,7 @@ void setup() {
     expander.setPinPullUp(6,A,OFF);
     expander.setPinPullUp(7,A,OFF);
 
-    expander.setPinPullUp(4,A,ON); // STM RST OFF
+    expander.setPinX(4,A,OUTPUT,ON); // STM RST OFF
     expander.setPinMode(0,B,INPUT); //input for abort button
 
     expander.setPinPullUp(1,B,OFF);// all leds on
@@ -49,12 +48,9 @@ void setup() {
     expander.setPinPullUp(5,B,OFF);
     expander.setPinPullUp(6,B,OFF);
     expander.setPinPullUp(7,B,OFF);
+
   }
  
-
-
-
-
   nowInit();
   nowAddPeer(adressObc, 0);
 
@@ -69,7 +65,7 @@ void setup() {
   vTaskDelay(25 / portTICK_PERIOD_MS);
 
   xTaskCreatePinnedToCore(loraTask, "LoRa task", 8096, NULL, 3, &stm.loraTask, PRO_CPU_NUM);
-  xTaskCreatePinnedToCore(rxHandlingTask, "Rx handling task", 8096, NULL, 2, &stm.rxHandlingTask, PRO_CPU_NUM);
+  xTaskCreatePinnedToCore(rxHandlingTask, "Rx handling task", 8096, NULL, 2, &stm.rxHandlingTask, APP_CPU_NUM);
   xTaskCreatePinnedToCore(sdTask,   "SD task",   8096, NULL, 3, &stm.sdTask,   APP_CPU_NUM);
   xTaskCreatePinnedToCore(dataTask, "Data task", 8096, NULL, 3, &stm.dataTask, APP_CPU_NUM);
   xTaskCreatePinnedToCore(stateTask, "State task", 8096, NULL, 10, &stm.stateTask, APP_CPU_NUM);
