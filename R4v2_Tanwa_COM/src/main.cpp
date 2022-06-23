@@ -39,9 +39,9 @@ void setup() {
     expander.setPinPullUp(7,A,OFF);
 
     expander.setPinX(4,A,OUTPUT,ON); // STM RST OFF
-    expander.setPinMode(0,B,INPUT); //input for abort button
+    expander.setPinX(0,B,INPUT,ON); //input for abort button
 
-    expander.setPinPullUp(1,B,OFF);// all leds on
+    expander.setPinPullUp(1,B,OFF);// all leds off
     expander.setPinPullUp(2,B,OFF);
     expander.setPinPullUp(3,B,OFF);
     expander.setPinPullUp(4,B,OFF);

@@ -163,11 +163,11 @@ void stateTask(void *arg){
         digitalWrite(ARM_PIN, LOW);
         digitalWrite(FIRE1, LOW);
         digitalWrite(FIRE2, LOW);
-        //CLOSE FILL, OPEN DEPR, OPEN VENT
+        //CLOSE FILL, OPEN DEPR
         xSemaphoreTake(stm.i2cMutex, pdTRUE);
         pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
+        vTaskDelay(15000 / portTICK_PERIOD_MS);
         pwrCom.sendCommandMotor(MOTOR_DEPR, OPEN_VALVE);
-        // pwrCom.sendCommandMotor(MOTOR_VENT, OPEN_VALVE);
         xSemaphoreGive(stm.i2cMutex);
 
         break;

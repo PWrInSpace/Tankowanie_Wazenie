@@ -77,9 +77,15 @@ void dataTask(void *arg){
 
     xQueueSend(stm.sdQueue, (void*)data, 0); 
 
-      // xSemaphoreTake(stm.i2cMutex, pdTRUE);
-      // expander.setPinX(4,A,OUTPUT,OFF);
-      // xSemaphoreGive(stm.i2cMutex);
+      xSemaphoreTake(stm.i2cMutex, pdTRUE);
+      if(expander.getPin(0,B)==0){
+        expander.setPinPullUp(1,B,ON);
+        StateMachine::changeStateRequest(States::ABORT);
+      }
+      else
+        expander.setPinPullUp(1,B,OFF);
+
+      xSemaphoreGive(stm.i2cMutex);
 
       // Serial.println("RESeeeeeeeeeeeeeeeET");
       // vTaskDelay(5000 / portTICK_PERIOD_MS);
