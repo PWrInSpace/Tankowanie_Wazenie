@@ -30,7 +30,7 @@ static String dataFileName= "/data_";
 #define OPEN_VALVE 0x01
 #define CLOSE_VALVE 0x00
 #define TIMED_OPEN_VALVE 0x03
-#define MOTOR_FILL 0x01
+#define MOTOR_FILL 0x05
 #define MOTOR_DEPR 0x02
 #define MOTOR_QUICK_DISCONNECT 0x03
 
@@ -38,8 +38,8 @@ static String dataFileName= "/data_";
 #define LORA_FREQ_MHZ 927    //927
 
 //WEIGHTING
-#define BIT_TO_GRAM_RATIO_RCK 1
-#define BIT_TO_GRAM_RATIO_TANK 1
+#define BIT_TO_GRAM_RATIO_RCK 53.13
+#define BIT_TO_GRAM_RATIO_TANK 32.73
 #define OFFSET_RCK 1
 #define OFFSET_TANK 1
 #define STABILIZNG_TIME 4000

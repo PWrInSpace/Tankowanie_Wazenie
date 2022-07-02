@@ -20,6 +20,7 @@ enum FrameStates {
     CALIBRATE_TANK_,
     SOFT_RESTART_ESP_,
     SOFT_RESTART_STM_,
+    SET_CAL_FACTOR_,
     STAT_,
     HOLD_IN_,
     HOLD_OUT_,
@@ -42,6 +43,7 @@ FrameStates resolveOption(string input) {
     if( input == "CALIBRATE_TANK" ) return CALIBRATE_TANK_;
     if( input == "SOFT_RESTART_ESP" ) return SOFT_RESTART_ESP_;
     if( input == "SOFT_RESTART_STM" ) return SOFT_RESTART_STM_;
+    if( input == "SET_CAL_FACTOR" ) return SET_CAL_FACTOR_;
     if( input == "STAT" ) return STAT_;
     if( input == "HOLD_IN" ) return HOLD_IN_;
     if( input == "HOLD_OUT" ) return HOLD_OUT_;
@@ -198,7 +200,7 @@ void rxHandlingTask(void* arg){
               break;
             
             case CALIBRATE_RCK_:
-              rckWeight.CustomCalibration(atoi(frame_array[2].c_str()));
+              Serial.print("CAL FACTOR ROCKET: "); Serial.println(rckWeight.CustomCalibration(atoi(frame_array[2].c_str())));
               break;
 
             case TARE_TANK_:
@@ -207,7 +209,9 @@ void rxHandlingTask(void* arg){
 
             case CALIBRATE_TANK_:
               // tankWeight.CustomCalibration(atoi(frame_array[3].c_str()),0);
-              tankWeight.CustomCalibration(atoi(frame_array[2].c_str()));
+              // tankWeight.CustomCalibration(atoi(frame_array[2].c_str()));
+              Serial.print("CAL FACTOR TANK: "); Serial.println(tankWeight.CustomCalibration(atoi(frame_array[2].c_str())));
+
               break;
 
             case SOFT_RESTART_ESP_:
@@ -229,6 +233,18 @@ void rxHandlingTask(void* arg){
               xSemaphoreGive(stm.i2cMutex);
 
               break;
+
+          case SET_CAL_FACTOR_:
+            if(frame_array[2]=="RCK"){
+              rckWeight.setCalFactor(atoi(frame_array[3].c_str()));
+              Serial.print("CAL FACTOR RCK = "); Serial.println(atoi(frame_array[3].c_str()));
+            }
+            else if (frame_array[2]=="TANK"){
+              tankWeight.setCalFactor(atoi(frame_array[3].c_str()));
+              Serial.print("CAL FACTOR TANK = "); Serial.println(atoi(frame_array[3].c_str()));
+            }
+            
+            break;
 
             case STAT_:
               StateMachine::changeStateRequest(static_cast<States>(atoi(frame_array[3].c_str())));

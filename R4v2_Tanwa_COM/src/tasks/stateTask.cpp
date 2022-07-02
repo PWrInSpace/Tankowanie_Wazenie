@@ -1,7 +1,7 @@
 #include "../include/tasks/tasks.h"
 
 // extern MCP23017 expander;
-
+extern  PWRData pwrData;
 void stateTask(void *arg){
   StateMachine stateMachine(stm.stateTask);
   bool initialCondition = false;
@@ -165,9 +165,16 @@ void stateTask(void *arg){
         digitalWrite(FIRE2, LOW);
         //CLOSE FILL, OPEN DEPR
         xSemaphoreTake(stm.i2cMutex, pdTRUE);
-        pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
-        vTaskDelay(15000 / portTICK_PERIOD_MS);
-        pwrCom.sendCommandMotor(MOTOR_DEPR, OPEN_VALVE);
+        for(int i = 0; i<15;i++){
+            pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+        }
+       
+        if(pwrData.motorState[4]==CLOSE_VALVE)
+           for(int i = 0; i<5;i++){
+          pwrCom.sendCommandMotor(MOTOR_DEPR, OPEN_VALVE);
+          vTaskDelay(1000 / portTICK_PERIOD_MS);
+        }
         xSemaphoreGive(stm.i2cMutex);
 
         break;

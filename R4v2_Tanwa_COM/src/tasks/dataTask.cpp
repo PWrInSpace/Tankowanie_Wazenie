@@ -5,24 +5,25 @@
 // extern Hx711 tankWeight;
 // extern MCP23017 expander;
 char data[SD_FRAME_SIZE] = {};
+ PWRData pwrData;
 //kod w tym tasku jest tylko do debugu 
 void dataTask(void *arg){
   
   int turnVar = 0;
   DataFrame dataFrame;
-  PWRData pwrData;
+ 
   expander.setPinMode(0,B,INPUT); //input for abort button
 
   //HX711
   rckWeight.begin();
   rckWeight.start(STABILIZNG_TIME, true); //start without tare
-  // rckWeight.setCalFactor(BIT_TO_GRAM_RATIO_RCK);
+  rckWeight.setCalFactor(BIT_TO_GRAM_RATIO_RCK);
   // rckWeight.setTareOffset(OFFSET_RCK);
   rckWeight.setSamplesInUse(1);
 
   tankWeight.begin();
   tankWeight.start(STABILIZNG_TIME, true); //start without tare
-  // tankWeight.setCalFactor(BIT_TO_GRAM_RATIO_TANK);
+  tankWeight.setCalFactor(BIT_TO_GRAM_RATIO_TANK);
   // tankWeight.setTareOffset(OFFSET_TANK);
   tankWeight.setSamplesInUse(1);
   while (tankWeight.getTareTimeoutFlag() && rckWeight.getTareTimeoutFlag())
