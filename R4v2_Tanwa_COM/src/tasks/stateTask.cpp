@@ -69,7 +69,7 @@ void stateTask(void *arg){
       case IDLE:
         //Idle state means nothing is going on
         xSemaphoreTake(stm.i2cMutex, pdTRUE);
-        expander.setPinPullUp(3,B,ON);
+        expander.setPinPullUp(3,B,ON); // indication LED ON
         xSemaphoreGive(stm.i2cMutex);
         vTaskDelay(500 / portTICK_PERIOD_MS);
         break;
@@ -104,7 +104,7 @@ void stateTask(void *arg){
        // soft arm
         digitalWrite(ARM_PIN, HIGH);
         xSemaphoreTake(stm.i2cMutex, pdTRUE);
-        expander.setPinPullUp(4,B,ON);
+        expander.setPinPullUp(4,B,ON); //indication LED ON
         xSemaphoreGive(stm.i2cMutex);
 
         digitalWrite(FIRE1, LOW);
@@ -119,7 +119,7 @@ void stateTask(void *arg){
         digitalWrite(ARM_PIN, HIGH);
         
         xSemaphoreTake(stm.i2cMutex, pdTRUE);
-        expander.setPinPullUp(5,B,ON);
+        expander.setPinPullUp(5,B,ON); // indication LED ON
         xSemaphoreGive(stm.i2cMutex);
 
         digitalWrite(FIRE1, LOW);
@@ -132,7 +132,7 @@ void stateTask(void *arg){
         //CAN GO IN IF ARMED AND SOFTWARMED AND IGNITERS HAVE CONTINUITY
         //FIRE THE IGNITER AFTER COUNTDOWN
         xSemaphoreTake(stm.i2cMutex, pdTRUE);
-        expander.setPinPullUp(6,B,ON);
+        expander.setPinPullUp(6,B,ON);  // indication LED ON
         xSemaphoreGive(stm.i2cMutex);
 
         digitalWrite(ARM_PIN, HIGH);

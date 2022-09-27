@@ -79,7 +79,7 @@ void dataTask(void *arg){
     xQueueSend(stm.sdQueue, (void*)data, 0); 
 
       xSemaphoreTake(stm.i2cMutex, pdTRUE);
-      if(expander.getPin(0,B)==0){
+      if(expander.getPin(0,B)==0){// ABORT BUTTON
         expander.setPinPullUp(1,B,ON);
         StateMachine::changeStateRequest(States::ABORT);
       }

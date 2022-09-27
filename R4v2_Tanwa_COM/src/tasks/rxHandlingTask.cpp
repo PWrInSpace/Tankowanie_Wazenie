@@ -64,7 +64,6 @@ void rxHandlingTask(void* arg){
       Serial.print("ESP NOW: ");
       Serial.println(espNowCommand.command);
       Serial.println(espNowCommand.commandValue);
-        //TODO parser zaplnik, kalibracja, state
 
       switch(espNowCommand.command){
         case PLSS_:
