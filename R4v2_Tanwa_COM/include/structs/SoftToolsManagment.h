@@ -10,6 +10,7 @@ struct SoftwareToolsManagment{
   TaskHandle_t sdTask;
   TaskHandle_t dataTask;
   TaskHandle_t stateTask;
+  TaskHandle_t buzzerTask;
   TaskHandle_t rxHandlingTask;
   //... inne taski
   QueueHandle_t sdQueue;

@@ -30,6 +30,7 @@ void rxHandlingTask(void *arg);
 void sdTask(void *arg);
 void dataTask(void *arg);
 void stateTask(void *arg);
+void buzzerTask(void *arg);
 
 
 #endif

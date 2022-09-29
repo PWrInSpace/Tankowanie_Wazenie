@@ -72,6 +72,8 @@ void setup() {
   xTaskCreatePinnedToCore(sdTask,   "SD task",   8096, NULL, 3, &stm.sdTask,   APP_CPU_NUM);
   xTaskCreatePinnedToCore(dataTask, "Data task", 8096, NULL, 3, &stm.dataTask, APP_CPU_NUM);
   xTaskCreatePinnedToCore(stateTask, "State task", 8096, NULL, 10, &stm.stateTask, APP_CPU_NUM);
+  xTaskCreatePinnedToCore(buzzerTask, "Buzzer task", 8096, NULL, 3, &stm.buzzerTask, APP_CPU_NUM);
+
 
   if(stm.sdQueue == NULL || stm.loraTxQueue == NULL){
     ESP.restart();
@@ -86,6 +88,7 @@ void setup() {
    ESP.restart();
   }*/
   StateMachine::changeStateRequest(States::IDLE);
+  
   vTaskDelete(NULL);
 
 }

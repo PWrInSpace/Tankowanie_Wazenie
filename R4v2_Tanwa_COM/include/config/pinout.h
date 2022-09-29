@@ -59,7 +59,7 @@
 #define RESET_PIN 4 
 
 
-void beepBoop(int delay, int times);
+void beepBoop(int delay, int times, int devicePin);
 float voltageMeasure(uint8_t batteryPin);
 void pinInit();
 

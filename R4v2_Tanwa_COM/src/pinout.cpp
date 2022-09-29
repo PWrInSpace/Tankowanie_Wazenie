@@ -10,12 +10,12 @@ float voltageMeasure(uint8_t batteryPin)
 }
 
 
-void beepBoop(int time, int howManyTimes){
+void beepBoop(int time, int howManyTimes, int devicePin){
     uint32_t delay = time / howManyTimes;
     for(int i=0; i < howManyTimes; ++i){
-        digitalWrite(BUZZER, 1);
+        digitalWrite(devicePin, 1);
         vTaskDelay(delay / portTICK_PERIOD_MS);
-        digitalWrite(BUZZER, 0);
+        digitalWrite(devicePin, 0);
         vTaskDelay(delay / portTICK_PERIOD_MS);
     }
 }
