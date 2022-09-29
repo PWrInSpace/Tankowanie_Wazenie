@@ -33,6 +33,9 @@ void setup() {
   if(!expander.Init())
     Serial.println("Not connected!");
   else{
+ 
+    expander.softReset(); //WARNING - EXPANDER ON SECOND PCB NEEDED THIS!!!!!! CHECK BEHAVIOUR FOR 1ST ONE
+
     Serial.println("CONNECTED");
     expander.setPinPullUp(5,A,OFF); //all termopary down
     expander.setPinPullUp(6,A,OFF);

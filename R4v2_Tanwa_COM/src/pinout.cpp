@@ -46,7 +46,7 @@ void pinInit()
     digitalWrite(SPEAKER, LOW);
 
     //RESET
-    pinMode(RST, INPUT);
+    pinMode(RST, OUTPUT);
 
 
     //I2C
