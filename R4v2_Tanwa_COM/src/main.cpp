@@ -26,6 +26,9 @@ void setup() {
   // digitalWrite(FIRE2,1);
   WiFi.mode(WIFI_STA);
   esp_wifi_set_mac(ESP_IF_WIFI_STA, adressTanwa);
+
+  ledcSetup(0,2000,8);// PWM FOR BUZZER
+  ledcAttachPin(SPEAKER, 0);
   
   stm.i2c.begin(I2C_SDA, I2C_SCL, 100E3);
   stm.spi.begin();
