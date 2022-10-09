@@ -35,12 +35,17 @@ void loraTask(void *arg){
     LoRa.parsePacket();
     if (LoRa.available()) {
       String rxStr = LoRa.readString();
-      strcpy(loraRx, rxStr.c_str());
-     
+      
+      if(rxStr.length() < 50)
+      { 
+        strcpy(loraRx, rxStr.c_str());
+        if(xQueueSend(stm.loraRxQueue, (void*)&loraRx, 0) == pdFALSE){
+
+        }
+      }
       
       //send data to rxHandleTask
-      if(xQueueSend(stm.loraRxQueue, (void*)&loraRx, 0) == pdFALSE){
-      }
+      
      
       memset(loraRx, 0, LORA_RX_FRAME_SIZE);
     }

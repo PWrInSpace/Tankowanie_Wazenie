@@ -33,29 +33,40 @@ void setup() {
   stm.i2c.begin(I2C_SDA, I2C_SCL, 100E3);
   stm.spi.begin();
 
-  if(!expander.Init())
-    Serial.println("Not connected!");
-  else{
- 
-    expander.softReset(); //WARNING - EXPANDER ON SECOND PCB NEEDED THIS!!!!!! CHECK BEHAVIOUR FOR 1ST ONE
+  while(!expander.Init()){
+    vTaskDelay(500);
+    Serial.println("Not connected!1");
+    digitalWrite(RUNCAM, LOW);
+    vTaskDelay(150);
+    digitalWrite(RUNCAM, HIGH);
+    stm.i2c.begin(I2C_SDA, I2C_SCL, 100E3);
+    }
 
-    Serial.println("CONNECTED");
-    expander.setPinPullUp(5,A,OFF); //all termopary down
-    expander.setPinPullUp(6,A,OFF);
-    expander.setPinPullUp(7,A,OFF);
+    // if(!expander.Init())
+    //   Serial.println("Not connected!");
 
-    expander.setPinX(4,A,OUTPUT,ON); // STM RST OFF
-    expander.setPinX(0,B,INPUT,ON); //input for abort button
+    // else{
+  
+      expander.softReset(); //WARNING - EXPANDER ON SECOND PCB NEEDED THIS!!!!!! CHECK BEHAVIOUR FOR 1ST ONE
 
-    expander.setPinPullUp(1,B,OFF);// all leds off
-    expander.setPinPullUp(2,B,OFF);
-    expander.setPinPullUp(3,B,OFF);
-    expander.setPinPullUp(4,B,OFF);
-    expander.setPinPullUp(5,B,OFF);
-    expander.setPinPullUp(6,B,OFF);
-    expander.setPinPullUp(7,B,OFF);
+      Serial.println("CONNECTED");
+      expander.setPinPullUp(5,A,OFF); //all termopary down
+      expander.setPinPullUp(6,A,OFF);
+      expander.setPinPullUp(7,A,OFF);
 
-  }
+      expander.setPinX(4,A,OUTPUT,ON); // STM RST OFF
+      expander.setPinX(0,B,INPUT,ON); //input for abort button
+
+      expander.setPinPullUp(1,B,OFF);// all leds off
+      expander.setPinPullUp(2,B,OFF);
+      expander.setPinPullUp(3,B,OFF);
+      expander.setPinPullUp(4,B,OFF);
+      expander.setPinPullUp(5,B,OFF);
+      expander.setPinPullUp(6,B,OFF);
+      expander.setPinPullUp(7,B,OFF);
+
+    // }
+  
  
   nowInit();
   nowAddPeer(adressObc, 0);
@@ -71,11 +82,11 @@ void setup() {
   vTaskDelay(25 / portTICK_PERIOD_MS);
 
   xTaskCreatePinnedToCore(loraTask, "LoRa task", 8096, NULL, 3, &stm.loraTask, PRO_CPU_NUM);
-  xTaskCreatePinnedToCore(rxHandlingTask, "Rx handling task", 8096, NULL, 2, &stm.rxHandlingTask, APP_CPU_NUM);
+  xTaskCreatePinnedToCore(rxHandlingTask, "Rx handling task", 20000, NULL, 2, &stm.rxHandlingTask, APP_CPU_NUM);
   xTaskCreatePinnedToCore(sdTask,   "SD task",   8096, NULL, 3, &stm.sdTask,   APP_CPU_NUM);
   xTaskCreatePinnedToCore(dataTask, "Data task", 8096, NULL, 3, &stm.dataTask, APP_CPU_NUM);
   xTaskCreatePinnedToCore(stateTask, "State task", 8096, NULL, 10, &stm.stateTask, APP_CPU_NUM);
-  xTaskCreatePinnedToCore(buzzerTask, "Buzzer task", 8096, NULL, 3, &stm.buzzerTask, APP_CPU_NUM);
+  xTaskCreatePinnedToCore(buzzerTask, "Buzzer task", 8096, NULL, 1, &stm.buzzerTask, APP_CPU_NUM);
 
 
   if(stm.sdQueue == NULL || stm.loraTxQueue == NULL){

@@ -5,24 +5,31 @@ extern  PWRData pwrData;
 void stateTask(void *arg){
   StateMachine stateMachine(stm.stateTask);
   bool initialCondition = false;
+  bool abort_flag = false;
+  bool hold_flag = false;
   while(1){
 
     if(ulTaskNotifyTake(pdTRUE, false)){
+
+      hold_flag = false; // reset hold after changing state (getting out of)
       switch(stateMachine.getRequestedState()){
         case IDLE:
           stateMachine.changeStateConfirmation();
+          break;
+        case RECOVERY_ARM:
+            stateMachine.changeStateConfirmation();
           break;
            
         case FUELING:
           if(( analogRead(IGN_TEST_CON_1) > 1000 ||
             analogRead(IGN_TEST_CON_2) > 1000))
-           
+
             stateMachine.changeStateConfirmation();
           else
             stateMachine.changeStateRejection();
           break;
 
-        case ARMED:
+        case ARMED_TO_LAUNCH:
           if(( analogRead(IGN_TEST_CON_1) > 1000 ||
             analogRead(IGN_TEST_CON_2) > 1000))
 
@@ -68,10 +75,16 @@ void stateTask(void *arg){
     switch(StateMachine::getCurrentState()){
       case IDLE:
         //Idle state means nothing is going on
+        // xSemaphoreTake(stm.i2cMutex, pdTRUE);
+        // expander.setPinPullUp(3,B,ON); // indication LED ON
+        // xSemaphoreGive(stm.i2cMutex);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+        break;
+
+      case RECOVERY_ARM:
         xSemaphoreTake(stm.i2cMutex, pdTRUE);
         expander.setPinPullUp(3,B,ON); // indication LED ON
         xSemaphoreGive(stm.i2cMutex);
-        vTaskDelay(500 / portTICK_PERIOD_MS);
         break;
     
       
@@ -84,6 +97,10 @@ void stateTask(void *arg){
         digitalWrite(ARM_PIN, LOW);
         digitalWrite(FIRE1, LOW);
         digitalWrite(FIRE2, LOW);
+
+        xSemaphoreTake(stm.i2cMutex, pdTRUE);
+        expander.setPinPullUp(4,B,ON); // indication LED ON
+        xSemaphoreGive(stm.i2cMutex);
         //send msg to close valves?
         // motorMsg.command = MOTOR_FILL;
         // motorMsg.commandValue = CLOSE_VALVE;
@@ -98,13 +115,13 @@ void stateTask(void *arg){
         break;
 
 
-      case ARMED:
+      case ARMED_TO_LAUNCH:
         //CHECK THE CONTINUITY OF IGNITERS
         //if armed 
        // soft arm
         digitalWrite(ARM_PIN, HIGH);
         xSemaphoreTake(stm.i2cMutex, pdTRUE);
-        expander.setPinPullUp(4,B,ON); //indication LED ON
+        expander.setPinPullUp(5,B,ON); //indication LED ON
         xSemaphoreGive(stm.i2cMutex);
 
         digitalWrite(FIRE1, LOW);
@@ -119,7 +136,7 @@ void stateTask(void *arg){
         digitalWrite(ARM_PIN, HIGH);
         
         xSemaphoreTake(stm.i2cMutex, pdTRUE);
-        expander.setPinPullUp(5,B,ON); // indication LED ON
+        expander.setPinPullUp(6,B,ON); // indication LED ON
         xSemaphoreGive(stm.i2cMutex);
 
         digitalWrite(FIRE1, LOW);
@@ -133,7 +150,11 @@ void stateTask(void *arg){
         //FIRE THE IGNITER AFTER COUNTDOWN
         xSemaphoreTake(stm.i2cMutex, pdTRUE);
         expander.setPinPullUp(6,B,ON);  // indication LED ON
+        expander.setPinPullUp(5,B,OFF); 
+        expander.setPinPullUp(4,B,OFF); 
+        expander.setPinPullUp(3,B,OFF); 
         xSemaphoreGive(stm.i2cMutex);
+
 
         digitalWrite(ARM_PIN, HIGH);
         digitalWrite(FIRE1, LOW);
@@ -144,15 +165,27 @@ void stateTask(void *arg){
       case HOLD:
         //ALLOW TO GO FROM ANY STATE
         //SOFTWARE DISARM, NO ACCESS TO VALVES
+
         digitalWrite(ARM_PIN, LOW);
         digitalWrite(FIRE1, LOW);
         digitalWrite(FIRE2, LOW);
-        //CLOSE VALVES MSG
-        xSemaphoreTake(stm.i2cMutex, pdTRUE);
-        pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
-        pwrCom.sendCommandMotor(MOTOR_DEPR, CLOSE_VALVE);
-        xSemaphoreGive(stm.i2cMutex);
 
+        if(hold_flag == false){
+
+          hold_flag = true;
+
+          for(int i=0; i<5; i++){
+           xSemaphoreTake(stm.i2cMutex, pdTRUE);
+          pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
+          pwrCom.sendCommandMotor(MOTOR_DEPR, CLOSE_VALVE);
+          xSemaphoreGive(stm.i2cMutex);
+          vTaskDelay(1000);
+
+          }
+
+        }
+        //CLOSE VALVES MSG
+       
         break;
 
       case ABORT:
@@ -163,19 +196,22 @@ void stateTask(void *arg){
         digitalWrite(ARM_PIN, LOW);
         digitalWrite(FIRE1, LOW);
         digitalWrite(FIRE2, LOW);
-        //CLOSE FILL, OPEN DEPR
-        xSemaphoreTake(stm.i2cMutex, pdTRUE);
-        for(int i = 0; i<15;i++){
-            pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
+        if(abort_flag == false){
+          abort_flag = true;
+           //CLOSE FILL, OPEN DEPR
+          xSemaphoreTake(stm.i2cMutex, pdTRUE);
+          for(int i = 0; i<15;i++){
+              pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
+              vTaskDelay(1000 / portTICK_PERIOD_MS);
+          }
+        
+          if(pwrData.motorState[4]==CLOSE_VALVE)
+            for(int i = 0; i<5;i++){
+            pwrCom.sendCommandMotor(MOTOR_DEPR, OPEN_VALVE);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
+          }
+          xSemaphoreGive(stm.i2cMutex);          
         }
-       
-        if(pwrData.motorState[4]==CLOSE_VALVE)
-           for(int i = 0; i<5;i++){
-          pwrCom.sendCommandMotor(MOTOR_DEPR, OPEN_VALVE);
-          vTaskDelay(1000 / portTICK_PERIOD_MS);
-        }
-        xSemaphoreGive(stm.i2cMutex);
 
         break;
 

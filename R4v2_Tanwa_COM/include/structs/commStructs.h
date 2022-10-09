@@ -23,7 +23,7 @@ struct PWRData{
   bool tick = {};
   uint8_t lastDoneCommandNum = {};
   uint8_t motorState[5] = {};
-  // int16_t adcValue[8] = {}; //tanwa voltage adc[4]
+  int16_t adcValue[2] = {}; //tanwa voltage adc[4]
  
 };
 

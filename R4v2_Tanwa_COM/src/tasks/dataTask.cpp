@@ -8,7 +8,7 @@ char data[SD_FRAME_SIZE] = {};
  PWRData pwrData;
 //kod w tym tasku jest tylko do debugu 
 void dataTask(void *arg){
-  
+  uint32_t abort_count = 0;
   int turnVar = 0;
   DataFrame dataFrame;
  
@@ -80,11 +80,17 @@ void dataTask(void *arg){
 
       xSemaphoreTake(stm.i2cMutex, pdTRUE);
       if(expander.getPin(0,B)==0){// ABORT BUTTON
-        expander.setPinPullUp(1,B,ON);
-        StateMachine::changeStateRequest(States::ABORT);
+        abort_count++;
+        if(abort_count>=3){
+          expander.setPinPullUp(1,B,ON);
+          StateMachine::changeStateRequest(States::ABORT);
+        }
       }
-      else
+      else{
+        abort_count = 0;
         expander.setPinPullUp(1,B,OFF);
+      }
+       
 
       xSemaphoreGive(stm.i2cMutex);
 
@@ -106,7 +112,13 @@ void dataTask(void *arg){
     Serial.print("MOTOR STATE 2: "); Serial.println(pwrData.motorState[2]);
     Serial.print("MOTOR STATE 3: "); Serial.println(pwrData.motorState[3]);
     Serial.print("MOTOR STATE 4: "); Serial.println(pwrData.motorState[4]);
-    // Serial.print("ADC VALUE 0: "); Serial.println(pwrData.adcValue[0]);
+
+    Serial.print("PRESSURE bit: "); Serial.println(pwrData.adcValue[0]);
+
+    long pressure = map(pwrData.adcValue[0],450, 4096, 0, 80);
+
+
+    Serial.print("PRESSURE in bars: "); Serial.println(pressure);
     // Serial.print("ADC VALUE 1: "); Serial.println(pwrData.adcValue[1]);
     // Serial.print("ADC VALUE 2: "); Serial.println(pwrData.adcValue[2]);
     // Serial.print("ADC VALUE 3: "); Serial.println(pwrData.adcValue[3]);

@@ -4,7 +4,7 @@ bool once_upon_a_time = true;
 void buzzerTask(void *arg){
     while(1){
         if(( analogRead(IGN_TEST_CON_1) > 1000 ||
-        analogRead(IGN_TEST_CON_2) > 1000)&& (StateMachine::getCurrentState() != ARMED && StateMachine::getCurrentState() != ABORT))
+        analogRead(IGN_TEST_CON_2) > 1000)&& (StateMachine::getCurrentState() <= ARMED_TO_LAUNCH && StateMachine::getCurrentState() != ABORT))
         {
             // beepBoop(200, 1, SPEAKER);
             // beepBoop(200, 1, BUZZER);
@@ -91,7 +91,7 @@ void buzzerTask(void *arg){
         }
 
         else if (( analogRead(IGN_TEST_CON_1) > 1000 ||
-           analogRead(IGN_TEST_CON_2) > 1000) && StateMachine::getCurrentState() == ARMED)
+           analogRead(IGN_TEST_CON_2) > 1000) && (StateMachine::getCurrentState() >= ARMED_TO_LAUNCH && StateMachine::getCurrentState() != ABORT))
         {
             // beepBoop(100, 1, SPEAKER);
             beepBoop(50, 1, BUZZER);
@@ -106,6 +106,7 @@ void buzzerTask(void *arg){
         {
             // beepBoop(50, 1, SPEAKER);
             beepBoop(20, 1, BUZZER);
+
             ledcWriteTone(0, 3000);
             ledcWrite(0, 255);
         }

@@ -55,7 +55,7 @@ void pinInit()
 
     //CAMERA
     pinMode(RUNCAM, OUTPUT);
-    digitalWrite(RUNCAM, LOW);
+    digitalWrite(RUNCAM, HIGH);//RESET STM PURPOSES - DRUT
 
     //
 }
