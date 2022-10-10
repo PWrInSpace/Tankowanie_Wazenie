@@ -34,7 +34,7 @@ struct TxStruct{
     bool tick;
     uint8_t lastDoneCommandNum;
     uint8_t MotorState[5];
-    int16_t adcValue[2];
+    int16_t adcValue[2]; //int16_t adcValue[8];
 };
 
 struct RxStruct{
@@ -45,10 +45,11 @@ struct RxStruct{
 TxStruct txStruct = {0,0,{0,0,0,0,0},{0,0}};
 RxStruct rxStruct = {0,0};
 const uint16_t rxBufferLenght = 10;
-auto rxQueue = xQueueCreate(rxBufferLenght, sizeof(rxStruct));
-uint16_t ventingTime = 500; //tmp
+auto rxQueue = xQueueCreate(rxBufferLenght, sizeof(RxStruct));
+uint16_t ventingTime = 500;
 std::vector<std::tuple<Motor*,volatile ValveState>> MotorList;
-
+bool debounceTimerEnable = true;
+uint16_t currPinINT = NULL; //change to mutex
 
 /* USER CODE END PTD */
 
@@ -146,14 +147,13 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_ADC1_Init();
   MX_TIM1_Init();
   MX_TIM3_Init();
-  MX_TIM4_Init();
-  MX_GPIO_Init();
   MX_DMA_Init();
-  MX_ADC1_Init();
+  MX_TIM4_Init();
   MX_I2C2_Init();
-
   /* USER CODE BEGIN 2 */
 	HAL_Delay(50);
 	MotorList.push_back({new Motor(M1Dir_GPIO_Port, M1Dir_Pin, &htim4, TIM_CHANNEL_4), ValveStateIDK});
@@ -414,7 +414,7 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 47;
+  htim1.Init.Prescaler = 4799;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 999;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -665,66 +665,8 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void TryReachExpectedState(std::tuple<Motor*,volatile ValveState>& Valve, uint16_t parameter = 500){
-	Motor* motor = std::get<0>(Valve);
-	ValveState expectedState = std::get<1>(Valve);
-	if(motor->GetState() == expectedState){
-		motor->Stop();
-		return;
-	}
-	else if(expectedState == ValveStateOpen){
-		motor->State = ValveStateAttemptToOpen;
-		motor->Open();
-	}
-	else if(expectedState == ValveStateClose){
-		motor->State = ValveStateAttemptToClose;
-		motor->Close();
-	}
-	else if(expectedState == ValveStateVent){
-		motor->State = ValveStateAttemptToOpen;
-		motor->Open();
-		osDelay(parameter);
-		motor->State = ValveStateAttemptToClose;
-		motor->Close();
-	}
-}
 
-void setNewExpectedStateOfValveOnVector(std::vector<std::tuple<Motor*,volatile ValveState>>& Valves, const uint8_t& ValveNumber, const ValveState& newExpectedValveState){
-	std::get<0>(Valves[ValveNumber])->SetState(ValveStateIDK);
-	Valves[ValveNumber] = std::tuple<Motor*,volatile ValveState>(std::get<0>(Valves[ValveNumber]), newExpectedValveState);
-}
-
-void handleRxStruct(RxStruct rxStruct){
-	txStruct.lastDoneCommandNum = rxStruct.CommandNum;
-	uint8_t CommandNumValve = (rxStruct.CommandNum / 10) % 10;
-	uint8_t CommandNumState = rxStruct.CommandNum % 10;
-	ventingTime = rxStruct.CommandArgument; //new venting time
-	if(rxStruct.CommandNum == 99){
-			HAL_NVIC_SystemReset();
-	}
-	else if(CommandNumValve > 0 && CommandNumValve < 6){ //Motor1 - Motor5
-		if(CommandNumState == 0 || CommandNumState == 1 || CommandNumState == 3){
-			setNewExpectedStateOfValveOnVector(MotorList, CommandNumValve - 1, (ValveState)CommandNumState);
-		}
-	}
-
-}
-
-void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode){
-	HAL_I2C_DisableListen_IT(hi2c);
-	if(!TransferDirection) {
-		HAL_I2C_Slave_Transmit(hi2c, (uint8_t*)&txStruct, sizeof(TxStruct), 5);
-	}
-	else{
-		HAL_I2C_Slave_Receive(hi2c, (uint8_t*)&rxStruct, sizeof(RxStruct), 50);
-		xQueueSendFromISR(rxQueue, &rxStruct, NULL);
-	}
-	HAL_I2C_EnableListen_IT(hi2c);
-}
-
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){ //ToDo change to loop
-//	HAL_Delay(50);
-	//ToDO add real de-bounce // https://www.instructables.com/STM32CubeMX-Button-Debounce-With-Interrupt/
+void handleLimitSwitches(uint16_t GPIO_Pin){
 	if(std::get<1>(MotorList[0]) == ValveStateOpen && GPIO_Pin == M1OpenLimitSwitchEXT_Pin){
 		if (HAL_GPIO_ReadPin(GPIOB, M1OpenLimitSwitchEXT_Pin) == 0)
 			std::get<0>(MotorList[0])->SetState(ValveStateOpen);
@@ -763,6 +705,78 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){ //ToDo change to loop
 	}
 }
 
+
+void TryReachExpectedState(std::tuple<Motor*,volatile ValveState>& Valve, uint16_t parameter = 500){
+	Motor* motor = std::get<0>(Valve);
+	ValveState expectedState = std::get<1>(Valve);
+	if(motor->GetState() == expectedState){
+		motor->Stop();
+		return;
+	}
+	else if(expectedState == ValveStateOpen){
+		motor->State = ValveStateAttemptToOpen;
+		motor->Open();
+	}
+	else if(expectedState == ValveStateClose){
+		motor->State = ValveStateAttemptToClose;
+		motor->Close();
+	}
+	else if(expectedState == ValveStateVent){
+		motor->State = ValveStateAttemptToOpen;
+		motor->Open();
+		osDelay(parameter);
+		motor->Stop();
+		osDelay(10);
+		motor->State = ValveStateAttemptToClose;
+		motor->Close();
+	}
+}
+
+void setNewExpectedStateOfValveOnVector(std::vector<std::tuple<Motor*,volatile ValveState>>& Valves, const uint8_t& ValveNumber, const ValveState& newExpectedValveState){
+	std::get<0>(Valves[ValveNumber])->SetState(ValveStateIDK);
+	Valves[ValveNumber] = std::tuple<Motor*,volatile ValveState>(std::get<0>(Valves[ValveNumber]), newExpectedValveState);
+}
+
+void handleRxStruct(RxStruct rxStruct){
+	txStruct.lastDoneCommandNum = rxStruct.CommandNum;
+	uint8_t CommandNumValve = (rxStruct.CommandNum / 10) % 10;
+	uint8_t CommandNumState = rxStruct.CommandNum % 10;
+	ventingTime = rxStruct.CommandArgument; //new venting time
+	if(rxStruct.CommandNum == 99){
+			HAL_NVIC_SystemReset();
+	}
+	else if(CommandNumValve > 0 && CommandNumValve < 6){ //Motor1 - Motor5
+		if(CommandNumState == 0 || CommandNumState == 1 || CommandNumState == 3){
+			setNewExpectedStateOfValveOnVector(MotorList, CommandNumValve - 1, (ValveState)CommandNumState);
+		}
+	}
+
+}
+
+void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode){
+	HAL_I2C_DisableListen_IT(hi2c);
+	if(!TransferDirection) {
+		HAL_I2C_Slave_Transmit(hi2c, (uint8_t*)&txStruct, sizeof(TxStruct), 5);
+	}
+	else{
+		RxStruct chuj = {0, 0};
+		HAL_I2C_Slave_Receive(hi2c, (uint8_t*)&chuj, sizeof(RxStruct), 50);
+		xQueueSendFromISR(rxQueue,(void*) &chuj, NULL);
+	}
+	HAL_I2C_EnableListen_IT(hi2c);
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){ //ToDo change to loop
+	if(debounceTimerEnable == true){			//real de-bounce (WIP) // https://www.instructables.com/STM32CubeMX-Button-Debounce-With-Interrupt/
+		debounceTimerEnable = false;
+		currPinINT = GPIO_Pin; 					//ToDo change to mutex;
+		HAL_TIM_Base_Start_IT(&htim1);
+	}
+	else{
+		__NOP();
+	}
+}
+
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_TaskCOM */
@@ -771,6 +785,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){ //ToDo change to loop
   * @param  argument: Not used
   * @retval None
   */
+static RxStruct dupa = {0, 0};
+
 /* USER CODE END Header_TaskCOM */
 void TaskCOM(void *argument)
 {
@@ -786,8 +802,9 @@ void TaskCOM(void *argument)
 	}
 	/* Infinite loop */
 	for(;;){
-		if(xQueueReceive(rxQueue, &currentCommand, 100) == pdPASS){
-			handleRxStruct(currentCommand);
+		if(xQueueReceive(rxQueue,(void*) &currentCommand, 100) == pdPASS){
+			// handleRxStruct(currentCommand);
+			dupa = currentCommand;
 		}
 		osDelay(100);
 	}
@@ -844,21 +861,22 @@ void TaskMeasure(void *argument)
 				(uint8_t)std::get<0>(MotorList[2])->GetState(),
 				(uint8_t)std::get<0>(MotorList[3])->GetState(),
 				(uint8_t)std::get<0>(MotorList[4])->GetState()
-
 			},
 			{
-				ADCData[4], //M1 Analog
-				ADCData[5]
+				ADCData[4], //Pressure1
+				ADCData[5]  //Pressure2
 			}
-			/*{
-				ADCData[4], //M1 Analog
-				ADCData[5] //M2 Analog
-//				ADCData[2]/ADCDividerRatio[2], //M3 Analog
-//				ADCData[3]/ADCDividerRatio[3], //M1 Analog
-//				(int16_t)(ADCData[4]/ADCDividerRatio[4]), //Battery Voltage
-//				ADCData[5]/ADCDividerRatio[5], //Pressure1
-//				ADCData[6]/ADCDividerRatio[6], //Pressure2
-//				ADCData[7]/ADCDividerRatio[7] //M4 Analog
+
+			/*,
+			{
+				ADCData[0]/ADCDividerRatio[0], //M1 Analog
+				ADCData[1]/ADCDividerRatio[1], //M2 Analog
+				ADCData[2]/ADCDividerRatio[2], //M3 Analog
+				ADCData[3]/ADCDividerRatio[3], //M1 Analog
+				(int16_t)(ADCData[4]/ADCDividerRatio[4]), //Battery Voltage
+				ADCData[5]/ADCDividerRatio[5], //Pressure1
+				ADCData[6]/ADCDividerRatio[6], //Pressure2
+				ADCData[7]/ADCDividerRatio[7] //M4 Analog
 			}*/
 		};
 		osDelay(500);
@@ -877,11 +895,16 @@ void TaskMeasure(void *argument)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
-
+	if (htim->Instance == TIM1){
+		handleLimitSwitches(currPinINT);
+		debounceTimerEnable = true;
+		HAL_TIM_Base_Stop_IT(&htim1);
+		HAL_IncTick();
+	}
   /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM2) {
-    HAL_IncTick();
-  }
+	if (htim->Instance == TIM2) {
+		HAL_IncTick();
+	}
   /* USER CODE BEGIN Callback 1 */
 
   /* USER CODE END Callback 1 */
