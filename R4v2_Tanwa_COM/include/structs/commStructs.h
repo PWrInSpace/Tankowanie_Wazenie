@@ -24,7 +24,6 @@ struct PWRData{
   uint8_t lastDoneCommandNum = {};
   uint8_t motorState[5] = {};
   int16_t adcValue[2] = {}; //tanwa voltage adc[4]
- 
 };
 
 struct Options{

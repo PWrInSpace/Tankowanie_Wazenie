@@ -44,7 +44,7 @@ static String dataFileName= "/data_";
 #define OFFSET_TANK 1
 #define STABILIZNG_TIME 4000
 
-#define COM_ADRESS 0x1A //26 dec
+#define COM_ADRESS 0x1A //26 dec 0x1A
 
 //ESPNOW COMMANDS
 

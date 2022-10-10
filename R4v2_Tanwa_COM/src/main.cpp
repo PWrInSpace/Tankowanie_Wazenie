@@ -31,21 +31,22 @@ void setup() {
   ledcAttachPin(SPEAKER, 0);
   
   stm.i2c.begin(I2C_SDA, I2C_SCL, 100E3);
+  stm.i2c.setTimeOut(20);
   stm.spi.begin();
 
   while(!expander.Init()){
     vTaskDelay(500);
     Serial.println("Not connected!1");
-    digitalWrite(RUNCAM, LOW);
-    vTaskDelay(150);
-    digitalWrite(RUNCAM, HIGH);
-    stm.i2c.begin(I2C_SDA, I2C_SCL, 100E3);
-    }
+    // digitalWrite(RUNCAM, LOW);
+    // vTaskDelay(150);
+    // digitalWrite(RUNCAM, HIGH);
+    // stm.i2c.begin(I2C_SDA, I2C_SCL, 100E3);
+  }
 
-    // if(!expander.Init())
-    //   Serial.println("Not connected!");
+    if(!expander.Init())
+      Serial.println("Not connected!");
 
-    // else{
+    else{
   
       expander.softReset(); //WARNING - EXPANDER ON SECOND PCB NEEDED THIS!!!!!! CHECK BEHAVIOUR FOR 1ST ONE
 
@@ -65,7 +66,7 @@ void setup() {
       expander.setPinPullUp(6,B,OFF);
       expander.setPinPullUp(7,B,OFF);
 
-    // }
+    }
   
  
   nowInit();
@@ -105,6 +106,7 @@ void setup() {
   
   vTaskDelete(NULL);
 
+  
 }
 
 void loop() {}

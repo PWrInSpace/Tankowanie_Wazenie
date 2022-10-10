@@ -43,6 +43,10 @@ void dataTask(void *arg){
    
     xSemaphoreTake(stm.i2cMutex, pdTRUE);
     pwrCom.getData(&pwrData);
+    xSemaphoreGive(stm.i2cMutex);
+
+
+    xSemaphoreTake(stm.i2cMutex, pdTRUE);
     expander.setPinPullUp(2,B,turnVar);
     xSemaphoreGive(stm.i2cMutex);
 
