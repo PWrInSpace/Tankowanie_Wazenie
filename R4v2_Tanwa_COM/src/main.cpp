@@ -71,6 +71,10 @@ void setup() {
  
   nowInit();
   nowAddPeer(adressObc, 0);
+  ledcWriteTone(0, 1000);
+  ledcWrite(0, 255);
+  vTaskDelay(100 / portTICK_PERIOD_MS);
+  ledcWrite(0, 0);
 
   stm.sdQueue = xQueueCreate(SD_QUEUE_LENGTH, sizeof(char[SD_FRAME_SIZE]));
   stm.loraTxQueue = xQueueCreate(LORA_TX_QUEUE_LENGTH, sizeof(char[LORA_TX_FRAME_SIZE]));

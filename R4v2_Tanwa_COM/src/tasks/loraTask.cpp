@@ -1,8 +1,34 @@
 #include "../include/tasks/tasks.h"
 
+static void lora_read_message_and_put_on_queue(void) {
+  String rxStr = "";
+  uint32_t start_time = millis();
+  uint32_t timeout = 250;
+  uint32_t available = LoRa.available();
+  uint8_t rx_buffer[LORA_RX_FRAME_SIZE];
+  rxStr.clear();
+
+  while ((available > 0) && (millis() - start_time < timeout)) {
+    rxStr += (char)LoRa.read();
+    available -= 1;
+  }
+
+  if (millis() - start_time > timeout) {
+    Serial.println("Lora timeout");
+    return;
+  }
+
+  size_t rx_size = rxStr.length();
+  if (rx_size < LORA_RX_FRAME_SIZE - 1) {
+    memcpy(rx_buffer, rxStr.c_str(), rx_size);
+    rx_buffer[rx_size] = '\0';
+    xQueueSend(stm.loraRxQueue, (void*)&rx_buffer, 0);
+  }
+}
+
 void loraTask(void *arg){
   char loraTx[LORA_TX_FRAME_SIZE] = {};
-  char loraRx[LORA_RX_FRAME_SIZE] = {};
+  // char loraRx[LORA_RX_FRAME_SIZE] = {};
 
   //TanWaControl * tc = static_cast<TanWaControl*>(arg);
   
@@ -32,22 +58,10 @@ void loraTask(void *arg){
 
   while(1){
     xSemaphoreTake(stm.spiMutex, portMAX_DELAY);
-    LoRa.parsePacket();
-    if (LoRa.available()) {
-      String rxStr = LoRa.readString();
-      
-      if(rxStr.length() < 50)
-      { 
-        strcpy(loraRx, rxStr.c_str());
-        if(xQueueSend(stm.loraRxQueue, (void*)&loraRx, 0) == pdFALSE){
-
-        }
+    if (LoRa.parsePacket() != 0) {
+      if (LoRa.available()) {
+        lora_read_message_and_put_on_queue();
       }
-      
-      //send data to rxHandleTask
-      
-     
-      memset(loraRx, 0, LORA_RX_FRAME_SIZE);
     }
     xSemaphoreGive(stm.spiMutex);
 
