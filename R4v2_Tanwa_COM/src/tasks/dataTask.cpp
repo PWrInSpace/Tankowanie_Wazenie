@@ -67,12 +67,18 @@ void dataTask(void *arg){
     }
 
     dataFrame.vbat = voltageMeasure(VOLTAGE_MEASURE);
-    memcpy(dataFrame.motorState, pwrData.motorState, sizeof(uint8_t[5]));
+    // memcpy(dataFrame.motorState, pwrData.motorState, sizeof(uint8_t[5]));
+    dataFrame.motorState_1 = pwrData.motorState[0];
+    dataFrame.motorState_2 = pwrData.motorState[1];
+    dataFrame.motorState_3 = pwrData.motorState[2];
+    dataFrame.motorState_4 = pwrData.motorState[3];
+    dataFrame.motorState_5 = pwrData.motorState[4];
+  
 
     dataFrame.tanWaState = StateMachine::getCurrentState();
     
-    dataFrame.igniterContinouity[0] = analogRead(IGN_TEST_CON_1) > 1000;
-    dataFrame.igniterContinouity[1] = analogRead(IGN_TEST_CON_2) > 1000;
+    dataFrame.igniterContinouity_1 = analogRead(IGN_TEST_CON_1) > 1000;
+    dataFrame.igniterContinouity_2 = analogRead(IGN_TEST_CON_2) > 1000;
 
 
     createDataFrame(dataFrame, data);
@@ -119,10 +125,10 @@ void dataTask(void *arg){
 
     Serial.print("PRESSURE bit: "); Serial.println(pwrData.adcValue[0]);
 
-    long pressure = map(pwrData.adcValue[0],450, 4096, 0, 80);
+    dataFrame.pressureSensor = map(pwrData.adcValue[0],450, 4096, 0, 80);
 
 
-    Serial.print("PRESSURE in bars: "); Serial.println(pressure);
+    Serial.print("PRESSURE in bars: "); Serial.println(dataFrame.pressureSensor);
     // Serial.print("ADC VALUE 1: "); Serial.println(pwrData.adcValue[1]);
     // Serial.print("ADC VALUE 2: "); Serial.println(pwrData.adcValue[2]);
     // Serial.print("ADC VALUE 3: "); Serial.println(pwrData.adcValue[3]);
@@ -132,8 +138,8 @@ void dataTask(void *arg){
     // Serial.print("ADC VALUE 7: "); Serial.println(pwrData.adcValue[7]);
     Serial.print("TANK WEIGHT: "); Serial.println(dataFrame.tankWeight);
     Serial.print("ROCKET WEIGHT: "); Serial.println(dataFrame.rocketWeight);
-    Serial.print("continuity 1 "); Serial.println(dataFrame.igniterContinouity[0]);
-    Serial.print("continuity 2 "); Serial.println(dataFrame.igniterContinouity[1]);
+    Serial.print("continuity 1 "); Serial.println(dataFrame.igniterContinouity_1);
+    Serial.print("continuity 2 "); Serial.println(dataFrame.igniterContinouity_2);
 
 
   

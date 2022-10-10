@@ -3,22 +3,22 @@
 void createDataFrame(DataFrame df, char *data){
   size_t loraDataSize;
 
-  loraDataSize = snprintf(NULL, 0, "%d;%0.2f;%d;%d;%d;%d;%d;%d;%d;%0.2f;%0.2f;%d;%d;%0.2f;%0.2f;%0.2f",
-    df.tanWaState, df.vbat, df.igniterContinouity[0],
-    df.igniterContinouity[1], df.motorState[0], df.motorState[1],
-    df.motorState[2], df.motorState[3], df.motorState[4],
+  loraDataSize = snprintf(NULL, 0, "%d;%d;%0.2f;%d;%d;%d;%d;%d;%d;%d;%0.2f;%0.2f;%d;%d;%0.2f;%0.2f;%0.2f",
+    df.tanWaState, df.pressureSensor, df.vbat, df.igniterContinouity_1,
+    df.igniterContinouity_2, df.motorState_1, df.motorState_2,
+    df.motorState_3, df.motorState_4, df.motorState_5,
     df.rocketWeight, df.tankWeight, df.rocketWeightRaw, 
-    df.tankWeightRaw, df.thermocouple[0], df.thermocouple[1], df.thermocouple[2]) + 1;
+    df.tankWeightRaw, df.thermocouple_1, df.thermocouple_2, df.thermocouple_3) + 1;
   
   char loraFrame[loraDataSize];
 
   
-  snprintf(loraFrame, loraDataSize, "%d;%0.2f;%d;%d;%d;%d;%d;%d;%d;%0.2f;%0.2f;%d;%d;%0.2f;%0.2f;%0.2f",
-    df.tanWaState, df.vbat, df.igniterContinouity[0],
-    df.igniterContinouity[1], df.motorState[0], df.motorState[1],
-    df.motorState[2], df.motorState[3], df.motorState[4],
+  snprintf(loraFrame, loraDataSize, "%d;%d;%0.2f;%d;%d;%d;%d;%d;%d;%d;%0.2f;%0.2f;%d;%d;%0.2f;%0.2f;%0.2f",
+    df.tanWaState, df.pressureSensor, df.vbat, df.igniterContinouity_1,
+    df.igniterContinouity_2, df.motorState_1, df.motorState_2,
+    df.motorState_3, df.motorState_4, df.motorState_5,
     df.rocketWeight, df.tankWeight, df.rocketWeightRaw, 
-    df.tankWeightRaw, df.thermocouple[0], df.thermocouple[1], df.thermocouple[2]);//10
+    df.tankWeightRaw, df.thermocouple_1, df.thermocouple_2, df.thermocouple_3);//10
   
   strcpy(data, DATA_PREFIX);
   strcat(data, loraFrame);
