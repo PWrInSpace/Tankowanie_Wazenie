@@ -41,7 +41,9 @@ void buzzerTask(void *arg){
                 vTaskDelay(delay1 / portTICK_PERIOD_MS);
 
                 ledcWriteTone(0, G2);
-                vTaskDelay(delay2 / portTICK_PERIOD_MS);
+                vTaskDelay(delay1 / portTICK_PERIOD_MS);
+                ledcWrite(0, 0);
+                vTaskDelay(300 / portTICK_PERIOD_MS);
             }
 
             ledcWriteTone(0, G1);
@@ -86,8 +88,9 @@ void buzzerTask(void *arg){
             vTaskDelay(delay1 / portTICK_PERIOD_MS);
 
             ledcWriteTone(0, G2);
-            vTaskDelay(delay2 / portTICK_PERIOD_MS);
+            vTaskDelay(delay1 / portTICK_PERIOD_MS);
             ledcWrite(0, 0);
+            vTaskDelay(300 / portTICK_PERIOD_MS);
         }
 
         else if (( analogRead(IGN_TEST_CON_1) > 1000 ||

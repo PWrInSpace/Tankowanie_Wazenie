@@ -119,7 +119,7 @@ void rxHandlingTask(void* arg){
 
     //LORA 
     if(xQueueReceive(stm.loraRxQueue, (void*)&loraRx, 0) == pdTRUE){
-      Serial.print("LORA: ");
+      Serial.print("LORAAAAAAAAAAAAAAAAAAAAAAA: ");
       
       Serial.println(loraRx);
     

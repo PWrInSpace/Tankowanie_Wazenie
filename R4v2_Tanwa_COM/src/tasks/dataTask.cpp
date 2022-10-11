@@ -116,30 +116,24 @@ void dataTask(void *arg){
     
     Serial.println("\n\n\nCOM DATA:");
     Serial.print("BLINK: "); Serial.println(pwrData.tick);
-    Serial.print("LAST COMMAND: "); Serial.println(pwrData.lastDoneCommandNum);
-    Serial.print("MOTOR STATE 0: "); Serial.println(pwrData.motorState[0]);
-    Serial.print("MOTOR STATE 1: "); Serial.println(pwrData.motorState[1]);
-    Serial.print("MOTOR STATE 2: "); Serial.println(pwrData.motorState[2]);
-    Serial.print("MOTOR STATE 3: "); Serial.println(pwrData.motorState[3]);
-    Serial.print("MOTOR STATE 4: "); Serial.println(pwrData.motorState[4]);
+    // Serial.print("LAST COMMAND: "); Serial.println(pwrData.lastDoneCommandNum);
+    // Serial.print("MOTOR STATE 0: "); Serial.println(pwrData.motorState[0]);
+    // Serial.print("MOTOR STATE 1: "); Serial.println(pwrData.motorState[1]);
+    // Serial.print("MOTOR STATE 2: "); Serial.println(pwrData.motorState[2]);
+    // Serial.print("MOTOR STATE 3: "); Serial.println(pwrData.motorState[3]);
+    // Serial.print("MOTOR STATE 4: "); Serial.println(pwrData.motorState[4]);
 
-    Serial.print("PRESSURE bit: "); Serial.println(pwrData.adcValue[0]);
+    // Serial.print("PRESSURE bit: "); Serial.println(pwrData.adcValue[0]);
 
-    dataFrame.pressureSensor = map(pwrData.adcValue[0],450, 4096, 0, 80);
-
-
-    Serial.print("PRESSURE in bars: "); Serial.println(dataFrame.pressureSensor);
-    // Serial.print("ADC VALUE 1: "); Serial.println(pwrData.adcValue[1]);
-    // Serial.print("ADC VALUE 2: "); Serial.println(pwrData.adcValue[2]);
-    // Serial.print("ADC VALUE 3: "); Serial.println(pwrData.adcValue[3]);
+    // dataFrame.pressureSensor = map(pwrData.adcValue[0],450, 4096, 0, 80);
+    // Serial.print("PRESSURE in bars: "); Serial.println(dataFrame.pressureSensor);
     Serial.print("TANWA VOLTAGE 4: "); Serial.println(voltageMeasure(VOLTAGE_MEASURE));
-    // Serial.print("ADC VALUE 5: "); Serial.println(pwrData.adcValue[5]);
-    // Serial.print("ADC VALUE 6: "); Serial.println(pwrData.adcValue[6]);
-    // Serial.print("ADC VALUE 7: "); Serial.println(pwrData.adcValue[7]);
-    Serial.print("TANK WEIGHT: "); Serial.println(dataFrame.tankWeight);
-    Serial.print("ROCKET WEIGHT: "); Serial.println(dataFrame.rocketWeight);
-    Serial.print("continuity 1 "); Serial.println(dataFrame.igniterContinouity_1);
-    Serial.print("continuity 2 "); Serial.println(dataFrame.igniterContinouity_2);
+ 
+
+    // Serial.print("TANK WEIGHT: "); Serial.println(dataFrame.tankWeight);
+    // Serial.print("ROCKET WEIGHT: "); Serial.println(dataFrame.rocketWeight);
+    // Serial.print("continuity 1 "); Serial.println(dataFrame.igniterContinouity_1);
+    // Serial.print("continuity 2 "); Serial.println(dataFrame.igniterContinouity_2);
 
 
   
