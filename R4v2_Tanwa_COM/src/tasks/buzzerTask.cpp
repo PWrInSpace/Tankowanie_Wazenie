@@ -8,7 +8,6 @@ void buzzerTask(void *arg){
         {
             // beepBoop(200, 1, SPEAKER);
             // beepBoop(200, 1, BUZZER);
-
             int E1 = 1318;
             int E2 = 2637;
             int F1 = 1479;
@@ -84,7 +83,7 @@ void buzzerTask(void *arg){
             vTaskDelay(delay1 / portTICK_PERIOD_MS);
 
             ledcWriteTone(0, G1);
-            ledcWrite(0, 255);
+            // ledcWrite(0, 255);
             vTaskDelay(delay1 / portTICK_PERIOD_MS);
 
             ledcWriteTone(0, G2);
