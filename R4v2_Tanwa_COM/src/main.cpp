@@ -86,12 +86,12 @@ void setup() {
 
   vTaskDelay(25 / portTICK_PERIOD_MS);
 
-  xTaskCreatePinnedToCore(loraTask, "LoRa task", 8096, NULL, 3, &stm.loraTask, PRO_CPU_NUM);
+  xTaskCreatePinnedToCore(loraTask, "LoRa task", 20000, NULL, 3, &stm.loraTask, PRO_CPU_NUM);
   xTaskCreatePinnedToCore(rxHandlingTask, "Rx handling task", 20000, NULL, 2, &stm.rxHandlingTask, APP_CPU_NUM);
-  xTaskCreatePinnedToCore(sdTask,   "SD task",   8096, NULL, 3, &stm.sdTask,   APP_CPU_NUM);
-  xTaskCreatePinnedToCore(dataTask, "Data task", 8096, NULL, 3, &stm.dataTask, APP_CPU_NUM);
-  xTaskCreatePinnedToCore(stateTask, "State task", 8096, NULL, 10, &stm.stateTask, APP_CPU_NUM);
-  xTaskCreatePinnedToCore(buzzerTask, "Buzzer task", 8096, NULL, 1, &stm.buzzerTask, APP_CPU_NUM);
+  xTaskCreatePinnedToCore(sdTask,   "SD task",   20000, NULL, 3, &stm.sdTask,   APP_CPU_NUM);
+  xTaskCreatePinnedToCore(dataTask, "Data task", 20000, NULL, 3, &stm.dataTask, APP_CPU_NUM);
+  xTaskCreatePinnedToCore(stateTask, "State task", 20000, NULL, 10, &stm.stateTask, APP_CPU_NUM);
+  xTaskCreatePinnedToCore(buzzerTask, "Buzzer task", 20000, NULL, 1, &stm.buzzerTask, APP_CPU_NUM);
 
 
   if(stm.sdQueue == NULL || stm.loraTxQueue == NULL){

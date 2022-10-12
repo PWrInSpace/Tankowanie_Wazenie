@@ -176,13 +176,30 @@ void stateTask(void *arg)
 
         hold_flag = true;
 
-        for (int i = 0; i < 5; i++)
+        while (pwrData.motorState[4] != CLOSE_VALVE)
         {
+
+          Serial.println("Close motor fill HOLD");
           xSemaphoreTake(stm.i2cMutex, pdTRUE);
+          pwrCom.sendCommandMotor(MOTOR_FILL, OPEN_VALVE);
+          vTaskDelay(10 / portTICK_PERIOD_MS);
           pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
-          pwrCom.sendCommandMotor(MOTOR_DEPR, CLOSE_VALVE);
           xSemaphoreGive(stm.i2cMutex);
-          vTaskDelay(1000);
+          vTaskDelay(5000 / portTICK_PERIOD_MS);
+        }
+
+        if (pwrData.motorState[4] == CLOSE_VALVE)
+        {
+          while (pwrData.motorState[1] != OPEN_VALVE)
+          {
+            Serial.println("Open motor depr HOLD");
+            xSemaphoreTake(stm.i2cMutex, pdTRUE);
+            pwrCom.sendCommandMotor(MOTOR_DEPR, CLOSE_VALVE);
+            vTaskDelay(10 / portTICK_PERIOD_MS);
+            pwrCom.sendCommandMotor(MOTOR_DEPR, OPEN_VALVE);
+            xSemaphoreGive(stm.i2cMutex);
+            vTaskDelay(5000 / portTICK_PERIOD_MS);
+          }
         }
       }
       // CLOSE VALVES MSG
@@ -207,6 +224,8 @@ void stateTask(void *arg)
 
           Serial.println("Close motor fill");
           xSemaphoreTake(stm.i2cMutex, pdTRUE);
+          pwrCom.sendCommandMotor(MOTOR_FILL, OPEN_VALVE);
+          vTaskDelay(10 / portTICK_PERIOD_MS);
           pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
           xSemaphoreGive(stm.i2cMutex);
           vTaskDelay(5000 / portTICK_PERIOD_MS);
@@ -218,6 +237,8 @@ void stateTask(void *arg)
           {
             Serial.println("Open motor depr");
             xSemaphoreTake(stm.i2cMutex, pdTRUE);
+            pwrCom.sendCommandMotor(MOTOR_DEPR, CLOSE_VALVE);
+            vTaskDelay(10 / portTICK_PERIOD_MS);
             pwrCom.sendCommandMotor(MOTOR_DEPR, OPEN_VALVE);
             xSemaphoreGive(stm.i2cMutex);
             vTaskDelay(5000 / portTICK_PERIOD_MS);
