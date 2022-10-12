@@ -112,6 +112,19 @@ void buzzerTask(void *arg){
             ledcWriteTone(0, 3000);
             ledcWrite(0, 255);
         }
+
+        else if (StateMachine::getCurrentState() == HOLD)
+        {
+            // beepBoop(50, 1, SPEAKER);
+            beepBoop(20, 1, BUZZER);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
+            ledcWriteTone(0, 2500);
+            ledcWrite(0, 255);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
+            ledcWrite(0, 0);
+
+            
+        }
             
 
         vTaskDelay(10 / portTICK_PERIOD_MS);
