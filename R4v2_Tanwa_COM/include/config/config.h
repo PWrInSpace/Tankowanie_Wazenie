@@ -35,7 +35,7 @@ static String dataFileName= "/data_";
 #define MOTOR_QUICK_DISCONNECT 0x03
 
 
-#define LORA_FREQ_MHZ 868    //927
+#define LORA_FREQ_MHZ 867    //927
 
 //WEIGHTING
 #define BIT_TO_GRAM_RATIO_RCK 53.13

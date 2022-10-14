@@ -66,8 +66,11 @@ void stateTask(void *arg)
         break;
 
       case ABORT:
+      {
         stateMachine.changeStateConfirmation();
+        Serial.println("ABORT CONFIRMATION");
         break;
+      }
 
       default:
         stateMachine.changeStateRejection();
@@ -109,37 +112,31 @@ void stateTask(void *arg)
       //  motorMsg.commandValue = CLOSE_VALVE;
       if (initialCondition == false)
       {
+        initialCondition = true;
         // xSemaphoreTake(stm.i2cMutex, pdTRUE);
         // pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
 
         // pwrCom.sendCommandMotor(MOTOR_DEPR, CLOSE_VALVE);
         // xSemaphoreGive(stm.i2cMutex);
-         while (pwrData.motorState[1] != CLOSE_VALVE)
-        {
 
-          Serial.println("Close motor depr close filling state");
+        Serial.println("Close motor depr close filling state");
+        xSemaphoreTake(stm.i2cMutex, pdTRUE);
+        pwrCom.sendCommandMotor(MOTOR_DEPR, OPEN_VALVE);
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+        pwrCom.sendCommandMotor(MOTOR_DEPR, CLOSE_VALVE);
+        xSemaphoreGive(stm.i2cMutex);
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
+        
+        if (pwrData.motorState[1] == CLOSE_VALVE)
+        {
+          Serial.println("Open motor fill close filling state");
           xSemaphoreTake(stm.i2cMutex, pdTRUE);
-          pwrCom.sendCommandMotor(MOTOR_DEPR, OPEN_VALVE);
+          pwrCom.sendCommandMotor(MOTOR_FILL, OPEN_VALVE);
           vTaskDelay(10 / portTICK_PERIOD_MS);
-          pwrCom.sendCommandMotor(MOTOR_DEPR, CLOSE_VALVE);
+          pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
           xSemaphoreGive(stm.i2cMutex);
           vTaskDelay(5000 / portTICK_PERIOD_MS);
         }
-
-        if (pwrData.motorState[1] == CLOSE_VALVE)
-        {
-          while (pwrData.motorState[4] != CLOSE_VALVE)
-          {
-            Serial.println("Open motor fill close filling state");
-            xSemaphoreTake(stm.i2cMutex, pdTRUE);
-            pwrCom.sendCommandMotor(MOTOR_FILL, OPEN_VALVE);
-            vTaskDelay(10 / portTICK_PERIOD_MS);
-            pwrCom.sendCommandMotor(MOTOR_FILL, CLOSE_VALVE);
-            xSemaphoreGive(stm.i2cMutex);
-            vTaskDelay(5000 / portTICK_PERIOD_MS);
-          }
-        }
-        initialCondition = true;
       }
 
       break;
@@ -240,6 +237,7 @@ void stateTask(void *arg)
       digitalWrite(ARM_PIN, LOW);
       digitalWrite(FIRE1, LOW);
       digitalWrite(FIRE2, LOW);
+      Serial.println("ABORTTTT");
       if (abort_flag == false)
       {
         abort_flag = true;

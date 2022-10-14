@@ -88,21 +88,29 @@ void dataTask(void *arg){
 
     xQueueSend(stm.sdQueue, (void*)data, 0); 
 
-      xSemaphoreTake(stm.i2cMutex, pdTRUE);
-      if(expander.getPin(0,B)==0){// ABORT BUTTON
+      // xSemaphoreTake(stm.i2cMutex, pdTRUE);
+      if(digitalRead(RUNCAM)==0){// ABORT BUTTON
         abort_count++;
+        Serial.println("==================");
+        Serial.println("ABORT ++");
+        Serial.println("==================");
         if(abort_count>=3){
+          xSemaphoreTake(stm.i2cMutex, pdTRUE);
           expander.setPinPullUp(1,B,ON);
+          xSemaphoreGive(stm.i2cMutex);
           StateMachine::changeStateRequest(States::ABORT);
+          Serial.println("ABORT BUTTON CONFIRMATION");
         }
       }
       else{
         abort_count = 0;
+        xSemaphoreTake(stm.i2cMutex, pdTRUE);
         expander.setPinPullUp(1,B,OFF);
+        xSemaphoreGive(stm.i2cMutex);
       }
        
 
-      xSemaphoreGive(stm.i2cMutex);
+      // xSemaphoreGive(stm.i2cMutex);
 
       // Serial.println("RESeeeeeeeeeeeeeeeET");
       // vTaskDelay(5000 / portTICK_PERIOD_MS);

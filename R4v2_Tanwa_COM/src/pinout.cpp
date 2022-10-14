@@ -54,8 +54,8 @@ void pinInit()
 
 
     //CAMERA
-    pinMode(RUNCAM, OUTPUT);
-    digitalWrite(RUNCAM, HIGH);//RESET STM PURPOSES - DRUT
+    pinMode(RUNCAM, INPUT);// INPUT FOR ABORT BUTTON
+    // digitalWrite(RUNCAM, HIGH);
 
     //
 }
