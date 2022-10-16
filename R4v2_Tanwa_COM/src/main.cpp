@@ -20,10 +20,7 @@ void setup() {
 
   Serial.begin(115200);
   pinInit();
-  // digitalWrite(ARM_PIN,1);
-  // delay(1000);
-  // digitalWrite(FIRE1,1);
-  // digitalWrite(FIRE2,1);
+
   WiFi.mode(WIFI_STA);
   esp_wifi_set_mac(ESP_IF_WIFI_STA, adressTanwa);
 
@@ -37,10 +34,6 @@ void setup() {
   while(!expander.Init()){
     vTaskDelay(500);
     Serial.println("Not connected!1");
-    // digitalWrite(RUNCAM, LOW);
-    // vTaskDelay(150);
-    // digitalWrite(RUNCAM, HIGH);
-    // stm.i2c.begin(I2C_SDA, I2C_SCL, 100E3);
   }
 
     if(!expander.Init())
